@@ -11,29 +11,25 @@ import {composeType, extractAddressFromType, isSortedSymbols} from "../utils/con
 import {d} from "../utils/numbers";
 import Decimal from "decimal.js";
 
-export type CalculateRatesParams = {
-  fromToken: AptosResourceType;
-  toToken: AptosResourceType;
+export type GetAmountInOutParams = {
+  coinIn: AptosResourceType;
+  coinOut: AptosResourceType;
   amount: BigNumber;
-  interactiveToken: 'from' | 'to',
   pool: {
-    lpToken: AptosResourceType,
-    moduleAddress: string,
-    address: string
+    address: string,
+    lpCoin: AptosResourceType,
   },
 }
 
-export type CreateTXPayloadParams = {
-  fromToken: AptosResourceType;
-  toToken: AptosResourceType;
-  fromAmount: BigNumber;
-  toAmount: BigNumber;
-  interactiveToken: 'from' | 'to';
+export type CreateSwapTxPayload = {
+  coinIn: AptosResourceType;
+  coinOut: AptosResourceType;
+  coinInAmount: BigNumber;
+  coinOutAmount: BigNumber;
   slippage: number,
   pool: {
-    lpToken: AptosResourceType,
-    moduleAddress: string,
-    address: string
+    address: string,
+    lpCoin: AptosResourceType,
   },
 }
 
@@ -48,41 +44,49 @@ export class SwapModule implements IModule {
     this._sdk = sdk;
   }
 
-  async calculateRates(params: CalculateRatesParams): Promise<string> {
+  async getAmountIn(params: GetAmountInOutParams): Promise<string> {
+    return this.calculateRates(params, true);
+  }
+
+  async getAmountOut(params: GetAmountInOutParams): Promise<string> {
+    return this.calculateRates(params, false);
+  }
+
+  async calculateRates(params: GetAmountInOutParams, isIn: boolean): Promise<string> {
     const { modules } = this.sdk.networkOptions;
 
     const fromCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
-      extractAddressFromType(params.fromToken),
-      composeType(modules.CoinInfo, [params.fromToken])
+      extractAddressFromType(params.coinIn),
+      composeType(modules.CoinInfo, [params.coinIn])
     )
 
     const toCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
-      extractAddressFromType(params.toToken),
-      composeType(modules.CoinInfo, [params.toToken])
+      extractAddressFromType(params.coinOut),
+      composeType(modules.CoinInfo, [params.coinOut])
     )
 
     if(!fromCoinInfo) {
-      throw new Error('To Coin not exists');
+      throw new Error('coinIn doesn\'t exist');
     }
 
     if(!toCoinInfo) {
-      throw new Error('To Coin not exists');
+      throw new Error('coinOut doesn\'t exists');
     }
 
     const isSorted = isSortedSymbols(fromCoinInfo.data.symbol, toCoinInfo.data.symbol);
-    const [fromToken, toToken] = isSorted
-      ? [params.fromToken, params.toToken]
-      : [params.toToken, params.fromToken];
+    const [coinX, coinY] = isSorted
+      ? [params.coinIn, params.coinOut]
+      : [params.coinOut, params.coinIn];
 
-    const liquidityPoolType = composeType(params.pool.moduleAddress,'liquidity_pool', 'LiquidityPool', [
-      fromToken,
-      toToken,
-      params.pool.lpToken,
-    ])
+    const liquidityPoolType = composeType(modules.LiquidswapDeployer, 'liquidity_pool', 'LiquidityPool', [
+      coinX,
+      coinY,
+      params.pool.lpCoin,
+    ]);
 
     const liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
       params.pool.address,
-      liquidityPoolType
+      liquidityPoolType,
     )
 
     if(!liquidityPoolResource) {
@@ -92,23 +96,22 @@ export class SwapModule implements IModule {
     const coinXReserve = liquidityPoolResource.data.coin_x_reserve.value
     const coinYReserve = liquidityPoolResource.data.coin_y_reserve.value
 
-    const [reserveX, reserveY] = isSorted
-      ? params.interactiveToken === 'from'
-        ? [d(coinXReserve), d(coinYReserve)]
-        : [d(coinYReserve), d(coinXReserve)]
-      : params.interactiveToken === 'from'
-        ? [d(coinYReserve), d(coinXReserve)]
-        : [d(coinXReserve), d(coinYReserve)];
+    const [reserveIn, reserveOut] = isSorted? [d(coinXReserve), d(coinYReserve)] : [d(coinYReserve), d(coinXReserve)];
 
-    const outputTokens =
-      params.interactiveToken === 'from'
-        ? getCoinOutWithFees(d(params.amount), reserveX, reserveY)
-        : getCoinInWithFees(d(params.amount), reserveX, reserveY);
-
+    const outputTokens = isIn? getCoinOutWithFees(d(params.amount), reserveIn, reserveOut) : getCoinInWithFees(d(params.amount), reserveOut, reserveIn);
+    
     return outputTokens.toString();
   }
 
-  createSwapTransactionPayload(params: CreateTXPayloadParams): TxPayloadCallFunction {
+  createSwapExactAmountPayload(params: CreateSwapTxPayload): TxPayloadCallFunction {
+    return this.createSwapTransactionPayload(params, true);
+  }
+
+  createSwapForExactAmountPayload(params: CreateSwapTxPayload): TxPayloadCallFunction {
+    return this.createSwapTransactionPayload(params, false);
+  }
+
+  createSwapTransactionPayload(params: CreateSwapTxPayload, isSwapIn: boolean): TxPayloadCallFunction {
     if(params.slippage >= 1 || params.slippage <= 0) {
       throw new Error(`Invalid slippage (${params.slippage}) value`);
     }
@@ -116,26 +119,20 @@ export class SwapModule implements IModule {
     const { modules } = this.sdk.networkOptions;
 
     const functionName = composeType(
-      modules.Scripts,
-      params.interactiveToken === 'from' ? 'swap' : 'swap_into'
+      `${modules.LiquidswapDeployer}::scripts`,
+      isSwapIn ? 'swap' : 'swap_into'
     );
 
     const typeArguments = [
-      params.fromToken,
-      params.toToken,
-      params.pool.lpToken,
+      params.coinIn,
+      params.coinOut,
+      params.pool.lpCoin,
     ];
 
-    const fromAmount =
-      params.interactiveToken === 'from'
-        ? params.fromAmount
-        : withSlippage(d(params.fromAmount), d(params.slippage), 'minus')
-    const toAmount =
-      params.interactiveToken === 'to'
-        ? params.toAmount
-        : withSlippage(d(params.toAmount), d(params.slippage), 'plus')
+    const coinInAmount = isSwapIn ? params.coinInAmount :  withSlippage(d(params.coinInAmount), d(params.slippage), 'minus');
+    const coinOutAmount = isSwapIn ? withSlippage(d(params.coinOutAmount), d(params.slippage), 'plus') : params.coinOutAmount;
 
-    const args = [params.pool.address, d(fromAmount).toString(), d(toAmount).toString()];
+    const args = [params.pool.address, d(coinInAmount).toString(), d(coinOutAmount).toString()];
 
     return {
       type: 'script_function_payload',

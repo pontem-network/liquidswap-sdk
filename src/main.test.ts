@@ -31,8 +31,8 @@ describe('Swap Module', () => {
     networkOptions: {
       nativeToken: '0x1::test_coin::TestCoin',
       modules: {
-        Scripts:
-          '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::scripts',
+        LiquidswapDeployer:
+          '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
         Faucet:
           '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::faucet',
         LiquidityPool:
@@ -42,18 +42,26 @@ describe('Swap Module', () => {
       },
     }
   })
-  test('calculateRates (from mode)', async () => {
+
+  test('test default sdk options', () => {
+    const sdk = new SDK()
+    expect(sdk.client.nodeUrl).toBe('https://fullnode.devnet.aptoslabs.com')
+    expect(sdk.networkOptions.nativeToken).toBe('0x1::test_coin::TestCoin')
+    expect(sdk.networkOptions.modules.LiquidswapDeployer).toBe('0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9')
+    expect(sdk.networkOptions.modules.CoinInfo).toBe('0x1::coin::CoinInfo')
+    expect(sdk.networkOptions.modules.CoinStore).toBe('0x1::coin::CoinStore')
+  });
+
+  test('calculateRates (getAmountIn mode)', async () => {
     const output = await sdk.Swap.calculateRates({
-      fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
+      coinIn: TokensMapping.APTOS,
+      coinOut: TokensMapping.BTC,
       amount: convertToDecimals(1, 'APTOS'),
-      interactiveToken: 'from',
       pool: {
         address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
+        lpCoin: TokensMapping.APTOSBTCLP
       }
-    })
+    }, true)
 
     console.log({
       amount: output,
@@ -63,19 +71,17 @@ describe('Swap Module', () => {
     expect(1).toBe(1)
   });
 
-  test('calculateRates (to mode)', async () => {
+  test('calculateRates (getAmountOut mode)', async () => {
     console.log(convertToDecimals('0.001', 'BTC'),);
     const output = await sdk.Swap.calculateRates({
-      fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
+      coinIn: TokensMapping.APTOS,
+      coinOut: TokensMapping.BTC,
       amount: convertToDecimals('0.001', 'BTC'),
-      interactiveToken: 'to',
       pool: {
         address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
+        lpCoin: TokensMapping.APTOSBTCLP
       }
-    })
+    }, false)
 
     console.log({
       amount: output,
@@ -85,19 +91,17 @@ describe('Swap Module', () => {
     expect(1).toBe(1)
   });
 
-  test('createSwapTransactionPayload (to mode)', async () => {
+  test('createSwapTransactionPayload (swapExactAmount mode)', async () => {
     console.log(convertToDecimals('0.001', 'BTC'),);
-    const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
-      fromAmount: convertToDecimals('0.116831', 'APTOS'),
-      toAmount: convertToDecimals('0.001', 'BTC'),
-      interactiveToken: 'to',
+    const output = sdk.Swap.createSwapExactAmountPayload({
+      coinIn: TokensMapping.APTOS,
+      coinOut: TokensMapping.BTC,
+      coinInAmount: convertToDecimals('0.116831', 'APTOS'),
+      coinOutAmount: convertToDecimals('0.001', 'BTC'),
       slippage: 0.05,
       pool: {
         address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
+        lpCoin: TokensMapping.APTOSBTCLP
       }
     })
 
@@ -106,19 +110,17 @@ describe('Swap Module', () => {
     expect(1).toBe(1)
   });
 
-  test('createSwapTransactionPayload (from mode)', async () => {
+  test('createSwapTransactionPayload (swapForExactAmount mode)', async () => {
     console.log(convertToDecimals('0.001', 'BTC'),);
-    const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
-      fromAmount: convertToDecimals('1', 'APTOS'),
-      toAmount: convertToDecimals('0.01584723', 'BTC'),
-      interactiveToken: 'from',
+    const output = sdk.Swap.createSwapForExactAmountPayload({
+      coinIn: TokensMapping.APTOS,
+      coinOut: TokensMapping.BTC,
+      coinInAmount: convertToDecimals('1', 'APTOS'),
+      coinOutAmount: convertToDecimals('0.01584723', 'BTC'),
       slippage: 0.05,
       pool: {
         address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
+        lpCoin: TokensMapping.APTOSBTCLP
       }
     })
 

@@ -1,5 +1,5 @@
 import { SDK, SdkOptions } from "./sdk";
-import { SwapModule, CalculateRatesParams, CreateTXPayloadParams } from "./modules/SwapModule";
+import { SwapModule, GetAmountInOutParams, CreateSwapTxPayload } from "./modules/SwapModule";
 import { ResourcesModule } from "./modules/ResourcesModule";
 
 export {
@@ -7,8 +7,8 @@ export {
   SwapModule,
   ResourcesModule,
   SdkOptions,
-  CalculateRatesParams,
-  CreateTXPayloadParams
+  GetAmountInOutParams,
+  CreateSwapTxPayload,
 };
 
 export default SDK;
