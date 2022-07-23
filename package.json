@@ -1,6 +1,6 @@
 {
   "name": "liquidswap-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "SDK for use any functions of LiquidSwap",
   "author": "Igor Demko <igor@pontem.network>",
   "repository": "https://github.com/pontem-network/liquidswap-sdk",
@@ -11,7 +11,6 @@
   ],
   "main": "./dist/tsc/main.js",
   "types": "./dist/tsc/main.d.ts",
-  "browser": "./dist/esbuild/browser.js",
   "scripts": {
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "test": "jest",
@@ -19,10 +18,7 @@
     "ts-node": "ts-node",
     "docs": "typedoc --entryPoints src/main.ts",
     "build": "tsc -p tsconfig.json",
-    "build-all": "yarn clean && yarn build && yarn esbuild-browser",
-    "esbuild-browser": "esbuild src/browser.ts --bundle --minify --sourcemap=external --outfile=dist/esbuild/browser.js",
-    "esbuild-browser:dev": "esbuild src/browser.ts --bundle --outfile=dist/esbuild/browser.js",
-    "esbuild-browser:watch": "esbuild src/browser.ts --bundle --watch --outfile=dist/esbuild/browser.js"
+    "build-all": "yarn clean && yarn build"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
