@@ -2,6 +2,10 @@
 
 The typescript SDK for [Liquidswap](https://liquidswap.com).
 
+# Installation
+
+    npm i @pontem/liquidswap-sdk
+
 # Usage
 ### Init SDK
 ```typescript
