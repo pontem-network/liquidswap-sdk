@@ -1,5 +1,7 @@
 # LiquidSwap SDK
 
+The typescript SDK for [Liquidswap](https://liquidswap.com).
+
 # Usage
 ### Init SDK
 ```typescript
