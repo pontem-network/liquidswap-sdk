@@ -5,6 +5,8 @@
 /tmp/
 .idea/*
 /docs/
+/.idea/
+/examples/
 
 coverage
 *.log
