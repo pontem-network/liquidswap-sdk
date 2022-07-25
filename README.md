@@ -117,3 +117,61 @@ const sdk = new SDK({
    */
 })()
 ```
+
+### You want to know how much BTC coins you need for your APTOS coins to add liquidity
+
+```typescript
+(async () => {
+  // Get amount of BTC needed to add 1000000 (1.0) APTOS as liquidity.
+  const amount = await sdk.Swap.getLiquidityForCoinIn({
+    coinIn: '0x1::test_coin::TestCoin', // Coin (APTOS) we want to add as liquidity.
+    coinOut: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC', // Another coin we want to add as liquidity.
+    amount: 1000000, // Amount of APTOS to add as liquidity.
+    pool: {
+      address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+      lpCoin: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>',
+    },
+  })
+
+  console.log(amount) // The amount of  BTC we have to use to add 1 APTOS as liquidity.
+})()
+```
+
+### Generate transaction payload to add liquidity for APTOS/BTC pool
+
+```typescript
+(async () => {
+  const txPayload = sdk.Swap.createAddLiquidityTransactionPayload({
+    coinX: TokensMapping.APTOS,
+    coinY: TokensMapping.BTC,
+    coinXAmount: 1000000,
+    coinYAmount: 1584723,
+    slippage: 0.05,
+    pool: {
+      address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+      lpCoin: TokensMapping.APTOSBTCLP,
+      }
+  })
+
+  console.log(txPayload);
+  /**
+   Output:
+   {
+      type: 'script_function_payload',
+      function: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::scripts::add_liquidity',
+      typeArguments: [
+        '0x1::test_coin::TestCoin',
+        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
+        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+      ],
+      arguments: [
+        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+        '1000000',
+        '950000',
+        '1584723',
+        '1505487'
+      ]
+    }
+    */
+})()
+```

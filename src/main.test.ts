@@ -128,4 +128,78 @@ describe('Swap Module', () => {
 
     expect(1).toBe(1)
   });
+
+  test('getLiquidityForCoinIn', async () => {
+    const output = await sdk.Swap.getLiquidityForCoinIn({
+      coinIn: TokensMapping.APTOS,
+      coinOut: TokensMapping.BTC,
+      amount: convertToDecimals('1', 'APTOS'),
+      pool: {
+        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+        lpCoin: TokensMapping.APTOSBTCLP,
+      },
+    })
+
+    console.log({
+      amount: output,
+      pretty: prettyAmount(output, 'BTC'),
+    });
+
+    expect(1).toBe(1)
+  })
+
+
+  test('getLiquidityForCoinIn (vise versa)', async () => {
+    const output = await sdk.Swap.getLiquidityForCoinIn({
+      coinIn: TokensMapping.BTC,
+      coinOut: TokensMapping.APTOS,
+      amount: convertToDecimals('0.01782823', 'BTC'),
+      pool: {
+        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+        lpCoin: TokensMapping.APTOSBTCLP,
+      },
+    })
+
+    console.log({
+      amount: output,
+      pretty: prettyAmount(output, 'BTC'),
+    });
+    
+    expect(1).toBe(1)
+  })
+
+
+  test('createAddLiquidityTransactionPayload', () => {
+    const output = sdk.Swap.createAddLiquidityTransactionPayload({
+      coinX: TokensMapping.APTOS,
+      coinY: TokensMapping.BTC,
+      coinXAmount: convertToDecimals('1', 'APTOS'),
+      coinYAmount: convertToDecimals('0.01584723', 'BTC'),
+      slippage: 0.05,
+      pool: {
+        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+        lpCoin: TokensMapping.APTOSBTCLP,
+      }
+    })
+
+    console.log(output);
+    expect(1).toBe(1)
+  });
+
+  test('createAddLiquidityTransactionPayload (vise versa)', () => {
+    const output = sdk.Swap.createAddLiquidityTransactionPayload({
+      coinX: TokensMapping.BTC,
+      coinY: TokensMapping.APTOS,
+      coinXAmount: convertToDecimals('0.01584723', 'BTC'),
+      coinYAmount: convertToDecimals('1', 'APTOS'),
+      slippage: 0.05,
+      pool: {
+        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
+        lpCoin: TokensMapping.APTOSBTCLP,
+      }
+    })
+
+    console.log(output);
+    expect(1).toBe(1)
+  });
 })
