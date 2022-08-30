@@ -62,7 +62,7 @@ export class SwapModule implements IModule {
     )
 
     if(!fromCoinInfo) {
-      throw new Error('To Coin not exists');
+      throw new Error('From Coin not exists');
     }
 
     if(!toCoinInfo) {
