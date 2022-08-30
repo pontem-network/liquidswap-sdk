@@ -14,7 +14,7 @@ import { SDK } from '@pontem/liquidswap-sdk';
 const sdk = new SDK({
   nodeUrl: 'https://fullnode.devnet.aptoslabs.com', // Node URL
   networkOptions: {
-    nativeToken: '0x1::test_coin::TestCoin', // Type of Native network token
+    nativeToken: '0x1::aptos_coin::AptosCoin', // Type of Native network token
     modules: {
       Scripts:
         '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::scripts', // This module is used for Swap
@@ -30,14 +30,14 @@ const sdk = new SDK({
 (async () => {
   // Get BTC amount
   const amount = await sdk.Swap.calculateRates({
-    fromToken: '0x1::test_coin::TestCoin',
+    fromToken: '0x1::aptos_coin::AptosCoin',
     toToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
     amount: 1000000, // 1 APTOS
     interactiveToken: 'from',
     pool: {
       address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
       moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
     }
   })
   console.log(amount) // 1584723 (0.01584723 BTC)
@@ -45,7 +45,7 @@ const sdk = new SDK({
   // Generate TX payload for swap 1 APTOS to maximum 0.01584723 BTC
   // and minimum 0.01584723 BTC - 5% (with slippage 5%)
   const txPayload = sdk.Swap.createSwapTransactionPayload({
-    fromToken: '0x1::test_coin::TestCoin',
+    fromToken: '0x1::aptos_coin::AptosCoin',
     toToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
     fromAmount: 1000000, // 1 APTOS,
     toAmount: 1584723, // 0.01584723 BTC,
@@ -54,7 +54,7 @@ const sdk = new SDK({
     pool: {
       address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
       moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
     }
   })
   console.log(txPayload);
@@ -64,9 +64,9 @@ const sdk = new SDK({
       type: 'script_function_payload',
       function: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::scripts::swap',
       typeArguments: [
-        '0x1::test_coin::TestCoin',
+        '0x1::aptos_coin::AptosCoin',
         '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
-        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
       ],
       arguments: [
         '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
@@ -83,14 +83,14 @@ const sdk = new SDK({
 (async () => {
   // Get APTOS amount
   const amount = await sdk.Swap.calculateRates({
-    fromToken: '0x1::test_coin::TestCoin',
+    fromToken: '0x1::aptos_coin::AptosCoin',
     toToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
     amount: 100000, // 0.001 BTC
     interactiveToken: 'to', // from - calculate TO amount, to - calculate FROM amount
     pool: {
       address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
       moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
     }
   })
   console.log(amount) // 116831 (0.116831 APTOS)
@@ -98,7 +98,7 @@ const sdk = new SDK({
   // Generate TX payload for get EXACTLY 0.001 BTC
   // and minimum send 0.116831 + 5% (with slippage 5%)
   const txPayload = sdk.Swap.createSwapTransactionPayload({
-    fromToken: '0x1::test_coin::TestCoin',
+    fromToken: '0x1::aptos_coin::AptosCoin',
     toToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
     fromAmount: 116831, // 0.116831 APTOS,
     toAmount: 100000, // 0.001 BTC,
@@ -107,7 +107,7 @@ const sdk = new SDK({
     pool: {
       address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
       moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+      lpToken: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
     }
   })
   console.log(txPayload);
@@ -117,9 +117,9 @@ const sdk = new SDK({
       type: 'script_function_payload',
       function: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::scripts::swap_into',
       typeArguments: [
-        '0x1::test_coin::TestCoin',
+        '0x1::aptos_coin::AptosCoin',
         '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
-        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
+        '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>'
       ],
       arguments: [
         '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
