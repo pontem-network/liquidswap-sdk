@@ -4,13 +4,6 @@ import {AptosResource, AptosResourceType} from "../types/aptos";
 import {BigNumber} from "../types";
 import {isAxiosError} from "../utils/is";
 
-export type CalculateRatesParams = {
-  fromToken: AptosResourceType;
-  toToken: AptosResourceType;
-  fromAmount: BigNumber;
-  toAmount: BigNumber;
-}
-
 export class ResourcesModule implements IModule {
   protected _sdk: SDK;
 
