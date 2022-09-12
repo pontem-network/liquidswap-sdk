@@ -7,7 +7,9 @@ The typescript SDK for [Liquidswap](https://liquidswap.com).
     npm i @pontem/liquidswap-sdk
 
 # Usage
+
 ### Init SDK
+
 ```typescript
 import { SDK } from '@pontem/liquidswap-sdk';
 
@@ -26,6 +28,7 @@ const sdk = new SDK({
 ```
 
 ### You want swap EXACTLY 1 APTOS to SLIPPAGED BTC amount
+
 ```typescript
 (async () => {
   // Get BTC amount

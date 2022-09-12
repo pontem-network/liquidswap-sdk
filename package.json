@@ -1,6 +1,6 @@
 {
   "name": "@pontem/liquidswap-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "SDK for use any functions of LiquidSwap",
   "author": "Igor Demko <igor@pontem.network>",
   "repository": "https://github.com/pontem-network/liquidswap-sdk",
@@ -21,6 +21,7 @@
     "build-all": "yarn clean && yarn build"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.26",
     "@typescript-eslint/eslint-plugin": "^5.20.0",

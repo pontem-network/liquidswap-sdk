@@ -1,5 +1,5 @@
 import { AptosResourceType } from "../types/aptos";
-import {checkAddress} from "./hex";
+import { checkAddress } from "./hex";
 
 const EQUAL = 0;
 const LESS_THAN = 1;
@@ -16,21 +16,17 @@ function cmp(a: number, b: number) {
 }
 
 function compare(symbolX: string, symbolY: string) {
-  let iX = symbolX.length;
-  let iY = symbolY.length;
-
-  const lenCmp = cmp(iX, iY);
-  while (iX > 0 && iY > 0) {
-    iX -= 1;
-    iY -= 1;
-
-    const elemCmp = cmp(symbolX.charCodeAt(iX), symbolY.charCodeAt(iY));
-    if (elemCmp !== 0) {
-      return elemCmp;
-    }
+  const lenCmp = cmp(symbolX.length, symbolY.length);
+  if (lenCmp != EQUAL) {
+    return lenCmp;
   }
-
-  return lenCmp;
+  let i = 0;
+  while (i < symbolX.length && i < symbolY.length) {
+    const elem_cmp = cmp(symbolX.charCodeAt(i), symbolY.charCodeAt(i));
+    if (elem_cmp != EQUAL) return elem_cmp;
+    i++;
+  }
+  return EQUAL;
 }
 
 export function isSortedSymbols(symbolX: string, symbolY: string) {
