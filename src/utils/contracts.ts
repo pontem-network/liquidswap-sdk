@@ -22,8 +22,7 @@ function compare(symbolX: string, symbolY: string) {
     if (elem_cmp != EQUAL) return elem_cmp;
     i++;
   }
-  const lenCmp = cmp(symbolX.length, symbolY.length);
-  return lenCmp;
+  return cmp(symbolX.length, symbolY.length);
 }
 
 export function isSortedSymbols(symbolX: string, symbolY: string) {
