@@ -16,17 +16,14 @@ function cmp(a: number, b: number) {
 }
 
 function compare(symbolX: string, symbolY: string) {
-  const lenCmp = cmp(symbolX.length, symbolY.length);
-  if (lenCmp != EQUAL) {
-    return lenCmp;
-  }
   let i = 0;
   while (i < symbolX.length && i < symbolY.length) {
     const elem_cmp = cmp(symbolX.charCodeAt(i), symbolY.charCodeAt(i));
     if (elem_cmp != EQUAL) return elem_cmp;
     i++;
   }
-  return EQUAL;
+  const lenCmp = cmp(symbolX.length, symbolY.length);
+  return lenCmp;
 }
 
 export function isSortedSymbols(symbolX: string, symbolY: string) {
