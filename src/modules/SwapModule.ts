@@ -1,13 +1,8 @@
 import {SDK} from "../sdk";
 import {IModule} from "../interfaces/IModule";
-import {
-  AptosCoinInfoResource,
-  AptosPoolResource,
-  AptosResourceType,
-  TxPayloadCallFunction
-} from "../types/aptos";
-import {BigNumber} from "../types";
-import {composeType, extractAddressFromType, isSortedSymbols} from "../utils/contracts";
+import {AptosCoinInfoResource, AptosPoolResource, AptosResourceType, TxPayloadCallFunction} from "../types/aptos";
+import {BigNumber, CURVES} from "../types";
+import {composeType, extractAddressFromType} from "../utils/contracts";
 import {d} from "../utils/numbers";
 import Decimal from "decimal.js";
 
@@ -17,9 +12,10 @@ export type CalculateRatesParams = {
   amount: BigNumber;
   interactiveToken: 'from' | 'to',
   pool: {
-    lpToken: AptosResourceType,
     moduleAddress: string,
-    address: string
+    address: string,
+    curves: CURVES,
+    lpToken: string
   },
 }
 
@@ -33,7 +29,8 @@ export type CreateTXPayloadParams = {
   pool: {
     lpToken: AptosResourceType,
     moduleAddress: string,
-    address: string
+    address: string,
+    curves: CURVES,
   },
 }
 
@@ -49,7 +46,8 @@ export class SwapModule implements IModule {
   }
 
   async calculateRates(params: CalculateRatesParams): Promise<string> {
-    const { modules } = this.sdk.networkOptions;
+    params.pool.lpToken = `${params.pool.lpToken}<${params.fromToken}, ${params.toToken}, ${params.pool.curves}>`
+    const {modules} = this.sdk.networkOptions;
 
     const fromCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
       extractAddressFromType(params.fromToken),
@@ -61,38 +59,24 @@ export class SwapModule implements IModule {
       composeType(modules.CoinInfo, [params.toToken])
     )
 
-    if(!fromCoinInfo) {
+    if (!fromCoinInfo) {
       throw new Error('To Coin not exists');
     }
 
-    if(!toCoinInfo) {
+    if (!toCoinInfo) {
       throw new Error('To Coin not exists');
     }
 
-    const isSorted = isSortedSymbols(fromCoinInfo.data.symbol, toCoinInfo.data.symbol);
-    const [fromToken, toToken] = isSorted
-      ? [params.fromToken, params.toToken]
-      : [params.toToken, params.fromToken];
 
-    const liquidityPoolType = composeType(params.pool.moduleAddress,'liquidity_pool', 'LiquidityPool', [
-      fromToken,
-      toToken,
-      params.pool.lpToken,
-    ])
-
-    const liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-      params.pool.address,
-      liquidityPoolType
-    )
-
-    if(!liquidityPoolResource) {
+    const {liquidityPoolType, liquidityPoolResource, isRevert} = await this.getLiquidityPoolResource(params);
+    if (!liquidityPoolResource) {
       throw new Error(`LiquidityPool (${liquidityPoolType}) not found`)
     }
 
     const coinXReserve = liquidityPoolResource.data.coin_x_reserve.value
     const coinYReserve = liquidityPoolResource.data.coin_y_reserve.value
 
-    const [reserveX, reserveY] = isSorted
+    const [reserveX, reserveY] = isRevert
       ? params.interactiveToken === 'from'
         ? [d(coinXReserve), d(coinYReserve)]
         : [d(coinYReserve), d(coinXReserve)]
@@ -108,12 +92,43 @@ export class SwapModule implements IModule {
     return outputTokens.toString();
   }
 
+  async getLiquidityPoolResource(params: CalculateRatesParams) {
+    let isRevert = true
+    let liquidityPoolType = composeType(params.pool.moduleAddress, 'liquidity_pool', 'LiquidityPool', [
+      params.fromToken,
+      params.toToken,
+      `${params.pool.moduleAddress}::curves::${params.pool.curves}`
+    ])
+
+    let liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
+      params.pool.address,
+      liquidityPoolType
+    )
+
+    if (!liquidityPoolResource) {
+      isRevert = false
+      liquidityPoolType = composeType(params.pool.moduleAddress, 'liquidity_pool', 'LiquidityPool', [
+        params.toToken,
+        params.fromToken,
+        `${params.pool.moduleAddress}::curves::${params.pool.curves}`
+      ])
+      liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
+        params.pool.address,
+        liquidityPoolType
+      )
+    }
+
+    return {liquidityPoolType, liquidityPoolResource, isRevert}
+  }
+
+
   createSwapTransactionPayload(params: CreateTXPayloadParams): TxPayloadCallFunction {
-    if(params.slippage >= 1 || params.slippage <= 0) {
+
+    if (params.slippage >= 1 || params.slippage <= 0) {
       throw new Error(`Invalid slippage (${params.slippage}) value`);
     }
 
-    const { modules } = this.sdk.networkOptions;
+    const {modules} = this.sdk.networkOptions;
 
     const functionName = composeType(
       modules.Scripts,
@@ -123,7 +138,7 @@ export class SwapModule implements IModule {
     const typeArguments = [
       params.fromToken,
       params.toToken,
-      params.pool.lpToken,
+      `${params.pool.moduleAddress}::curves::${params.pool.curves}`,
     ];
 
     const fromAmount =
@@ -135,7 +150,7 @@ export class SwapModule implements IModule {
         ? params.toAmount
         : withSlippage(d(params.toAmount), d(params.slippage), 'plus')
 
-    const args = [params.pool.address, d(fromAmount).toString(), d(toAmount).toString()];
+    const args = [d(fromAmount).toString(), d(toAmount).toString()];
 
     return {
       type: 'script_function_payload',
@@ -146,12 +161,13 @@ export class SwapModule implements IModule {
   }
 }
 
+
 function getCoinOutWithFees(
   coinInVal: Decimal.Instance,
   reserveInSize: Decimal.Instance,
   reserveOutSize: Decimal.Instance
 ) {
-  const { feePct, feeScale } = { feePct: d(3), feeScale: d(1000) };
+  const {feePct, feeScale} = {feePct: d(3), feeScale: d(1000)};
   const feeMultiplier = feeScale.sub(feePct);
   const coinInAfterFees = coinInVal.mul(feeMultiplier);
   const newReservesInSize = reserveInSize.mul(feeScale).plus(coinInAfterFees);
@@ -164,7 +180,7 @@ function getCoinInWithFees(
   reserveOutSize: Decimal.Instance,
   reserveInSize: Decimal.Instance
 ) {
-  const { feePct, feeScale } = { feePct: d(3), feeScale: d(1000) };
+  const {feePct, feeScale} = {feePct: d(3), feeScale: d(1000)};
   const feeMultiplier = feeScale.sub(feePct);
   const newReservesOutSize = reserveOutSize.sub(coinOutVal).mul(feeMultiplier);
 
