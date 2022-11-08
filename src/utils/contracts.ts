@@ -1,5 +1,8 @@
-import { AptosResourceType } from "../types/aptos";
+import { Buffer } from "buffer";
+
 import { checkAddress } from "./hex";
+import { d } from './numbers';
+
 
 const EQUAL = 0;
 const LESS_THAN = 1;
@@ -29,23 +32,82 @@ function compare(symbolX: string, symbolY: string) {
   return EQUAL;
 }
 
-export function isSortedSymbols(symbolX: string, symbolY: string) {
-  return compare(symbolX, symbolY) === LESS_THAN;
+function cmp_addresses(a: string, b: string) {
+  if (a.startsWith('0x')) {
+    a = a.substring(2);
+  }
+
+  if (a.length != 64) {
+    while (a.length < 64) {
+      a = '0' + a;
+    }
+  }
+
+  if (b.startsWith('0x')) {
+    b = b.substring(2);
+  }
+
+  if (b.length != 64) {
+    while (b.length < 64) {
+      b = '0' + b;
+    }
+  }
+
+  const a_buf = Buffer.from(a, 'hex');
+  const b_buf = Buffer.from(b, 'hex');
+
+  for (let i = 0; i < 32; i++) {
+    if (a_buf[i] < b_buf[i]) {
+      return LESS_THAN;
+    } else if (a_buf[i] > b_buf[i]) {
+      return GREATER_THAN;
+    }
+  }
+
+  return EQUAL;
 }
 
-export function composeType(address: string, generics: AptosResourceType[]): AptosResourceType;
+function compare_types(coin_x: string, coin_y: string) {
+  const coin_x_parts = coin_x.split('::').reverse();
+  const coin_y_parts = coin_y.split('::').reverse();
+
+  const coin_x_address = coin_x_parts.pop() as string;
+  const coin_y_address = coin_y_parts.pop() as string;
+
+  for (let i = 0; i < 2; i++) {
+    const c = compare(coin_x_parts[i], coin_y_parts[i]);
+    if (c != EQUAL) {
+      return c;
+    }
+  }
+
+  return cmp_addresses(coin_x_address, coin_y_address);
+}
+
+/**
+ * Compare sorting between two coin types
+ *
+ * @param coin_x string with full address of coin
+ * @param coin_y string with full address of coin
+ * @returns boolean
+ */
+export function is_sorted(coin_x: string, coin_y: string) {
+  return compare_types(coin_x, coin_y) == LESS_THAN;
+}
+
+export function composeType(address: string, generics: string[]): string;
 export function composeType(
   address: string,
   struct: string,
-  generics?: AptosResourceType[]
-): AptosResourceType;
+  generics?: string[]
+): string;
 export function composeType(
   address: string,
   module: string,
   struct: string,
-  generics?: AptosResourceType[]
-): AptosResourceType;
-export function composeType(address: string, ...args: unknown[]): AptosResourceType {
+  generics?: string[]
+): string;
+export function composeType(address: string, ...args: unknown[]): string {
   const generics: string[] = Array.isArray(args[args.length - 1])
     ? (args.pop() as string[])
     : [];
@@ -58,6 +120,19 @@ export function composeType(address: string, ...args: unknown[]): AptosResourceT
   }
 
   return result;
+}
+
+/**
+ * Calculate value with slippage.
+ * @param {number} slippage - slippage refers to the difference between the expected price of a trade
+ * and the price at which the trade is executed.
+ * @param {number} value - value to calculate slippage
+ */
+export function withSlippage(slippage: number, value: number) {
+  const multiply = 10000;
+  const slippagePercent = slippage * multiply;
+
+  return d(value).minus(d(value).mul(slippagePercent).div(multiply)).toNumber();
 }
 
 export function extractAddressFromType(type: string) {
@@ -115,3 +190,5 @@ export function checkAptosType(
     parts[2].length >= 1
   );
 }
+
+
