@@ -96,17 +96,20 @@ export function is_sorted(coin_x: string, coin_y: string) {
 }
 
 export function composeType(address: string, generics: string[]): string;
+
 export function composeType(
   address: string,
   struct: string,
   generics?: string[]
 ): string;
+
 export function composeType(
   address: string,
   module: string,
   struct: string,
   generics?: string[]
 ): string;
+
 export function composeType(address: string, ...args: unknown[]): string {
   const generics: string[] = Array.isArray(args[args.length - 1])
     ? (args.pop() as string[])

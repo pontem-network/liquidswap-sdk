@@ -26,6 +26,7 @@ export type AptosPoolResource = {
   lp_mint_cap: {
     dummy_field: boolean;
   };
+  fee: number;
 };
 
 export type TxPayloadCallFunction = {
