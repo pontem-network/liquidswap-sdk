@@ -1,3 +1,5 @@
+import Decimal from 'Decimal.js'
+
 import { SDK } from "../sdk";
 import { IModule } from "../interfaces/IModule";
 import {
@@ -15,6 +17,7 @@ import {
   getCoinOutWithFees,
   getCoinsOutWithFeesStable,
   getCoinsInWithFeesStable,
+  d,
 } from "../utils";
 import {
   MODULES_ACCOUNT,
@@ -26,7 +29,7 @@ import {
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
-  amount: number;
+  amount: Decimal;
   interactiveToken: 'from' | 'to';
   curveType: 'stable' | 'uncorrelated' | 'selectable';
 }
@@ -34,10 +37,10 @@ export type CalculateRatesParams = {
 export type CreateTXPayloadParams = {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
-  fromAmount: number;
-  toAmount: number;
+  fromAmount: Decimal;
+  toAmount: Decimal;
   interactiveToken: 'from' | 'to';
-  slippage: number;
+  slippage: Decimal;
   stableSwapType: 'high' | 'normal';
   curveType: 'stable' | 'uncorrelated' | 'selectable';
 }
@@ -102,9 +105,9 @@ export class SwapModule implements IModule {
       throw new Error(`LiquidityPool (${liquidityPoolType}) not found`)
     }
 
-    const coinXReserve = +liquidityPoolResource.data.coin_x_reserve.value;
-    const coinYReserve = +liquidityPoolResource.data.coin_y_reserve.value;
-    const fee = +liquidityPoolResource.data.fee;
+    const coinXReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
+    const coinYReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
+    const fee = d(liquidityPoolResource.data.fee);
     const coinFromDecimals = +fromCoinInfo.data.decimals;
     const coinToDecimals = +toCoinInfo.data.decimals;
 
@@ -133,16 +136,16 @@ export class SwapModule implements IModule {
           params.amount,
           toReserve,
           fromReserve,
-          Math.pow(10, coinToDecimals),
-          Math.pow(10, coinFromDecimals),
+          d(Math.pow(10, coinToDecimals)),
+          d(Math.pow(10, coinFromDecimals)),
           fee
         )
         : getCoinsInWithFeesStable(
           params.amount,
           fromReserve,
           toReserve,
-          Math.pow(10, coinFromDecimals),
-          Math.pow(10, coinToDecimals),
+          d(Math.pow(10, coinFromDecimals)),
+          d(Math.pow(10, coinToDecimals)),
           fee
         )
 
@@ -151,7 +154,7 @@ export class SwapModule implements IModule {
   }
 
   createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {
-    if(params.slippage >= 1 || params.slippage <= 0) {
+    if(params.slippage.gte(1) || params.slippage.lte(0 )) {
       throw new Error(`Invalid slippage (${params.slippage}) value`);
     }
 

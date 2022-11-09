@@ -1,8 +1,7 @@
 import { Buffer } from "buffer";
+import Decimal from 'decimal.js';
 
 import { checkAddress } from "./hex";
-import { d } from './numbers';
-
 
 const EQUAL = 0;
 const LESS_THAN = 1;
@@ -127,15 +126,15 @@ export function composeType(address: string, ...args: unknown[]): string {
 
 /**
  * Calculate value with slippage.
- * @param {number} slippage - slippage refers to the difference between the expected price of a trade
+ * @param {Decimal} slippage - slippage refers to the difference between the expected price of a trade
  * and the price at which the trade is executed.
- * @param {number} value - value to calculate slippage
+ * @param {Decimal} value - value to calculate slippage
  */
-export function withSlippage(slippage: number, value: number) {
-  const multiply = 10000;
-  const slippagePercent = slippage * multiply;
+export function withSlippage(slippage: Decimal, value: Decimal) {
+  const multiply = new Decimal(10000);
+  const slippagePercent = slippage.mul(multiply);
 
-  return d(value).minus(d(value).mul(slippagePercent).div(multiply)).toNumber();
+  return value.minus(value.mul(slippagePercent).div(multiply)).toNumber();
 }
 
 export function extractAddressFromType(type: string) {

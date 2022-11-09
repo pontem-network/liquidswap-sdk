@@ -1,77 +1,72 @@
 import Decimal from 'decimal.js';
+import { d } from '../utils'
 
 const e8 = new Decimal('100000000');
-const DENOMINATOR = 10000;
+const DENOMINATOR = new Decimal(10000);
 
 /**
  * Calculates rate with uncorrelated curve for 'to' input  based on 'from' input
  *
- * @param {number} coinInVal - amount of first('from') token
- * @param {number} reserveInSize - amount of reserves for first('from') token
- * @param {number} reserveOutSize - amount of reserves for second('to') token
- * @param {number} fee - amount of fee
+ * @param {Decimal} coinInVal - amount of first('from') token
+ * @param {Decimal} reserveInSize - amount of reserves for first('from') token
+ * @param {Decimal} reserveOutSize - amount of reserves for second('to') token
+ * @param {Decimal} fee - amount of fee
  */
 export function getCoinOutWithFees(
-  coinInVal: number,
-  reserveInSize: number,
-  reserveOutSize: number,
-  fee: number
+  coinInVal: Decimal,
+  reserveInSize: Decimal,
+  reserveOutSize: Decimal,
+  fee: Decimal
 ) {
-  const { feePct, feeScale } = { feePct: fee, feeScale: DENOMINATOR };
-  const feeMultiplier = feeScale - feePct;
-  const coinInAfterFees = coinInVal * feeMultiplier;
-  const newReservesInSize = reserveInSize * feeScale + coinInAfterFees;
-  return (coinInAfterFees * reserveOutSize) / newReservesInSize;
+  const { feePct, feeScale } = { feePct: fee, feeScale: d(DENOMINATOR) };
+  const feeMultiplier = feeScale.minus(feePct);
+  const coinInAfterFees = coinInVal.mul(feeMultiplier);
+  const newReservesInSize = reserveInSize.mul(feeScale).plus(coinInAfterFees);
+  return coinInAfterFees.mul(reserveOutSize).div(newReservesInSize);
 }
 
 /**
  * Calculates rate with uncorrelated curve for 'from' input based on 'to' input
  *
- * @param {number} coinOutVal - amount of second('to') token
- * @param {number} reserveOutSize - amount of reserves for second('to') token
- * @param {number} reserveInSize - amount of reserves for first('from') token
- * @param {number} fee - amount of fee
+ * @param {Decimal} coinOutVal - amount of second('to') token
+ * @param {Decimal} reserveOutSize - amount of reserves for second('to') token
+ * @param {Decimal} reserveInSize - amount of reserves for first('from') token
+ * @param {Decimal} fee - amount of fee
  */
 export function getCoinInWithFees(
-  coinOutVal: number,
-  reserveOutSize: number,
-  reserveInSize: number,
-  fee: number
+  coinOutVal: Decimal,
+  reserveOutSize: Decimal,
+  reserveInSize: Decimal,
+  fee: Decimal
 ) {
-  const feeMultiplier = DENOMINATOR - fee;
-  const newReservesOutSize = (reserveOutSize - coinOutVal) * feeMultiplier;
-  return (coinOutVal * DENOMINATOR * reserveInSize) / newReservesOutSize + 1;
+  const feeMultiplier = DENOMINATOR.minus(fee);
+  const newReservesOutSize = (reserveOutSize.minus(coinOutVal)).mul(feeMultiplier);
+  return coinOutVal.mul(DENOMINATOR).mul(reserveInSize).div(newReservesOutSize).plus(1);
 }
 
 /**
  * Calculates rate with stable curve for 'from' input based on 'to' input
  *
- * @param {number} coinOut - amount of second('to') token
- * @param {number} reserveOut - amount of reserves for second('to') token
- * @param {number} reserveIn - amount of reserves for first('from') token
- * @param {number} scaleOut - precision for the ('to')token in decimal places
- * @param {number} scaleIn - precision for the ('from')token in decimal places
- * @param {number} fee - amount of fee
+ * @param {Decimal} coinOut - amount of second('to') token
+ * @param {Decimal} reserveOut - amount of reserves for second('to') token
+ * @param {Decimal} reserveIn - amount of reserves for first('from') token
+ * @param {Decimal} scaleOut - precision for the ('to')token in decimal places
+ * @param {Decimal} scaleIn - precision for the ('from')token in decimal places
+ * @param {Decimal} fee - amount of fee
  */
 export function getCoinsInWithFeesStable(
-  coinOut: number,
-  reserveOut: number,
-  reserveIn: number,
-  scaleOut: number,
-  scaleIn: number,
-  fee: number
+  coinOut: Decimal,
+  reserveOut: Decimal,
+  reserveIn: Decimal,
+  scaleOut: Decimal,
+  scaleIn: Decimal,
+  fee: Decimal
 ) {
-  const coin_out = new Decimal(coinOut);
-  const reserve_out = new Decimal(reserveOut);
-  const reserve_in = new Decimal(reserveIn);
-  const scale_out = new Decimal(scaleOut);
-  const scale_in = new Decimal(scaleIn);
-
-  const r = coin_in(coin_out, scale_out, scale_in, reserve_out, reserve_in);
+  const r = coin_in(coinOut, scaleOut, scaleIn, reserveOut, reserveIn);
   return r
     .plus(1)
     .mul(DENOMINATOR)
-    .div(DENOMINATOR - fee)
+    .div(DENOMINATOR.minus(fee))
     .plus(1)
     .toString();
 }
@@ -106,28 +101,23 @@ export function coin_in(
 /**
  * Calculates rate with stable curve for 'from' input based on 'to' input
  *
- * @param {number} coinIn - amount of first('from') token
- * @param {number} reserveIn - amount of reserves for first('from') token
- * @param {number} reserveOut - amount of reserves for second('to') token
- * @param {number} scaleIn - precision for the ('from')token in decimal places
- * @param {number} scaleOut - precision for the ('to')token in decimal places
- * @param {number} fee - amount of fee
+ * @param {Decimal} coinIn - amount of first('from') token
+ * @param {Decimal} reserveIn - amount of reserves for first('from') token
+ * @param {Decimal} reserveOut - amount of reserves for second('to') token
+ * @param {Decimal} scaleIn - precision for the ('from')token in decimal places
+ * @param {Decimal} scaleOut - precision for the ('to')token in decimal places
+ * @param {Decimal} fee - amount of fee
  */
 export function getCoinsOutWithFeesStable(
-  coinIn: number,
-  reserveIn: number,
-  reserveOut: number,
-  scaleIn: number,
-  scaleOut: number,
-  fee: number
+  coinIn: Decimal,
+  reserveIn: Decimal,
+  reserveOut: Decimal,
+  scaleIn: Decimal,
+  scaleOut: Decimal,
+  fee: Decimal
 ): string {
-  const coin_in = new Decimal(coinIn);
-  const reserve_in = new Decimal(reserveIn);
-  const reserve_out = new Decimal(reserveOut);
-  const scale_in = new Decimal(scaleIn);
-  const scale_out = new Decimal(scaleOut);
   let coin_in_val_after_fees = new Decimal(0);
-  const coin_in_val_scaled = coin_in.mul(DENOMINATOR - fee);
+  const coin_in_val_scaled = coinIn.mul(DENOMINATOR.minus(fee));
   if (!coin_in_val_scaled.mod(DENOMINATOR).eq(0)) {
     coin_in_val_after_fees = coin_in_val_scaled.div(DENOMINATOR).plus(1);
   } else {
@@ -135,10 +125,10 @@ export function getCoinsOutWithFeesStable(
   }
   return coin_out(
     coin_in_val_after_fees,
-    scale_in,
-    scale_out,
-    reserve_in,
-    reserve_out
+    scaleIn,
+    scaleOut,
+    reserveIn,
+    reserveOut
   ).toString();
 }
 

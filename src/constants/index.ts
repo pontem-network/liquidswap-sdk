@@ -10,3 +10,13 @@ export const COINS_ACCOUNT =
 
 export const CURVE_UNCORRELATED = `${MODULES_ACCOUNT}::curves::Uncorrelated`;
 export const CURVE_STABLE = `${MODULES_ACCOUNT}::curves::Stable`;
+export const COIN_INFO = '0x1::coin::CoinInfo';
+export const COIN_STORE = '0x1::coin::CoinStore';
+
+export const NETWORKS_MODULES = {
+  Scripts: `${MODULES_ACCOUNT}::scripts_v2`,
+  Faucet: `${COINS_ACCOUNT}::faucet`,
+  LiquidityPool: `${RESOURCES_ACCOUNT}::liquidity_pool`,
+  CoinInfo: `${COIN_INFO}`,
+  CoinStore: `${COIN_STORE}`,
+};

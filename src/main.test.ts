@@ -1,5 +1,6 @@
 import SDK from './main'
 import { d, decimalsMultiplier } from "./utils";
+import {NETWORKS_MODULES} from "./constants";
 
 const TokensMapping: any = {
   APTOS: '0x1::aptos_coin::AptosCoin',
@@ -11,6 +12,7 @@ const CoinInfo: any = {
   APTOS: { decimals: 6 },
   BTC: { decimals: 8 },
   APTOSBTCLP: { decimals: 6 },
+  USDT: {decimals: 6}
 }
 
 function convertToDecimals(amount: number | string, token: string) {
@@ -27,32 +29,25 @@ function prettyAmount(amount: number | string, token: string) {
 
 describe('Swap Module', () => {
   const sdk = new SDK({
-    nodeUrl: 'https://fullnode.devnet.aptoslabs.com',
+    nodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
     networkOptions: {
-      nativeToken: '0x1::test_coin::TestCoin',
+      nativeToken: '0x1::aptos_coin::AptosCoin',
       modules: {
-        Scripts:
-          '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::scripts',
-        Faucet:
-          '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::faucet',
-        LiquidityPool:
-          '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::liquidity_pool',
-        CoinInfo: '0x1::coin::CoinInfo',
-        CoinStore: '0x1::coin::CoinStore',
+        Scripts: NETWORKS_MODULES.Scripts,
+        Faucet: NETWORKS_MODULES.Faucet,
+        LiquidityPool: NETWORKS_MODULES.LiquidityPool,
+        CoinInfo: NETWORKS_MODULES.CoinInfo,
+        CoinStore: NETWORKS_MODULES.CoinStore,
       },
     }
   })
   test('calculateRates (from mode)', async () => {
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
+      toToken: TokensMapping.USDT,
       amount: convertToDecimals(1, 'APTOS'),
+      curveType: 'stable',
       interactiveToken: 'from',
-      pool: {
-        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
-      }
     })
 
     console.log({
@@ -69,12 +64,8 @@ describe('Swap Module', () => {
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.BTC,
       amount: convertToDecimals('0.001', 'BTC'),
+      curveType: 'uncorrelated',
       interactiveToken: 'to',
-      pool: {
-        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
-      }
     })
 
     console.log({
@@ -93,12 +84,9 @@ describe('Swap Module', () => {
       fromAmount: convertToDecimals('0.116831', 'APTOS'),
       toAmount: convertToDecimals('0.001', 'BTC'),
       interactiveToken: 'to',
-      slippage: 0.05,
-      pool: {
-        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
-      }
+      slippage: d(0.05),
+      stableSwapType: 'normal',
+      curveType: 'stable',
     })
 
     console.log(output);
@@ -114,12 +102,9 @@ describe('Swap Module', () => {
       fromAmount: convertToDecimals('1', 'APTOS'),
       toAmount: convertToDecimals('0.01584723', 'BTC'),
       interactiveToken: 'from',
-      slippage: 0.05,
-      pool: {
-        address: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        moduleAddress: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9',
-        lpToken: TokensMapping.APTOSBTCLP
-      }
+      slippage: d(0.05),
+      stableSwapType: 'high',
+      curveType: 'stable',
     })
 
     console.log(output);
