@@ -1,4 +1,4 @@
-import Decimal from 'Decimal.js'
+import Decimal from 'decimal.js'
 
 import { SDK } from "../sdk";
 import { IModule } from "../interfaces/IModule";

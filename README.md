@@ -12,7 +12,7 @@ The typescript SDK for [Liquidswap](https://liquidswap.com).
 
 ```typescript
 import { SDK } from '@pontem/liquidswap-sdk';
-import Decimal from "decimal.js";
+import Decimal from 'decimal.js';
 
 const sdk = new SDK({
   nodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1', // Node URL
