@@ -85,12 +85,17 @@ export class SwapModule implements IModule {
 
     const isSorted = is_sorted(params.fromToken, params.toToken);
 
+    const [sortedFromCoinInfo, sortedToCoinInfo] = isSorted
+      ? [fromCoinInfo, toCoinInfo]
+      : [toCoinInfo, fromCoinInfo];
+
     const coinXReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
     const coinYReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
     const fee = d(liquidityPoolResource.data.fee);
 
-    const coinFromDecimals = +fromCoinInfo.data.decimals;
-    const coinToDecimals = +toCoinInfo.data.decimals;
+    const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
+    const coinToDecimals = +sortedToCoinInfo.data.decimals;
+
 
     const [fromReserve, toReserve] = isSorted
       ? [coinXReserve, coinYReserve]
