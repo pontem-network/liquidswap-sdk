@@ -17,6 +17,7 @@ import {
   getCoinsOutWithFeesStable,
   getCoinsInWithFeesStable,
   d,
+  is_sorted,
 } from "../utils";
 import {
   MODULES_ACCOUNT,
@@ -171,12 +172,27 @@ export class SwapModule implements IModule {
   }
 
   async getLiquidityPoolResource(params: CalculateRatesParams) {
+    const modulesLiquidityPool = composeType(
+      MODULES_ACCOUNT,
+      'liquidity_pool',
+      'LiquidityPool',
+    );
+
+    function getPoolStr(
+      coinX: string,
+      coinY: string,
+      curve: string,
+    ): string {
+      const [sortedX, sortedY] = is_sorted(coinX, coinY)
+        ? [coinX, coinY]
+        : [coinY, coinX];
+      return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
+    }
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
-    const liquidityPoolType = composeType(MODULES_ACCOUNT, 'liquidity_pool', 'LiquidityPool', [
-      params.fromToken,
+
+    const liquidityPoolType = getPoolStr(params.fromToken,
       params.toToken,
-      `${MODULES_ACCOUNT}::curves::${curve}`
-    ])
+      curve);
 
     let liquidityPoolResource;
 

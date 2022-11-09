@@ -75,39 +75,37 @@ describe('Swap Module', () => {
     expect(1).toBe(1)
   });
 
-  // test('createSwapTransactionPayload (to mode)', async () => {
-  //   console.log(convertToDecimals('0.001', 'USDT'),);
-  //   const output = sdk.Swap.createSwapTransactionPayload({
-  //     fromToken: TokensMapping.APTOS,
-  //     toToken: TokensMapping.USDT,
-  //     fromAmount: convertToDecimals('0.116831', 'APTOS'),
-  //     toAmount: convertToDecimals('0.001', 'USDT'),
-  //     interactiveToken: 'to',
-  //     slippage: d(0.05),
-  //     stableSwapType: 'normal',
-  //     curveType: 'stable',
-  //   })
-  //
-  //   console.log(output);
-  //
-  //   expect(1).toBe(1)
-  // });
-  //
-  // test('createSwapTransactionPayload (from mode)', async () => {
-  //   console.log(convertToDecimals('0.001', 'USDT'),);
-  //   const output = sdk.Swap.createSwapTransactionPayload({
-  //     fromToken: TokensMapping.APTOS,
-  //     toToken: TokensMapping.USDT,
-  //     fromAmount: convertToDecimals('1', 'APTOS'),
-  //     toAmount: convertToDecimals('0.01584723', 'USDT'),
-  //     interactiveToken: 'from',
-  //     slippage: d(0.05),
-  //     stableSwapType: 'high',
-  //     curveType: 'stable',
-  //   })
-  //
-  //   console.log(output);
-  //
-  //   expect(1).toBe(1)
-  // });
+  test('createSwapTransactionPayload (to mode)', async () => {
+    const output = sdk.Swap.createSwapTransactionPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      fromAmount: convertToDecimals('0.116831', 'APTOS'),
+      toAmount: convertToDecimals('0.001', 'USDT'),
+      interactiveToken: 'to',
+      slippage: d(0.05),
+      stableSwapType: 'normal',
+      curveType: 'stable',
+    })
+
+    console.log(output);
+
+    expect(1).toBe(1)
+  });
+
+  test('createSwapTransactionPayload (from mode)', async () => {
+    const output = sdk.Swap.createSwapTransactionPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      fromAmount: convertToDecimals('1', 'APTOS'),
+      toAmount: convertToDecimals('0.01584723', 'USDT'),
+      interactiveToken: 'from',
+      slippage: d(0.05),
+      stableSwapType: 'high',
+      curveType: 'stable',
+    })
+
+    console.log(output);
+
+    expect(1).toBe(1)
+  });
 })
