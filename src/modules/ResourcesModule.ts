@@ -3,6 +3,11 @@ import {IModule} from "../interfaces/IModule";
 import {AptosResource, AptosResourceType} from "../types/aptos";
 import {isAxiosError} from "../utils/is";
 
+export interface IPoolExist {
+  fromCoin: string;
+  toCoin: string;
+  curve: string;
+}
 
 export class ResourcesModule implements IModule {
   protected _sdk: SDK;
@@ -18,7 +23,7 @@ export class ResourcesModule implements IModule {
   async fetchAccountResource<T = unknown>(accountAddress: string, resourceType: AptosResourceType): Promise<AptosResource<T> | undefined> {
     try {
       const response = await this._sdk.client.getAccountResource(accountAddress, resourceType);
-      console.log('response and data', response, response.data);
+      console.log('response and data', response.data);
       return response as unknown as AptosResource<T>;
     } catch (e: unknown) {
       if(isAxiosError(e)) {

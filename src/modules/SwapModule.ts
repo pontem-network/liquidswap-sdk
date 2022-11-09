@@ -12,7 +12,6 @@ import {
   withSlippage,
   composeType,
   extractAddressFromType,
-  is_sorted,
   getCoinInWithFees,
   getCoinOutWithFees,
   getCoinsOutWithFeesStable,
@@ -77,11 +76,6 @@ export class SwapModule implements IModule {
       throw new Error('To Coin not exists');
     }
 
-    const isSorted = is_sorted(fromCoinInfo.data.symbol, toCoinInfo.data.symbol);
-    const [fromToken, toToken] = isSorted
-      ? [params.fromToken, params.toToken]
-      : [params.toToken, params.fromToken];
-
     const liquidityPoolType = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -91,8 +85,8 @@ export class SwapModule implements IModule {
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
     const resourceType = composeType(liquidityPoolType, [
-      fromToken,
-      toToken,
+      params.fromToken,
+      params.toToken,
       curve,
     ]);
 
@@ -111,13 +105,10 @@ export class SwapModule implements IModule {
     const coinFromDecimals = +fromCoinInfo.data.decimals;
     const coinToDecimals = +toCoinInfo.data.decimals;
 
-    const [fromReserve, toReserve] = isSorted
-      ? params.interactiveToken === 'from'
-        ? [coinXReserve, coinYReserve]
-        : [coinYReserve, coinXReserve]
-      : params.interactiveToken === 'from'
-        ? [coinYReserve, coinXReserve]
-        : [coinXReserve, coinYReserve];
+    const [fromReserve, toReserve] = params.interactiveToken === 'from'
+      ? [coinXReserve, coinYReserve]
+      : [coinYReserve, coinXReserve]
+
 
     let rate;
     if (!params.amount) {
