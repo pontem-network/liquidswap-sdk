@@ -83,6 +83,8 @@ export class SwapModule implements IModule {
       throw new Error(`LiquidityPool (${liquidityPoolType}) not found`)
     }
 
+    const isSorted = is_sorted(params.fromToken, params.toToken);
+
     const coinXReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
     const coinYReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
     const fee = d(liquidityPoolResource.data.fee);
@@ -90,9 +92,9 @@ export class SwapModule implements IModule {
     const coinFromDecimals = +fromCoinInfo.data.decimals;
     const coinToDecimals = +toCoinInfo.data.decimals;
 
-    const [fromReserve, toReserve] = params.interactiveToken === 'from'
+    const [fromReserve, toReserve] = isSorted
       ? [coinXReserve, coinYReserve]
-      : [coinYReserve, coinXReserve]
+      : [coinYReserve, coinXReserve];
 
     let rate;
     if (!params.amount) {
