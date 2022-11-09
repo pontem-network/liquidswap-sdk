@@ -18,7 +18,6 @@ export class ResourcesModule implements IModule {
   async fetchAccountResource<T = unknown>(accountAddress: string, resourceType: AptosResourceType): Promise<AptosResource<T> | undefined> {
     try {
       const response = await this._sdk.client.getAccountResource(accountAddress, resourceType);
-      console.log('response and data', response.data);
       return response as unknown as AptosResource<T>;
     } catch (e: unknown) {
       if(isAxiosError(e)) {
