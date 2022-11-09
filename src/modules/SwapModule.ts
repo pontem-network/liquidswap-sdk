@@ -76,24 +76,7 @@ export class SwapModule implements IModule {
       throw new Error('To Coin not exists');
     }
 
-    const liquidityPoolType = composeType(
-      MODULES_ACCOUNT,
-      'liquidity_pool',
-      'LiquidityPool'
-    );
-
-    const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
-
-    const resourceType = composeType(liquidityPoolType, [
-      params.fromToken,
-      params.toToken,
-      curve,
-    ]);
-
-    const liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-      RESOURCES_ACCOUNT,
-      resourceType
-    )
+    const { liquidityPoolType, liquidityPoolResource } = await this.getLiquidityPoolResource(params);
 
     if(!liquidityPoolResource) {
       throw new Error(`LiquidityPool (${liquidityPoolType}) not found`)
@@ -102,13 +85,13 @@ export class SwapModule implements IModule {
     const coinXReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
     const coinYReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
     const fee = d(liquidityPoolResource.data.fee);
+
     const coinFromDecimals = +fromCoinInfo.data.decimals;
     const coinToDecimals = +toCoinInfo.data.decimals;
 
     const [fromReserve, toReserve] = params.interactiveToken === 'from'
       ? [coinXReserve, coinYReserve]
       : [coinYReserve, coinXReserve]
-
 
     let rate;
     if (!params.amount) {
@@ -185,6 +168,27 @@ export class SwapModule implements IModule {
       typeArguments: typeArguments,
       arguments: args,
     };
+  }
+
+  async getLiquidityPoolResource(params: CalculateRatesParams) {
+    const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const liquidityPoolType = composeType(MODULES_ACCOUNT, 'liquidity_pool', 'LiquidityPool', [
+      params.fromToken,
+      params.toToken,
+      `${MODULES_ACCOUNT}::curves::${curve}`
+    ])
+
+    let liquidityPoolResource;
+
+    try {
+      liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
+        RESOURCES_ACCOUNT,
+        liquidityPoolType
+      )
+    } catch (e) {
+      console.log(e)
+    }
+    return { liquidityPoolType, liquidityPoolResource }
   }
 }
 
