@@ -4,7 +4,7 @@ import {
   AptosCoinInfoResource,
   AptosPoolResource,
   AptosResourceType,
-  TxPayloadCallFunction
+  TAptosTxPayload
 } from "../types/aptos";
 import {
   withSlippage,
@@ -15,15 +15,20 @@ import {
   getCoinOutWithFees,
   getCoinsOutWithFeesStable,
   getCoinsInWithFeesStable,
-  d
 } from "../utils";
+import {
+  MODULES_ACCOUNT,
+  RESOURCES_ACCOUNT,
+  CURVE_STABLE,
+  CURVE_UNCORRELATED
+} from '../constants';
 
 export type CalculateRatesParams = {
-  fromToken: AptosResourceType,
-  toToken: AptosResourceType,
-  amount: number,
-  interactiveToken: 'from' | 'to',
-  curveType: 'stable' | 'uncorrelated' | 'selectable',
+  fromToken: AptosResourceType;
+  toToken: AptosResourceType;
+  amount: number;
+  interactiveToken: 'from' | 'to';
+  curveType: 'stable' | 'uncorrelated' | 'selectable';
 }
 
 export type CreateTXPayloadParams = {
@@ -32,12 +37,9 @@ export type CreateTXPayloadParams = {
   fromAmount: number;
   toAmount: number;
   interactiveToken: 'from' | 'to';
-  slippage: number,
-  pool: {
-    lpToken: AptosResourceType,
-    moduleAddress: string,
-    address: string
-  },
+  slippage: number;
+  stableSwapType: 'high' | 'normal';
+  curveType: 'stable' | 'uncorrelated' | 'selectable';
 }
 
 export class SwapModule implements IModule {
@@ -77,15 +79,23 @@ export class SwapModule implements IModule {
       ? [params.fromToken, params.toToken]
       : [params.toToken, params.fromToken];
 
-    const liquidityPoolType = composeType(params.pool.moduleAddress,'liquidity_pool', 'LiquidityPool', [
+    const liquidityPoolType = composeType(
+      MODULES_ACCOUNT,
+      'liquidity_pool',
+      'LiquidityPool'
+    );
+
+    const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+
+    const resourceType = composeType(liquidityPoolType, [
       fromToken,
       toToken,
-      params.pool.lpToken,
-    ])
+      curve,
+    ]);
 
     const liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-      params.pool.address,
-      liquidityPoolType
+      RESOURCES_ACCOUNT,
+      resourceType
     )
 
     if(!liquidityPoolResource) {
@@ -106,7 +116,6 @@ export class SwapModule implements IModule {
         ? [coinYReserve, coinXReserve]
         : [coinXReserve, coinYReserve];
 
-    // curve check needed to be added;
     let rate;
     if (!params.amount) {
       throw new Error(`Amount equals zero or undefined`);
@@ -141,37 +150,43 @@ export class SwapModule implements IModule {
     }
   }
 
-  createSwapTransactionPayload(params: CreateTXPayloadParams): TxPayloadCallFunction {
+  createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {
     if(params.slippage >= 1 || params.slippage <= 0) {
       throw new Error(`Invalid slippage (${params.slippage}) value`);
     }
 
     const { modules } = this.sdk.networkOptions;
 
+    const isUnchecked = params.curveType === 'stable' && params.stableSwapType === 'normal';
+
     const functionName = composeType(
       modules.Scripts,
-      params.interactiveToken === 'from' ? 'swap' : 'swap_into'
+      isUnchecked
+      ? 'swap_unchecked'
+      : params.interactiveToken === 'from' ? 'swap' : 'swap_into'
     );
+
+    const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
     const typeArguments = [
       params.fromToken,
       params.toToken,
-      params.pool.lpToken,
+      curve
     ];
 
     const fromAmount =
       params.interactiveToken === 'from'
         ? params.fromAmount
-        : withSlippage(params.slippage, params.fromAmount)
+        : withSlippage(params.slippage, params.fromAmount).toFixed(0);
     const toAmount =
       params.interactiveToken === 'to'
         ? params.toAmount
-        : withSlippage(params.slippage, params.toAmount)
+        : withSlippage(params.slippage, params.toAmount).toFixed(0);
 
-    const args = [params.pool.address, d(fromAmount).toString(), d(toAmount).toString()];
+    const args = [fromAmount.toString(), toAmount.toString()];
 
     return {
-      type: 'script_function_payload',
+      type: 'entry_function_payload',
       function: functionName,
       typeArguments: typeArguments,
       arguments: args,

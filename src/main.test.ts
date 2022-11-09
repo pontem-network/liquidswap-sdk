@@ -1,11 +1,11 @@
 import SDK from './main'
-import {d, decimalsMultiplier} from "./utils/numbers";
+import { d, decimalsMultiplier } from "./utils";
 
 const TokensMapping: any = {
-  APTOS: '0x1::test_coin::TestCoin',
+  APTOS: '0x1::aptos_coin::AptosCoin',
   BTC: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
-  APTOSBTCLP: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::test_coin::TestCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>',
-}
+  APTOSBTCLP: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC>',
+};
 
 const CoinInfo: any = {
   APTOS: { decimals: 6 },
