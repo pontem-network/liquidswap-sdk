@@ -1,6 +1,6 @@
 import SDK from './main'
 import { d, decimalsMultiplier } from "./utils";
-import {NETWORKS_MODULES} from "./constants";
+import { NETWORKS_MODULES } from "./constants";
 
 const TokensMapping: Record<string, string> = {
   APTOS: '0x1::aptos_coin::AptosCoin',
