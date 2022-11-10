@@ -1,15 +1,14 @@
 import SDK from './main'
 import { d, decimalsMultiplier } from "./utils";
-import { NETWORKS_MODULES } from "./constants";
 
 const TokensMapping: Record<string, string> = {
   APTOS: '0x1::aptos_coin::AptosCoin',
-  USDT: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::USDT',
-  BTC: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
+  USDT: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', //layerzero
+  BTC: '0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T', // wormhole wrapped BTC
 };
 
 const CoinInfo: Record<string, { decimals: number }> = {
-  APTOS: { decimals: 6 },
+  APTOS: { decimals: 8 },
   USDT: { decimals: 6 },
   BTC: { decimals: 8 }
 }
@@ -28,17 +27,7 @@ function prettyAmount(amount: number | string, token: string) {
 
 describe('Swap Module', () => {
   const sdk = new SDK({
-    nodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
-    networkOptions: {
-      nativeToken: '0x1::aptos_coin::AptosCoin',
-      modules: {
-        Scripts: NETWORKS_MODULES.Scripts,
-        Faucet: NETWORKS_MODULES.Faucet,
-        LiquidityPool: NETWORKS_MODULES.LiquidityPool,
-        CoinInfo: NETWORKS_MODULES.CoinInfo,
-        CoinStore: NETWORKS_MODULES.CoinStore,
-      },
-    }
+    nodeUrl: 'https://fullnode.mainnet.aptoslabs.com/v1',
   })
   test('calculateRates (from mode)', async () => {
     console.log({amountIn: convertToDecimals(1, 'APTOS')});
@@ -46,7 +35,7 @@ describe('Swap Module', () => {
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
       amount: convertToDecimals(1, 'APTOS'),
-      curveType: 'stable',
+      curveType: 'uncorrelated',
       interactiveToken: 'from',
     })
 
@@ -59,14 +48,12 @@ describe('Swap Module', () => {
   });
 
   test('calculateRates (to mode)', async () => {
-    console.log({amountInToMode: convertToDecimals('0.001', 'BTC')});
-
-    console.log(convertToDecimals('0.001', 'BTC'),);
+    console.log({amountInToMode: convertToDecimals(1, 'USDT')});
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
-      amount: convertToDecimals('0.001', 'BTC'),
-      curveType: 'stable',
+      toToken: TokensMapping.USDT,
+      amount: convertToDecimals(1, 'USDT'),
+      curveType: 'uncorrelated',
       interactiveToken: 'to',
     })
 
