@@ -47,12 +47,29 @@ describe('Swap Module', () => {
     expect(1).toBe(1)
   });
 
+  test('createSwapTransactionPayload (from mode)', async () => {
+    const output = sdk.Swap.createSwapTransactionPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.BTC,
+      fromAmount: convertToDecimals('1', 'APTOS'),
+      toAmount: convertToDecimals('4.995851', 'USDT'),
+      interactiveToken: 'from',
+      slippage: d(0.05),
+      stableSwapType: 'normal',
+      curveType: 'uncorrelated',
+    })
+
+    console.log(output);
+
+    expect(1).toBe(1)
+  });
+
   test('calculateRates (to mode)', async () => {
     console.log({amountInToMode: convertToDecimals(1, 'USDT')});
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      amount: convertToDecimals(1, 'USDT'),
+      amount: convertToDecimals('1', 'USDT'),
       curveType: 'uncorrelated',
       interactiveToken: 'to',
     })
@@ -68,30 +85,13 @@ describe('Swap Module', () => {
   test('createSwapTransactionPayload (to mode)', async () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
-      fromAmount: convertToDecimals('1', 'APTOS'),
-      toAmount: convertToDecimals('0.01584723', 'BTC'),
-      interactiveToken: 'from',
-      slippage: d(0.05),
-      stableSwapType: 'high',
-      curveType: 'stable',
-    })
-
-    console.log(output);
-
-    expect(1).toBe(1)
-  });
-
-  test('createSwapTransactionPayload (from mode)', async () => {
-    const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.BTC,
-      fromAmount: convertToDecimals('2741.440068', 'APTOS'),
-      toAmount: convertToDecimals('0.001', 'BTC'),
+      toToken: TokensMapping.USDT,
+      fromAmount: convertToDecimals('0.20032734', 'APTOS'),
+      toAmount: convertToDecimals('1', 'USDT'),
       interactiveToken: 'to',
       slippage: d(0.05),
-      stableSwapType: 'high',
-      curveType: 'stable',
+      stableSwapType: 'normal',
+      curveType: 'uncorrelated',
     })
 
     console.log(output);
