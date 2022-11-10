@@ -26,21 +26,22 @@ export type AptosPoolResource = {
   lp_mint_cap: {
     dummy_field: boolean;
   };
+  fee: number;
 };
 
 export type TxPayloadCallFunction = {
-  type: 'script_function_payload';
+  type: 'entry_function_payload';
   function: string;
   typeArguments: string[];
   arguments: string[];
 };
 
-export type TxPayloadInstallModule = {
+type TxPayloadInstallModule = {
   type: 'module_bundle_payload';
   modules: { bytecode: string }[];
 };
 
-export type AptosTxPayload = TxPayloadCallFunction | TxPayloadInstallModule;
+export type TAptosTxPayload = TxPayloadCallFunction | TxPayloadInstallModule;
 
 export type AptosCreateTx = {
   sender: string;
@@ -48,5 +49,8 @@ export type AptosCreateTx = {
   gasUnitPrice: string;
   gasCurrencyCode: string;
   expiration: string;
-  payload: AptosTxPayload;
+  payload: TAptosTxPayload;
 };
+
+export type CurveType = 'uncorrelated' | 'stable';
+
