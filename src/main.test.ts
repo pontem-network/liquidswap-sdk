@@ -5,12 +5,14 @@ const TokensMapping: Record<string, string> = {
   APTOS: '0x1::aptos_coin::AptosCoin',
   USDT: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', //layerzero
   BTC: '0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T', // wormhole wrapped BTC
+  WETH: '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T' // wormhole WETH
 };
 
 const CoinInfo: Record<string, { decimals: number }> = {
   APTOS: { decimals: 8 },
   USDT: { decimals: 6 },
-  BTC: { decimals: 8 }
+  BTC: { decimals: 8 },
+  WETH: { decimals: 8 }
 }
 
 function convertToDecimals(amount: number | string, token: string) {
@@ -95,6 +97,24 @@ describe('Swap Module', () => {
     })
 
     console.log(output);
+
+    expect(1).toBe(1)
+  });
+
+  test('calculateRates (from mode stable)', async () => {
+    console.log({amountIn: convertToDecimals(1, 'APTOS')});
+    const output = await sdk.Swap.calculateRates({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.WETH,
+      amount: convertToDecimals('1', 'APTOS'),
+      curveType: 'uncorrelated',
+      interactiveToken: 'from',
+    })
+
+    console.log({
+      amount: output,
+      pretty: prettyAmount(output, 'WETH'),
+    });
 
     expect(1).toBe(1)
   });

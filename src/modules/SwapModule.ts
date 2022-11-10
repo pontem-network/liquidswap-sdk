@@ -99,8 +99,8 @@ export class SwapModule implements IModule {
 
 
     const [fromReserve, toReserve] = isSorted
-      ? [coinXReserve, coinYReserve]
-      : [coinYReserve, coinXReserve];
+      ? [coinYReserve, coinXReserve]
+      : [coinXReserve, coinYReserve];
 
     let rate;
     if (!params.amount) {
@@ -109,8 +109,8 @@ export class SwapModule implements IModule {
 
     if (params.curveType === 'uncorrelated') {
       rate = params.interactiveToken === 'from'
-        ? getCoinOutWithFees(params.amount, fromReserve, toReserve, fee)
-        : getCoinInWithFees(params.amount, toReserve, fromReserve, fee);
+        ? getCoinOutWithFees(params.amount, toReserve, fromReserve, fee)
+        : getCoinInWithFees(params.amount, fromReserve, toReserve, fee);
       return rate.toString();
 
     } else {

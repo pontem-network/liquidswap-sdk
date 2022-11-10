@@ -90,7 +90,7 @@ const sdk = new SDK({
   console.log(amount) // '20032733.69689480612' (0.20032734 APTOS)
 
   // Generate TX payload for get EXACTLY 1 USDT
-  // and minimum send 0.19031097 + 5% (with slippage 5%)
+  // and minimum send 0.20032734 + 5% (with slippage 5%)
   const txPayload = sdk.Swap.createSwapTransactionPayload({
     fromToken: '0x1::aptos_coin::AptosCoin',
     toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT',
@@ -112,9 +112,8 @@ const sdk = new SDK({
         '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'
       ],
-      arguments: [ '19031097', '1000000' ]
+      arguments: [ '21034371', '1000000' ]
     }
-
    */
 })()
 ```
