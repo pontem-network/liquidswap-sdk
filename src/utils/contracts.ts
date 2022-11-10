@@ -130,11 +130,10 @@ export function composeType(address: string, ...args: unknown[]): string {
  * and the price at which the trade is executed.
  * @param {Decimal} value - value to calculate slippage
  */
-export function withSlippage(slippage: Decimal, value: Decimal) {
+export function withSlippage(slippage: Decimal, value: Decimal, isPlussed: boolean) {
   const multiply = new Decimal(10000);
   const slippagePercent = slippage.mul(multiply);
-
-  return value.minus(value.mul(slippagePercent).div(multiply)).toNumber();
+  return isPlussed ? value.plus(value.mul(slippagePercent).div(multiply)).toNumber() : value.minus(value.mul(slippagePercent).div(multiply)).toNumber();
 }
 
 export function extractAddressFromType(type: string) {
