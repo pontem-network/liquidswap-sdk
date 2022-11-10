@@ -107,7 +107,7 @@ export class SwapModule implements IModule {
       throw new Error(`Amount equals zero or undefined`);
     }
 
-    if (params.curveType === 'stable') {
+    if (params.curveType === 'uncorrelated') {
       rate = params.interactiveToken === 'from'
         ? getCoinOutWithFees(params.amount, fromReserve, toReserve, fee)
         : getCoinInWithFees(params.amount, toReserve, fromReserve, fee);
