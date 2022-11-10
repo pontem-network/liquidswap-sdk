@@ -6,12 +6,10 @@ const TokensMapping: Record<string, string> = {
   APTOS: '0x1::aptos_coin::AptosCoin',
   USDT: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::USDT',
   BTC: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC',
-  APTOSUSDTLP: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::lp_coin::LP<0x1::aptos_coin::AptosCoin, 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::USDT>',
 };
 
 const CoinInfo: Record<string, { decimals: number }> = {
   APTOS: { decimals: 6 },
-  APTOSBTCLP: { decimals: 6 },
   USDT: { decimals: 6 },
   BTC: { decimals: 8 }
 }

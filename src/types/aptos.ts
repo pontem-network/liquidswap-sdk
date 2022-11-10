@@ -52,5 +52,5 @@ export type AptosCreateTx = {
   payload: TAptosTxPayload;
 };
 
-export type TCurveType = 'uncorrelated' | 'stable' | 'selectable';
+export type CurveType = 'uncorrelated' | 'stable';
 

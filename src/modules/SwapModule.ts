@@ -6,7 +6,8 @@ import {
   AptosCoinInfoResource,
   AptosPoolResource,
   AptosResourceType,
-  TAptosTxPayload
+  TAptosTxPayload,
+  CurveType,
 } from "../types/aptos";
 import {
   withSlippage,
@@ -31,7 +32,7 @@ export type CalculateRatesParams = {
   toToken: AptosResourceType;
   amount: Decimal;
   interactiveToken: 'from' | 'to';
-  curveType: 'stable' | 'uncorrelated' | 'selectable';
+  curveType: CurveType;
 }
 
 export type CreateTXPayloadParams = {
@@ -42,7 +43,7 @@ export type CreateTXPayloadParams = {
   interactiveToken: 'from' | 'to';
   slippage: Decimal;
   stableSwapType: 'high' | 'normal';
-  curveType: 'stable' | 'uncorrelated' | 'selectable';
+  curveType: CurveType;
 }
 
 export class SwapModule implements IModule {
