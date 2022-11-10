@@ -132,7 +132,7 @@ export class SwapModule implements IModule {
           fee
         )
 
-      return rate;
+      return rate.toString();
     }
   }
 

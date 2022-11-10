@@ -17,7 +17,7 @@ export function getCoinOutWithFees(
   reserveInSize: Decimal,
   reserveOutSize: Decimal,
   fee: Decimal
-) {
+): Decimal {
   const { feePct, feeScale } = { feePct: fee, feeScale: d(DENOMINATOR) };
   const feeMultiplier = feeScale.minus(feePct);
   const coinInAfterFees = coinInVal.mul(feeMultiplier);
@@ -38,7 +38,7 @@ export function getCoinInWithFees(
   reserveOutSize: Decimal,
   reserveInSize: Decimal,
   fee: Decimal
-) {
+): Decimal {
   const feeMultiplier = DENOMINATOR.minus(fee);
   const newReservesOutSize = (reserveOutSize.minus(coinOutVal)).mul(feeMultiplier);
   return coinOutVal.mul(DENOMINATOR).mul(reserveInSize).div(newReservesOutSize).plus(1);
@@ -61,14 +61,13 @@ export function getCoinsInWithFeesStable(
   scaleOut: Decimal,
   scaleIn: Decimal,
   fee: Decimal
-) {
+): Decimal {
   const r = coin_in(coinOut, scaleOut, scaleIn, reserveOut, reserveIn);
   return r
     .plus(1)
     .mul(DENOMINATOR)
     .div(DENOMINATOR.minus(fee))
-    .plus(1)
-    .toString();
+    .plus(1);
 }
 
 /**
@@ -115,7 +114,7 @@ export function getCoinsOutWithFeesStable(
   scaleIn: Decimal,
   scaleOut: Decimal,
   fee: Decimal
-): string {
+): Decimal {
   let coin_in_val_after_fees = new Decimal(0);
   const coin_in_val_scaled = coinIn.mul(DENOMINATOR.minus(fee));
   if (!coin_in_val_scaled.mod(DENOMINATOR).eq(0)) {
@@ -129,7 +128,7 @@ export function getCoinsOutWithFeesStable(
     scaleOut,
     reserveIn,
     reserveOut
-  ).toString();
+  );
 }
 
 /**
