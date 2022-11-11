@@ -107,7 +107,7 @@ describe('Swap Module', () => {
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
       amount: convertToDecimals('1', 'APTOS'),
-      curveType: 'uncorrelated',
+      curveType: 'stable',
       interactiveToken: 'from',
     })
 

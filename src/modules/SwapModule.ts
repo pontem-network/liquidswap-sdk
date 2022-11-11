@@ -90,17 +90,12 @@ export class SwapModule implements IModule {
       ? [fromCoinInfo, toCoinInfo]
       : [toCoinInfo, fromCoinInfo];
 
-    const coinXReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
-    const coinYReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
+    const fromReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
+    const toReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
     const fee = d(liquidityPoolResource.data.fee);
 
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
     const coinToDecimals = +sortedToCoinInfo.data.decimals;
-
-
-    const [fromReserve, toReserve] = isSorted
-      ? [coinYReserve, coinXReserve]
-      : [coinXReserve, coinYReserve];
 
     let rate;
     if (!params.amount) {
@@ -198,9 +193,7 @@ export class SwapModule implements IModule {
     }
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
-    const liquidityPoolType = getPoolStr(params.fromToken,
-      params.toToken,
-      curve);
+    const liquidityPoolType = getPoolStr(params.fromToken, params.toToken, curve);
 
     let liquidityPoolResource;
 
