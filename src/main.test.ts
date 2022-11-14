@@ -82,25 +82,28 @@ describe('Swap Module', () => {
       pretty: prettyAmount(output, 'WETH'),
     });
 
-    expect(1).toBe(1)
+    expect(1).toBe(1);
   });
 
-  test('calculateRates (to mode stable)', async () => {
+  test('calculateRates (to mode stable) and get error',  async () => {
     console.log({amountIn: convertToDecimals(1, 'WETH')});
-    const output = await sdk.Swap.calculateRates({
-      fromToken: TokensMapping.APTOS,
-      toToken: TokensMapping.WETH,
-      amount: convertToDecimals('1', 'WETH'),
-      curveType: 'stable',
-      interactiveToken: 'to',
-    })
 
-    console.log({
-      amount: output,
-      pretty: prettyAmount(output, 'APTOS'),
-    });
+    try {
+      const output = await sdk.Swap.calculateRates({
+        fromToken: TokensMapping.APTOS,
+        toToken: TokensMapping.WETH,
+        amount: convertToDecimals('1', 'WETH'),
+        curveType: 'stable',
+        interactiveToken: 'to',
+      })
 
-    expect(1).toBe(1)
+      console.log({
+        amount: output,
+        pretty: prettyAmount(output, 'WETH'),
+      });
+    } catch(e) {
+      expect(e).toMatchObject(new Error('Insufficient funds in Liquidity Pool'));
+    }
   });
 
   test('createSwapTransactionPayload (uncorrelated from mode high)', async () => {

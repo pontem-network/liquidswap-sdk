@@ -96,6 +96,11 @@ export class SwapModule implements IModule {
     const toReserve = isSorted ?
       d(liquidityPoolResource.data.coin_y_reserve.value) :
       d(liquidityPoolResource.data.coin_x_reserve.value);
+
+    if (params.interactiveToken === 'to' && toReserve.lessThan(params.amount)) {
+      throw new Error(`Insufficient funds in Liquidity Pool`);
+    }
+
     const fee = d(liquidityPoolResource.data.fee);
 
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
