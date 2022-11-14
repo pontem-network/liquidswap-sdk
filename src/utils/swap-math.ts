@@ -101,10 +101,10 @@ export function coin_in(
  * Calculates rate with stable curve for 'from' input based on 'to' input
  *
  * @param {Decimal} coinIn - amount of first('from') token
- * @param {Decimal} reserveIn - amount of reserves for first('from') token
- * @param {Decimal} reserveOut - amount of reserves for second('to') token
- * @param {Decimal} scaleIn - precision for the ('from')token in decimal places
- * @param {Decimal} scaleOut - precision for the ('to')token in decimal places
+ * @param {Decimal} reserveIn - amount of reserves for first ('from') token
+ * @param {Decimal} reserveOut - amount of reserves for second ('to') token
+ * @param {Decimal} scaleIn - precision for the ('from') token in decimal places
+ * @param {Decimal} scaleOut - precision for the ('to') token in decimal places
  * @param {Decimal} fee - amount of fee
  */
 export function getCoinsOutWithFeesStable(

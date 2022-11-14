@@ -1,4 +1,4 @@
-import Decimal from 'decimal.js'
+import Decimal from 'decimal.js';
 
 import { SDK } from "../sdk";
 import { IModule } from "../interfaces/IModule";
@@ -33,7 +33,7 @@ export type CalculateRatesParams = {
   amount: Decimal;
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
-}
+};
 
 export type CreateTXPayloadParams = {
   fromToken: AptosResourceType;
@@ -44,7 +44,7 @@ export type CreateTXPayloadParams = {
   slippage: Decimal;
   stableSwapType: 'high' | 'normal';
   curveType: CurveType;
-}
+};
 
 export class SwapModule implements IModule {
   protected _sdk: SDK;
@@ -63,25 +63,25 @@ export class SwapModule implements IModule {
     const fromCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
       extractAddressFromType(params.fromToken),
       composeType(modules.CoinInfo, [params.fromToken])
-    )
+    );
 
     const toCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
       extractAddressFromType(params.toToken),
       composeType(modules.CoinInfo, [params.toToken])
-    )
+    );
 
-    if(!fromCoinInfo) {
+    if (!fromCoinInfo) {
       throw new Error('From Coin not exists');
     }
 
-    if(!toCoinInfo) {
+    if (!toCoinInfo) {
       throw new Error('To Coin not exists');
     }
 
     const { liquidityPoolType, liquidityPoolResource } = await this.getLiquidityPoolResource(params);
 
-    if(!liquidityPoolResource) {
-      throw new Error(`LiquidityPool (${liquidityPoolType}) not found`)
+    if (!liquidityPoolResource) {
+      throw new Error(`LiquidityPool (${liquidityPoolType}) not found`);
     }
 
     const isSorted = is_sorted(params.fromToken, params.toToken);
@@ -90,8 +90,12 @@ export class SwapModule implements IModule {
       ? [fromCoinInfo, toCoinInfo]
       : [toCoinInfo, fromCoinInfo];
 
-    const fromReserve = d(liquidityPoolResource.data.coin_x_reserve.value);
-    const toReserve = d(liquidityPoolResource.data.coin_y_reserve.value);
+    const fromReserve = isSorted ?
+      d(liquidityPoolResource.data.coin_x_reserve.value) :
+      d(liquidityPoolResource.data.coin_y_reserve.value);
+    const toReserve = isSorted ?
+      d(liquidityPoolResource.data.coin_y_reserve.value) :
+      d(liquidityPoolResource.data.coin_x_reserve.value);
     const fee = d(liquidityPoolResource.data.fee);
 
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
@@ -104,35 +108,32 @@ export class SwapModule implements IModule {
 
     if (params.curveType === 'uncorrelated') {
       rate = params.interactiveToken === 'from'
-        ? getCoinOutWithFees(params.amount, toReserve, fromReserve, fee)
-        : getCoinInWithFees(params.amount, fromReserve, toReserve, fee);
-      return rate.toString();
-
+        ? getCoinOutWithFees(params.amount, fromReserve, toReserve, fee)
+        : getCoinInWithFees(params.amount, toReserve, fromReserve, fee);
     } else {
       rate = params.interactiveToken === 'from'
         ? getCoinsOutWithFeesStable(
           params.amount,
-          toReserve,
           fromReserve,
-          d(Math.pow(10, coinToDecimals)),
+          toReserve,
           d(Math.pow(10, coinFromDecimals)),
+          d(Math.pow(10, coinToDecimals)),
           fee
         )
         : getCoinsInWithFeesStable(
           params.amount,
-          fromReserve,
           toReserve,
-          d(Math.pow(10, coinFromDecimals)),
+          fromReserve,
           d(Math.pow(10, coinToDecimals)),
+          d(Math.pow(10, coinFromDecimals)),
           fee
-        )
-
-      return rate.toString();
+        );
     }
+    return rate.toString();
   }
 
   createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {
-    if(params.slippage.gte(1) || params.slippage.lte(0 )) {
+    if (params.slippage.gte(1) || params.slippage.lte(0)) {
       throw new Error(`Invalid slippage (${params.slippage}) value`);
     }
 
@@ -143,8 +144,8 @@ export class SwapModule implements IModule {
     const functionName = composeType(
       modules.Scripts,
       isUnchecked
-      ? 'swap_unchecked'
-      : params.interactiveToken === 'from' ? 'swap' : 'swap_into'
+        ? 'swap_unchecked'
+        : params.interactiveToken === 'from' ? 'swap' : 'swap_into'
     );
 
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
@@ -201,11 +202,11 @@ export class SwapModule implements IModule {
       liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
         RESOURCES_ACCOUNT,
         liquidityPoolType
-      )
+      );
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-    return { liquidityPoolType, liquidityPoolResource }
+    return { liquidityPoolType, liquidityPoolResource };
   }
 }
 
