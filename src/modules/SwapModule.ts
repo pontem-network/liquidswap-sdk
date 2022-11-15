@@ -19,6 +19,7 @@ import {
   getCoinsInWithFeesStable,
   d,
   is_sorted,
+  decimalsMultiplier,
 } from "../utils";
 import {
   MODULES_ACCOUNT,
@@ -30,7 +31,7 @@ import {
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
-  amount: Decimal;
+  amount: number;
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
 };
@@ -55,6 +56,18 @@ export class SwapModule implements IModule {
 
   constructor(sdk: SDK) {
     this._sdk = sdk;
+  }
+
+  convertFromNumberToDecimals(amount: number, decimals: number) {
+    const mul = decimalsMultiplier(decimals);
+
+    return d(amount).mul(mul);
+  }
+
+  convertFromDecimalsToFixedString(amount: Decimal, decimals: number) {
+    const mul = decimalsMultiplier(decimals);
+
+    return amount.div(mul).toFixed(decimals);
   }
 
   async calculateRates(params: CalculateRatesParams): Promise<string> {
@@ -97,28 +110,39 @@ export class SwapModule implements IModule {
       d(liquidityPoolResource.data.coin_y_reserve.value) :
       d(liquidityPoolResource.data.coin_x_reserve.value);
 
-    if (params.interactiveToken === 'to' && toReserve.lessThan(params.amount)) {
-      throw new Error(`Insufficient funds in Liquidity Pool`);
-    }
-
     const fee = d(liquidityPoolResource.data.fee);
 
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
     const coinToDecimals = +sortedToCoinInfo.data.decimals;
 
-    let rate;
+    const amount = params.interactiveToken === 'from'
+      ? this.convertFromNumberToDecimals(params.amount, coinToDecimals)
+      : this.convertFromNumberToDecimals(params.amount, coinFromDecimals);
+    if (params.interactiveToken === 'from') {
+      console.log('interactiveToken symbol amount decimals', params.interactiveToken, sortedToCoinInfo.data.symbol, amount, coinToDecimals);
+    }
+    if (params.interactiveToken === 'to') {
+      console.log('interactiveToken symbol amount decimals', params.interactiveToken, sortedFromCoinInfo.data.symbol, amount, coinFromDecimals);
+    }
+
     if (!params.amount) {
       throw new Error(`Amount equals zero or undefined`);
     }
 
+    if (params.interactiveToken === 'to' && toReserve.lessThan(amount)) {
+      throw new Error(`Insufficient funds in Liquidity Pool`);
+    }
+
+    let rate;
+
     if (params.curveType === 'uncorrelated') {
       rate = params.interactiveToken === 'from'
-        ? getCoinOutWithFees(params.amount, fromReserve, toReserve, fee)
-        : getCoinInWithFees(params.amount, toReserve, fromReserve, fee);
+        ? getCoinOutWithFees(amount, fromReserve, toReserve, fee)
+        : getCoinInWithFees(amount, toReserve, fromReserve, fee);
     } else {
       rate = params.interactiveToken === 'from'
         ? getCoinsOutWithFeesStable(
-          params.amount,
+          amount,
           fromReserve,
           toReserve,
           d(Math.pow(10, coinFromDecimals)),
@@ -126,7 +150,7 @@ export class SwapModule implements IModule {
           fee
         )
         : getCoinsInWithFeesStable(
-          params.amount,
+          amount,
           toReserve,
           fromReserve,
           d(Math.pow(10, coinToDecimals)),
@@ -134,7 +158,10 @@ export class SwapModule implements IModule {
           fee
         );
     }
-    return rate.toString();
+    const outputRate = params.interactiveToken === 'from'
+      ? this.convertFromDecimalsToFixedString(rate, coinFromDecimals)
+      : this.convertFromDecimalsToFixedString(rate, coinToDecimals);
+    return outputRate;
   }
 
   createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {

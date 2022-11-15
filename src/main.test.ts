@@ -21,86 +21,63 @@ function convertToDecimals(amount: number | string, token: string) {
   return d(amount).mul(mul)
 }
 
-function prettyAmount(amount: number | string, token: string) {
-  const mul = decimalsMultiplier(CoinInfo[token]?.decimals || 0);
-
-  return d(amount).div(mul)
-}
-
 describe('Swap Module', () => {
   const sdk = new SDK({
     nodeUrl: 'https://fullnode.mainnet.aptoslabs.com/v1',
   })
   test('calculateRates (from mode)', async () => {
-    console.log({amountIn: convertToDecimals(1, 'APTOS')});
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      amount: convertToDecimals(1, 'APTOS'),
+      amount: 1,
       curveType: 'uncorrelated',
       interactiveToken: 'from',
     })
 
-    console.log({
-      amount: output,
-      pretty: prettyAmount(output, 'USDT'),
-    });
+    console.log({ amount: output });
 
     expect(1).toBe(1)
   });
 
   test('calculateRates (to mode)', async () => {
-    console.log({amountInToMode: convertToDecimals(1, 'USDT')});
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      amount: convertToDecimals('1', 'USDT'),
+      amount: 1,
       curveType: 'uncorrelated',
       interactiveToken: 'to',
     })
 
-    console.log({
-      amount: output,
-      pretty: prettyAmount(output, 'APTOS'),
-    });
+    console.log({ amount: output });
 
     expect(1).toBe(1)
   });
 
   test('calculateRates (from mode stable)', async () => {
-    console.log({amountIn: convertToDecimals(1, 'APTOS')});
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
-      amount: convertToDecimals('1', 'APTOS'),
+      amount: 1,
       curveType: 'stable',
       interactiveToken: 'from',
     })
 
-    console.log({
-      amount: output,
-      pretty: prettyAmount(output, 'WETH'),
-    });
+    console.log({ amount: output });
 
     expect(1).toBe(1);
   });
 
   test('calculateRates (to mode stable) and get error',  async () => {
-    console.log({amountIn: convertToDecimals(1, 'WETH')});
-
     try {
       const output = await sdk.Swap.calculateRates({
         fromToken: TokensMapping.APTOS,
         toToken: TokensMapping.WETH,
-        amount: convertToDecimals('1', 'WETH'),
+        amount: 1,
         curveType: 'stable',
         interactiveToken: 'to',
       })
 
-      console.log({
-        amount: output,
-        pretty: prettyAmount(output, 'WETH'),
-      });
+      console.log({ amount: output });
     } catch(e) {
       expect(e).toMatchObject(new Error('Insufficient funds in Liquidity Pool'));
     }
