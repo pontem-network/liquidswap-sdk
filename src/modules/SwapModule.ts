@@ -19,7 +19,8 @@ import {
   getCoinsInWithFeesStable,
   d,
   is_sorted,
-  decimalsMultiplier,
+  convertValueToDecimal,
+  convertDecimalToFixedString
 } from "../utils";
 import {
   MODULES_ACCOUNT,
@@ -42,7 +43,7 @@ export type CreateTXPayloadParams = {
   fromAmount: Decimal;
   toAmount: Decimal;
   interactiveToken: 'from' | 'to';
-  slippage: Decimal;
+  slippage: number;
   stableSwapType: 'high' | 'normal';
   curveType: CurveType;
 };
@@ -56,18 +57,6 @@ export class SwapModule implements IModule {
 
   constructor(sdk: SDK) {
     this._sdk = sdk;
-  }
-
-  convertFromNumberToDecimals(amount: number, decimals: number) {
-    const mul = decimalsMultiplier(decimals);
-
-    return d(amount).mul(mul);
-  }
-
-  convertFromDecimalsToFixedString(amount: Decimal, decimals: number) {
-    const mul = decimalsMultiplier(decimals);
-
-    return amount.div(mul).toFixed(decimals);
   }
 
   async calculateRates(params: CalculateRatesParams): Promise<string> {
@@ -116,14 +105,8 @@ export class SwapModule implements IModule {
     const coinToDecimals = +sortedToCoinInfo.data.decimals;
 
     const amount = params.interactiveToken === 'from'
-      ? this.convertFromNumberToDecimals(params.amount, coinToDecimals)
-      : this.convertFromNumberToDecimals(params.amount, coinFromDecimals);
-    if (params.interactiveToken === 'from') {
-      console.log('interactiveToken symbol amount decimals', params.interactiveToken, sortedToCoinInfo.data.symbol, amount, coinToDecimals);
-    }
-    if (params.interactiveToken === 'to') {
-      console.log('interactiveToken symbol amount decimals', params.interactiveToken, sortedFromCoinInfo.data.symbol, amount, coinFromDecimals);
-    }
+      ? convertValueToDecimal(params.amount, coinToDecimals)
+      : convertValueToDecimal(params.amount, coinFromDecimals);
 
     if (!params.amount) {
       throw new Error(`Amount equals zero or undefined`);
@@ -159,14 +142,16 @@ export class SwapModule implements IModule {
         );
     }
     const outputRate = params.interactiveToken === 'from'
-      ? this.convertFromDecimalsToFixedString(rate, coinFromDecimals)
-      : this.convertFromDecimalsToFixedString(rate, coinToDecimals);
+      ? convertDecimalToFixedString(rate, coinFromDecimals)
+      : convertDecimalToFixedString(rate, coinToDecimals);
     return outputRate;
   }
 
   createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {
-    if (params.slippage.gte(1) || params.slippage.lte(0)) {
-      throw new Error(`Invalid slippage (${params.slippage}) value`);
+    const slippage = d(params.slippage);
+
+    if (slippage.gte(1) || slippage.lte(0)) {
+      throw new Error(`Invalid slippage (${params.slippage}) value, it should be from 0 to 1`);
     }
 
     const { modules } = this.sdk.networkOptions;
@@ -191,11 +176,11 @@ export class SwapModule implements IModule {
     const fromAmount =
       params.interactiveToken === 'from'
         ? params.fromAmount
-        : withSlippage(params.slippage, params.fromAmount, true).toFixed(0);
+        : withSlippage(slippage, params.fromAmount, true).toFixed(0);
     const toAmount =
       params.interactiveToken === 'to'
         ? params.toAmount
-        : withSlippage(params.slippage, params.toAmount, false).toFixed(0);
+        : withSlippage(slippage, params.toAmount, false).toFixed(0);
 
     const args = [fromAmount.toString(), toAmount.toString()];
 
