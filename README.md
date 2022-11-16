@@ -231,4 +231,4 @@ const decimalValue2 = convertValueToDecimal('15', 8);
 })()
 ```
 
-### For additional examples feel free to explore 'src/main.test.ts' file;
+### For additional examples feel free to explore '[src/main.test.ts](src/main.test.ts)' file;
