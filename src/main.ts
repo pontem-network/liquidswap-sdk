@@ -7,6 +7,7 @@ import {
   getCoinOutWithFees,
   getCoinInWithFees,
   convertValueToDecimal,
+  convertDecimalToFixedString,
 } from './utils'
 
 export {
@@ -21,6 +22,7 @@ export {
   getCoinsOutWithFeesStable,
   getCoinsInWithFeesStable,
   convertValueToDecimal,
+  convertDecimalToFixedString
 };
 
 export default SDK;
