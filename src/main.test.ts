@@ -72,6 +72,22 @@ describe('Swap Module', () => {
       const output = await sdk.Swap.calculateRates({
         fromToken: TokensMapping.APTOS,
         toToken: TokensMapping.WETH,
+        amount: 0.0018,
+        curveType: 'stable',
+        interactiveToken: 'to',
+      })
+
+      console.log({ amount: output });
+    } catch(e) {
+      expect(e).toMatchObject(new Error('Insufficient funds in Liquidity Pool'));
+    }
+  });
+
+  test('calculateRates (to mode stable) and get error',  async () => {
+    try {
+      const output = await sdk.Swap.calculateRates({
+        fromToken: TokensMapping.APTOS,
+        toToken: TokensMapping.WETH,
         amount: 1,
         curveType: 'stable',
         interactiveToken: 'to',
@@ -94,8 +110,6 @@ describe('Swap Module', () => {
       stableSwapType: 'high',
       curveType: 'uncorrelated',
     })
-
-    console.log(output);
 
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
@@ -137,10 +151,10 @@ describe('Swap Module', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
-      fromAmount: convertValueToDecimal(1, 8),
-      toAmount: convertValueToDecimal('0.000846', 8),
+      fromAmount: convertValueToDecimal(0.04, 8),
+      toAmount: convertValueToDecimal('0.00037818', 8),
       interactiveToken: 'from',
-      slippage: 0.05,
+      slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'stable',
     })
@@ -153,7 +167,7 @@ describe('Swap Module', () => {
         '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Stable'
       ],
-      arguments: ['100000000', '80370']
+      arguments: ['4000000', '37629']
     })
   });
 
@@ -161,13 +175,15 @@ describe('Swap Module', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
-      fromAmount: convertToDecimals('1', 'APTOS'),
-      toAmount: convertToDecimals('0.000846', 'WETH'),
+      fromAmount: convertToDecimals('0.03998981', 'APTOS'),
+      toAmount: convertToDecimals('0.0003781', 'WETH'),
       interactiveToken: 'to',
-      slippage: 0.05,
+      slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'stable',
     })
+
+    console.log(output);
 
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
@@ -177,7 +193,7 @@ describe('Swap Module', () => {
         '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Stable'
       ],
-      arguments: ['105000000', '84600']
+      arguments: ['4018976', '37810']
     });
   });
 
@@ -185,10 +201,10 @@ describe('Swap Module', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
-      fromAmount: convertToDecimals('1', 'APTOS'),
-      toAmount: convertToDecimals('0.000846', 'WETH'),
+      fromAmount: convertToDecimals('0.004', 'APTOS'),
+      toAmount: convertToDecimals('0.00004339', 'WETH'),
       interactiveToken: 'from',
-      slippage: 0.05,
+      slippage: 0.005,
       stableSwapType: 'normal',
       curveType: 'stable',
     })
@@ -201,7 +217,7 @@ describe('Swap Module', () => {
         '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Stable'
       ],
-      arguments: ['100000000', '80370']
+      arguments: ['400000', '4317']
     })
   });
 
@@ -209,10 +225,10 @@ describe('Swap Module', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
-      fromAmount: convertToDecimals('1', 'APTOS'),
-      toAmount: convertToDecimals('0.000846', 'WETH'),
+      fromAmount: convertToDecimals('0.00400045', 'APTOS'),
+      toAmount: convertToDecimals('0.00004339', 'WETH'),
       interactiveToken: 'to',
-      slippage: 0.05,
+      slippage: 0.005,
       stableSwapType: 'normal',
       curveType: 'stable',
     })
@@ -225,7 +241,7 @@ describe('Swap Module', () => {
         '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Stable'
       ],
-      arguments: ['105000000', '84600']
+      arguments: ['402045', '4339']
     })
   });
 })
