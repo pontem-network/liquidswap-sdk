@@ -134,9 +134,9 @@ describe('Swap Module', () => {
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
       fromAmount: convertValueToDecimal(1, 8),
-      toAmount: convertValueToDecimal('4.995851', 6),
+      toAmount: convertValueToDecimal('4.304638', 6),
       interactiveToken: 'from',
-      slippage: 0.05,
+      slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'uncorrelated',
     })
@@ -149,7 +149,7 @@ describe('Swap Module', () => {
         '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'
       ],
-      arguments: ['100000000', '4746058']
+      arguments: ['100000000', '4283115']
     })
   })
 
@@ -157,10 +157,10 @@ describe('Swap Module', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      fromAmount: convertValueToDecimal(1, 8),
-      toAmount: convertValueToDecimal('4.995851', 6),
+      fromAmount: convertValueToDecimal(0.23211815, 8),
+      toAmount: convertValueToDecimal(1, 6),
       interactiveToken: 'to',
-      slippage: 0.05,
+      slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'uncorrelated',
     })
@@ -173,7 +173,7 @@ describe('Swap Module', () => {
         '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'
       ],
-      arguments: ['105000000', '4995851']
+      arguments: ['23327874', '1000000']
     })
   });
 
@@ -231,8 +231,8 @@ describe('Swap Module', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.WETH,
-      fromAmount: convertToDecimals('0.004', 'APTOS'),
-      toAmount: convertToDecimals('0.00004339', 'WETH'),
+      fromAmount: convertToDecimals('1', 'APTOS'),
+      toAmount: convertToDecimals('0.00175257', 'WETH'),
       interactiveToken: 'from',
       slippage: 0.005,
       stableSwapType: 'normal',
@@ -247,7 +247,7 @@ describe('Swap Module', () => {
         '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T',
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Stable'
       ],
-      arguments: ['400000', '4317']
+      arguments: ['100000000', '174381']
     })
   });
 

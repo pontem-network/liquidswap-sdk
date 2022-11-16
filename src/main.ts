@@ -1,7 +1,13 @@
 import { SDK, SdkOptions } from "./sdk";
 import { SwapModule, CalculateRatesParams, CreateTXPayloadParams } from "./modules/SwapModule";
 import { ResourcesModule } from "./modules/ResourcesModule";
-import { getCoinsInWithFeesStable, getCoinsOutWithFeesStable, getCoinOutWithFees, getCoinInWithFees } from './utils'
+import {
+  getCoinsInWithFeesStable,
+  getCoinsOutWithFeesStable,
+  getCoinOutWithFees,
+  getCoinInWithFees,
+  convertValueToDecimal,
+} from './utils'
 
 export {
   SDK,
@@ -13,7 +19,8 @@ export {
   getCoinInWithFees,
   getCoinOutWithFees,
   getCoinsOutWithFeesStable,
-  getCoinsInWithFeesStable
+  getCoinsInWithFeesStable,
+  convertValueToDecimal,
 };
 
 export default SDK;
