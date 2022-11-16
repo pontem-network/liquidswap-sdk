@@ -60,15 +60,25 @@ export class SwapModule implements IModule {
   async calculateRates(params: CalculateRatesParams): Promise<string> {
     const { modules } = this.sdk.networkOptions;
 
-    const fromCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
-      extractAddressFromType(params.fromToken),
-      composeType(modules.CoinInfo, [params.fromToken])
-    );
+    let fromCoinInfo;
+    try {
+      fromCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
+        extractAddressFromType(params.fromToken),
+        composeType(modules.CoinInfo, [params.fromToken])
+      );
+    } catch (e) {
+      console.log(e);
+    }
 
-    const toCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
-      extractAddressFromType(params.toToken),
-      composeType(modules.CoinInfo, [params.toToken])
-    );
+    let toCoinInfo;
+    try {
+      toCoinInfo = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
+        extractAddressFromType(params.toToken),
+        composeType(modules.CoinInfo, [params.toToken])
+      );
+    }catch (e) {
+      console.log(e);
+    }
 
     if (!fromCoinInfo) {
       throw new Error('From Coin not exists');
@@ -107,7 +117,7 @@ export class SwapModule implements IModule {
     const coinToDecimals = +sortedToCoinInfo.data.decimals;
 
     let rate;
-    if (!params.amount) {
+    if (params.amount.comparedTo(0) == 0) {
       throw new Error(`Amount equals zero or undefined`);
     }
 
