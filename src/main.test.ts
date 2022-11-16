@@ -85,24 +85,67 @@ describe('Swap Module', () => {
     expect(1).toBe(1);
   });
 
-  test('calculateRates (to mode stable) and get error',  async () => {
-    console.log({amountIn: convertToDecimals(1, 'WETH')});
+  test('calculateRates (to mode stable) Errors',  async () => {
+    expect.assertions(5);
 
     try {
-      const output = await sdk.Swap.calculateRates({
+      await sdk.Swap.calculateRates({
+        fromToken: TokensMapping.BTC,
+        toToken: TokensMapping.WETH,
+        amount: convertToDecimals('1', 'WETH'),
+        curveType: 'stable',
+        interactiveToken: 'to',
+      })
+    } catch(e) {
+      expect(e).toMatchObject(new Error(`LiquidityPool (0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::liquidity_pool::LiquidityPool<${TokensMapping.BTC},${TokensMapping.WETH},0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Stable>) not found`));
+    }
+
+    try {
+      await sdk.Swap.calculateRates({
+        fromToken: TokensMapping.APTOS + '0',
+        toToken: TokensMapping.WETH,
+        amount: convertToDecimals('1', 'WETH'),
+        curveType: 'stable',
+        interactiveToken: 'to',
+      })
+    } catch(e) {
+      expect(e).toMatchObject(new Error('From Coin not exists'));
+    }
+
+    try {
+      await sdk.Swap.calculateRates({
+        fromToken: TokensMapping.APTOS,
+        toToken: TokensMapping.WETH + '0',
+        amount: convertToDecimals('1', 'WETH'),
+        curveType: 'stable',
+        interactiveToken: 'to',
+      })
+    } catch(e) {
+      expect(e).toMatchObject(new Error('To Coin not exists'));
+    }
+
+    try {
+      await sdk.Swap.calculateRates({
         fromToken: TokensMapping.APTOS,
         toToken: TokensMapping.WETH,
         amount: convertToDecimals('1', 'WETH'),
         curveType: 'stable',
         interactiveToken: 'to',
       })
-
-      console.log({
-        amount: output,
-        pretty: prettyAmount(output, 'WETH'),
-      });
     } catch(e) {
       expect(e).toMatchObject(new Error('Insufficient funds in Liquidity Pool'));
+    }
+
+    try {
+      await sdk.Swap.calculateRates({
+        fromToken: TokensMapping.APTOS,
+        toToken: TokensMapping.WETH,
+        amount: convertToDecimals('0', 'WETH'),
+        curveType: 'stable',
+        interactiveToken: 'to',
+      })
+    } catch(e) {
+      expect(e).toMatchObject(new Error('Amount equals zero or undefined'));
     }
   });
 
@@ -248,5 +291,39 @@ describe('Swap Module', () => {
       ],
       arguments: ['105000000', '84600']
     })
+  });
+
+  test('createSwapTransactionPayload Errors',  () => {
+    expect.assertions(2);
+
+    try {
+      sdk.Swap.createSwapTransactionPayload({
+        fromToken: TokensMapping.APTOS,
+        toToken: TokensMapping.WETH,
+        fromAmount: convertToDecimals('1', 'APTOS'),
+        toAmount: convertToDecimals('0.000846', 'WETH'),
+        interactiveToken: 'to',
+        slippage: d(-0.01),
+        stableSwapType: 'high',
+        curveType: 'stable',
+      })
+    } catch(e) {
+      expect(e).toMatchObject(new Error(`Invalid slippage (-0.01) value`));
+    }
+
+    try {
+      sdk.Swap.createSwapTransactionPayload({
+        fromToken: TokensMapping.APTOS,
+        toToken: TokensMapping.WETH,
+        fromAmount: convertToDecimals('1', 'APTOS'),
+        toAmount: convertToDecimals('0.000846', 'WETH'),
+        interactiveToken: 'to',
+        slippage: d(1.01),
+        stableSwapType: 'high',
+        curveType: 'stable',
+      })
+    } catch(e) {
+      expect(e).toMatchObject(new Error(`Invalid slippage (1.01) value`));
+    }
   });
 })
