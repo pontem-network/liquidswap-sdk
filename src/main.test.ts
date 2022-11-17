@@ -35,9 +35,10 @@ describe('Swap Module', () => {
       interactiveToken: 'from',
     });
 
-    console.log({ amount: output });
+    console.log(`1 APT → ${output} USDT`);
 
-    expect(1).toBe(1);
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
   });
 
   test('calculateRates (to mode)', async () => {
@@ -49,9 +50,10 @@ describe('Swap Module', () => {
       interactiveToken: 'to',
     });
 
-    console.log({ amount: output });
+    console.log(`${output} APT → 1 USDT`);
 
-    expect(1).toBe(1);
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
   });
 
   test('calculateRates (from mode stable)', async () => {
@@ -63,9 +65,10 @@ describe('Swap Module', () => {
       interactiveToken: 'from',
     });
 
-    console.log({ amount: output });
+    console.log(`1 APT → ${output} WETH`);
 
-    expect(1).toBe(1);
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
   });
 
   test('calculateRates (to mode stable) and get error', async () => {
@@ -213,8 +216,6 @@ describe('Swap Module', () => {
       stableSwapType: 'high',
       curveType: 'stable',
     });
-
-    console.log(output);
 
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
