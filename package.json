@@ -6,8 +6,16 @@
   "repository": "https://github.com/pontem-network/liquidswap-sdk",
   "license": "MIT",
   "keywords": [
+    "aptos",
+    "blockchain",
+    "crypto",
+    "curve",
+    "DEX",
+    "exchange",
+    "liquidswap",
     "pontem",
-    "liquidswap"
+    "sdk",
+    "tokens"
   ],
   "main": "./dist/tsc/main.js",
   "types": "./dist/tsc/main.d.ts",
