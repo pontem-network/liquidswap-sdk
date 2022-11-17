@@ -50,19 +50,19 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
     const output = await sdk.Swap.calculateRates({
       fromToken: '0x1::aptos_coin::AptosCoin', // full 'from' token address
       toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // full 'to' token address layerzero USDT
-      amount: 100000000, // 100000000 APTOS, or you can
-      curveType: 'uncorrelated',
-      interactiveToken: 'from',
+      amount: 100000000, // 1 APTOS, or you can use convertValueToDecimal(1, 8)
+      curveType: 'uncorrelated', // can be 'uncorrelated' or 'stable'
+      interactiveToken: 'from', // which token is 'base' to calculate other token rate.
     })
-    console.log(amount) // '4.304638' USDT
+    console.log(output) // '4304638' (4.304638 USDT)
 
     // Generate TX payload for swap 1 APTOS to maximum 4.304638 USDT
     // and minimum 4.283115 USDT (with slippage -0.5%)
     const txPayload = sdk.Swap.createSwapTransactionPayload({
       fromToken: '0x1::aptos_coin::AptosCoin',
       toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // layerzero USDT
-      fromAmount: convertValueToDecimal(1, 8), // 1 APTOS,
-      toAmount: convertValueToDecimal(4.304638, 6), // 4.304638 USDT,
+      fromAmount: 100000000, // 1 APTOS, or you can use convertValueToDecimal(1, 8)
+      toAmount: 4304638, // 4.304638 USDT, or you can use convertValueToDecimal(4.304638, 6)
       interactiveToken: 'from',
       slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
       stableSwapType: 'high',
