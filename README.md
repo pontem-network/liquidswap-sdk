@@ -33,10 +33,10 @@ const sdk = new SDK({
 ### You want to convert 15 coins to Decimal type with 8 decimals (coins like APTOS, BTC, etc);
 
 ```typescript
-
-const decimalValue = convertValueToDecimal(15, 8);
-or                                                    // convertValueToDecimal return Decimal type;
-const decimalValue2 = convertValueToDecimal('15', 8);
+// convertValueToDecimal return Decimal type;
+const decimalValue = convertValueToDecimal(15, 8); // 1500000000 (15 coin with 8 decimals)
+or
+const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin with 8 decimals)
 
 ```
 
@@ -48,21 +48,21 @@ const decimalValue2 = convertValueToDecimal('15', 8);
   // Get USDT amount
   try {
     const output = await sdk.Swap.calculateRates({
-      fromToken: '0x1::aptos_coin::AptosCoin',
-      toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // layerzero USDT
-      amount: 1, // 1 APTOS as Decimal amount
-      curveType: 'uncorrelated',
-      interactiveToken: 'from',
+      fromToken: '0x1::aptos_coin::AptosCoin', // full 'from' token address
+      toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // full 'to' token address layerzero USDT
+      amount: 100000000, // 1 APTOS, or you can use convertValueToDecimal(1, 8)
+      curveType: 'uncorrelated', // can be 'uncorrelated' or 'stable'
+      interactiveToken: 'from', // which token is 'base' to calculate other token rate.
     })
-    console.log(amount) // '4.304638' USDT
+    console.log(output) // '4304638' (4.304638 USDT)
 
     // Generate TX payload for swap 1 APTOS to maximum 4.304638 USDT
     // and minimum 4.283115 USDT (with slippage -0.5%)
     const txPayload = sdk.Swap.createSwapTransactionPayload({
       fromToken: '0x1::aptos_coin::AptosCoin',
       toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // layerzero USDT
-      fromAmount: convertValueToDecimal(1, 8), // 1 APTOS,
-      toAmount: convertValueToDecimal(4.304638, 6), // 4.304638 USDT,
+      fromAmount: 100000000, // 1 APTOS, or you can use convertValueToDecimal(1, 8)
+      toAmount: 4304638, // 4.304638 USDT, or you can use convertValueToDecimal(4.304638, 6)
       interactiveToken: 'from',
       slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
       stableSwapType: 'high',
@@ -98,11 +98,11 @@ const decimalValue2 = convertValueToDecimal('15', 8);
     const amount = await sdk.Swap.calculateRates({
       fromToken: '0x1::aptos_coin::AptosCoin',
       toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT',
-      amount: 1, // 1 layerzero USDT
+      amount: 1000000, // 1 layerzero USDT
       interactiveToken: 'to',
       curveType: 'uncorrelated',
     })
-    console.log(amount) // '0.23211815' APTOS
+    console.log(amount) // '23211815' ('0.23211815' APTOS)
 
     // Generate TX payload for get EXACTLY 1 USDT
     // and minimum send 0.23327874 (with slippage +0.5%)
@@ -145,11 +145,11 @@ const decimalValue2 = convertValueToDecimal('15', 8);
     const amount = await sdk.Swap.calculateRates({
       fromToken: '0x1::aptos_coin::AptosCoin',
       toToken: '0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T', // wormhole WETH (whWETH)
-      amount: 1, // 1 APTOS
+      amount: 100000000, // 1 APTOS
       interactiveToken: 'from',
       curveType: 'stable',
     })
-    console.log(amount) // '0.00175257' whWETH
+    console.log(amount) // '175257' ('0.00175257' whWETH)
 
     // Generate TX payload to swap 1 APTOS to
     // and minimum send 0.00174381 (with slippage -0.5%)
@@ -192,11 +192,11 @@ const decimalValue2 = convertValueToDecimal('15', 8);
     const amount = await sdk.Swap.calculateRates({
       fromToken: '0x1::aptos_coin::AptosCoin',
       toToken: '0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA', // USDA
-      amount: 1, // 1 USDA
+      amount: 1000000, // 1 USDA
       interactiveToken: 'to',
       curveType: 'stable',
     })
-    console.log(amount) // '0.12356861' APTOS
+    console.log(amount) // '12356861' ('0.12356861' APTOS)
 
     // Generate TX payload to swap 1 APTOS to
     // and minimum send 0.12418645 (with slippage +0.5%)

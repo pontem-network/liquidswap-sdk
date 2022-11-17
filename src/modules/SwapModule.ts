@@ -19,8 +19,6 @@ import {
   getCoinsInWithFeesStable,
   d,
   is_sorted,
-  convertValueToDecimal,
-  convertDecimalToFixedString
 } from "../utils";
 import {
   MODULES_ACCOUNT,
@@ -32,7 +30,7 @@ import {
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
-  amount: number;
+  amount: Decimal | number;
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
 };
@@ -40,8 +38,8 @@ export type CalculateRatesParams = {
 export type CreateTXPayloadParams = {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
-  fromAmount: Decimal;
-  toAmount: Decimal;
+  fromAmount: Decimal | number;
+  toAmount: Decimal | number;
   interactiveToken: 'from' | 'to';
   slippage: number;
   stableSwapType: 'high' | 'normal';
@@ -114,9 +112,7 @@ export class SwapModule implements IModule {
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
     const coinToDecimals = +sortedToCoinInfo.data.decimals;
 
-    const amount = params.interactiveToken === 'from'
-      ? convertValueToDecimal(params.amount, coinToDecimals)
-      : convertValueToDecimal(params.amount, coinFromDecimals);
+    const amount = d(params.amount);
 
     if (amount.comparedTo(0) === 0) {
       throw new Error(`Amount equals zero or undefined`);
@@ -151,10 +147,7 @@ export class SwapModule implements IModule {
           fee
         );
     }
-    const outputRate = params.interactiveToken === 'from'
-      ? convertDecimalToFixedString(rate, coinFromDecimals)
-      : convertDecimalToFixedString(rate, coinToDecimals);
-    return outputRate;
+    return rate.toFixed(0);
   }
 
   createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {
@@ -186,11 +179,11 @@ export class SwapModule implements IModule {
     const fromAmount =
       params.interactiveToken === 'from'
         ? params.fromAmount
-        : withSlippage(slippage, params.fromAmount, true).toFixed(0);
+        : withSlippage(slippage, d(params.fromAmount), true).toFixed(0);
     const toAmount =
       params.interactiveToken === 'to'
         ? params.toAmount
-        : withSlippage(slippage, params.toAmount, false).toFixed(0);
+        : withSlippage(slippage, d(params.toAmount), false).toFixed(0);
 
     const args = [fromAmount.toString(), toAmount.toString()];
 
