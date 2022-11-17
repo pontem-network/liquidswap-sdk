@@ -1,7 +1,7 @@
-import {SDK} from "../sdk";
-import {IModule} from "../interfaces/IModule";
-import {AptosResource, AptosResourceType} from "../types/aptos";
-import {isAxiosError} from "../utils/is";
+import { SDK } from "../sdk";
+import { IModule } from "../interfaces/IModule";
+import { AptosResource, AptosResourceType } from "../types/aptos";
+import { isAxiosError } from "../utils/is";
 
 
 export class ResourcesModule implements IModule {
@@ -20,8 +20,8 @@ export class ResourcesModule implements IModule {
       const response = await this._sdk.client.getAccountResource(accountAddress, resourceType);
       return response as unknown as AptosResource<T>;
     } catch (e: unknown) {
-      if(isAxiosError(e)) {
-        if(e.response?.status === 404) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
           return undefined;
         }
       }

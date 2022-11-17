@@ -142,7 +142,7 @@ export function extractAddressFromType(type: string) {
 
 export function checkAptosType(
   type: any,
-  options: { leadingZero: boolean } = { leadingZero: true }
+  options: { leadingZero: boolean; } = { leadingZero: true }
 ): boolean {
   if (typeof type !== 'string') {
     return false;

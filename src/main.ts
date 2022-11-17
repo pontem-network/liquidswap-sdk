@@ -8,7 +8,7 @@ import {
   getCoinInWithFees,
   convertValueToDecimal,
   convertDecimalToFixedString,
-} from './utils'
+} from './utils';
 
 export {
   SDK,

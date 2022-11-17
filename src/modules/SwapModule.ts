@@ -76,7 +76,7 @@ export class SwapModule implements IModule {
         extractAddressFromType(params.toToken),
         composeType(modules.CoinInfo, [params.toToken])
       );
-    }catch (e) {
+    } catch (e) {
       console.log(e);
     }
 

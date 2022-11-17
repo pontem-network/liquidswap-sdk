@@ -1,7 +1,7 @@
-import {AptosClient} from "aptos";
-import {SwapModule} from "./modules/SwapModule";
-import {ResourcesModule} from "./modules/ResourcesModule";
-import {AptosResourceType} from "./types/aptos";
+import { AptosClient } from "aptos";
+import { SwapModule } from "./modules/SwapModule";
+import { ResourcesModule } from "./modules/ResourcesModule";
+import { AptosResourceType } from "./types/aptos";
 
 const initialNetworkOptions = {
   nativeToken: '0x1::aptos_coin::AptosCoin',
@@ -10,7 +10,7 @@ const initialNetworkOptions = {
     CoinInfo: '0x1::coin::CoinInfo',
     CoinStore: '0x1::coin::CoinStore',
   },
-}
+};
 
 interface INetworkOptions {
   nativeToken?: AptosResourceType;
@@ -18,7 +18,7 @@ interface INetworkOptions {
     CoinInfo: AptosResourceType;
     CoinStore: AptosResourceType;
     Scripts: AptosResourceType;
-  } & Record<string, AptosResourceType>
+  } & Record<string, AptosResourceType>;
 }
 
 export interface SdkOptions {

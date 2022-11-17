@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js';
-import { d } from '../utils'
+import { d } from '../utils';
 
 const e8 = new Decimal('100000000');
 const DENOMINATOR = new Decimal(10000);
