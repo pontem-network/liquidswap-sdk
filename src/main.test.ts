@@ -39,7 +39,6 @@ describe('Swap Module', () => {
       interactiveToken: 'to',
     });
 
-    console.log({ amount: output });
     console.log(`${output} APT → 1000000 USDT`);
 
     expect(typeof output).toBe('string');
@@ -55,7 +54,6 @@ describe('Swap Module', () => {
       interactiveToken: 'from',
     });
 
-    console.log({ amount: output });
     console.log(`100000000 APT → ${output} WETH`);
 
     expect(typeof output).toBe('string');
