@@ -33,10 +33,10 @@ const sdk = new SDK({
 ### You want to convert 15 coins to Decimal type with 8 decimals (coins like APTOS, BTC, etc);
 
 ```typescript
-
-const decimalValue = convertValueToDecimal(15, 8);
-or                                                    // convertValueToDecimal return Decimal type;
-const decimalValue2 = convertValueToDecimal('15', 8);
+// convertValueToDecimal return Decimal type;
+const decimalValue = convertValueToDecimal(15, 8); // 1500000000 (15 coin with 8 decimals)
+or
+const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin with 8 decimals)
 
 ```
 
@@ -48,9 +48,9 @@ const decimalValue2 = convertValueToDecimal('15', 8);
   // Get USDT amount
   try {
     const output = await sdk.Swap.calculateRates({
-      fromToken: '0x1::aptos_coin::AptosCoin',
-      toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // layerzero USDT
-      amount: 1, // 1 APTOS as Decimal amount
+      fromToken: '0x1::aptos_coin::AptosCoin', // full 'from' token address
+      toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // full 'to' token address layerzero USDT
+      amount: 100000000, // 100000000 APTOS, or you can
       curveType: 'uncorrelated',
       interactiveToken: 'from',
     })
