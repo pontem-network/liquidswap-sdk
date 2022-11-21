@@ -22,11 +22,7 @@ describe('Swap Module', () => {
       interactiveToken: 'from',
     });
 
-<<<<<<< HEAD
-    console.log(`1 APT → ${output} USDT`);
-=======
     console.log(`100000000 APT → ${output} USDT`);
->>>>>>> apt-847-amount-to-integers
 
     expect(typeof output).toBe('string');
     expect(output.length).toBeGreaterThan(0);
