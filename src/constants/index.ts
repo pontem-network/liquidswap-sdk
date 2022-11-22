@@ -16,7 +16,6 @@ export const COIN_STORE = '0x1::coin::CoinStore';
 export const NETWORKS_MODULES = {
   Scripts: `${MODULES_ACCOUNT}::scripts_v2`,
   Faucet: `${COINS_ACCOUNT}::faucet`,
-  LiquidityPool: `${RESOURCES_ACCOUNT}::liquidity_pool`,
   CoinInfo: `${COIN_INFO}`,
   CoinStore: `${COIN_STORE}`,
 };

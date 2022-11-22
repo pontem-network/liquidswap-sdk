@@ -32,7 +32,7 @@ export type AptosPoolResource = {
 export type TxPayloadCallFunction = {
   type: 'entry_function_payload';
   function: string;
-  typeArguments: string[];
+  type_arguments: string[];
   arguments: string[];
 };
 
@@ -42,15 +42,6 @@ type TxPayloadInstallModule = {
 };
 
 export type TAptosTxPayload = TxPayloadCallFunction | TxPayloadInstallModule;
-
-export type AptosCreateTx = {
-  sender: string;
-  maxGasAmount: string;
-  gasUnitPrice: string;
-  gasCurrencyCode: string;
-  expiration: string;
-  payload: TAptosTxPayload;
-};
 
 export type CurveType = 'uncorrelated' | 'stable';
 

@@ -135,7 +135,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.USDT,
         CURVE_UNCORRELATED
@@ -159,7 +159,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.USDT,
         CURVE_UNCORRELATED
@@ -183,7 +183,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.WETH,
         CURVE_STABLE
@@ -207,7 +207,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.WETH,
         CURVE_STABLE
@@ -231,7 +231,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.WETH,
         CURVE_STABLE
@@ -255,7 +255,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.WETH,
         CURVE_STABLE

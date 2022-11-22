@@ -2,13 +2,14 @@ import { AptosClient } from "aptos";
 import { SwapModule } from "./modules/SwapModule";
 import { ResourcesModule } from "./modules/ResourcesModule";
 import { AptosResourceType } from "./types/aptos";
+import { NETWORKS_MODULES } from "./constants";
 
 const initialNetworkOptions = {
   nativeToken: '0x1::aptos_coin::AptosCoin',
   modules: {
-    Scripts: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2',
-    CoinInfo: '0x1::coin::CoinInfo',
-    CoinStore: '0x1::coin::CoinStore',
+    Scripts: NETWORKS_MODULES.Scripts,
+    CoinInfo: NETWORKS_MODULES.CoinInfo,
+    CoinStore: NETWORKS_MODULES.CoinStore,
   },
 };
 
