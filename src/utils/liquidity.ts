@@ -1,6 +1,8 @@
 import { Decimal } from "decimal.js";
 
 import { d } from "./numbers";
+import { RESOURCES_ACCOUNT } from "../constants";
+import { is_sorted, composeType } from './contracts';
 
 /**
  * Calculate return of Liquidity Coins
@@ -73,11 +75,38 @@ export function calcOutputBurnLiquidity({
 }
 
 export function getOptimalLiquidityAmount(
-  xDesired: number,
-  xReserve: number,
-  yReserve: number
-): number {
-  return Number(d(xDesired).mul(d(yReserve)).div(d(xReserve)).toFixed(0));
+  xDesired: Decimal,
+  xReserve: Decimal,
+  yReserve: Decimal
+): Decimal {
+  return xDesired.mul(yReserve).div(xReserve);
 }
 
-//TODO: add lpTokenNameStr from liquidswap-ui with resources account;
+export function getPoolLpStr(
+  coinX: string,
+  coinY: string,
+  curve: string,
+): string {
+  const [sortedX, sortedY] = is_sorted(coinX, coinY)
+    ? [coinX, coinY]
+    : [coinY, coinX];
+  return composeType(
+    //
+    RESOURCES_ACCOUNT,
+    'lp_coin',
+    'LP',
+    [sortedX, sortedY, curve],
+  );
+}
+
+export function getPoolStr(
+  coinX: string,
+  coinY: string,
+  curve: string,
+  modulesLiquidityPool: string
+): string {
+  const [sortedX, sortedY] = is_sorted(coinX, coinY)
+    ? [coinX, coinY]
+    : [coinY, coinX];
+  return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
+}
