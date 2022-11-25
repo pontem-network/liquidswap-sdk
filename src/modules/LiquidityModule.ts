@@ -77,22 +77,22 @@ export class LiquidityModule implements IModule {
   }
 
   async getLiquiditySupplyResource(params: CalculateRatesParams) {
-    const lpString = getPoolLpStr(params.fromToken, params.toToken, params.curveType);
+    const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
-    const liquidityPoolType = composeType(NETWORKS_MODULES.CoinInfo, lpString);
+    const lpString = getPoolLpStr(params.fromToken, params.toToken, curve);
 
     let liquidityPoolResource;
 
     try {
       liquidityPoolResource = await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
         RESOURCES_ACCOUNT,
-        liquidityPoolType
+        composeType(NETWORKS_MODULES.CoinInfo, [lpString])
       );
     } catch (e) {
       console.log(e);
     }
 
-    return { liquidityPoolResource }
+    return { liquidityPoolResource };
   }
 
   async calculateRateAndSupply(params: CalculateRatesParams): Promise<{rate: string, lpSupply: string}> {
@@ -159,9 +159,11 @@ export class LiquidityModule implements IModule {
       throw new Error(`lpSupplyResponse not existed`);
     }
 
+    // TODO: fix typing
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const lpSupply = lpSupplyResponse.data.supply.vec[0].integer.vec[0].value;
 
-
-    return { rate: optimalAmount, lpSupply };
+    return { rate: optimalAmount.toFixed(0), lpSupply };
   }
 }
