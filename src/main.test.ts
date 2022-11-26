@@ -308,7 +308,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
     });
 
-    console.log(`100000000 APT → ${output.rate} USDT && lpSupply ${output.receiveLp}`);
+    console.log(`100000000 APT → ${output.rate} USDT && receiveLp ${output.receiveLp}`);
 
     expect(typeof output).toBe('object');
     expect(output.rate.length).toBeGreaterThan(0);

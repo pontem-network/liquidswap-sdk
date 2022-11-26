@@ -1,9 +1,17 @@
 import {IModule} from "../interfaces/IModule";
 import {SDK} from "../sdk";
-import {AptosCoinInfoResource, AptosResource, AptosResourceType, CurveType, AptosPoolResource} from "../types/aptos";
+import {
+  AptosCoinInfoResource,
+  AptosResource,
+  AptosResourceType,
+  CurveType,
+  AptosPoolResource,
+  TxPayloadCallFunction
+} from "../types/aptos";
 import Decimal from "decimal.js";
 import {CURVE_STABLE, CURVE_UNCORRELATED, MODULES_ACCOUNT, NETWORKS_MODULES, RESOURCES_ACCOUNT} from "../constants";
 import {composeType, d, extractAddressFromType, getPoolLpStr, getPoolStr, is_sorted, getOptimalLiquidityAmount, withSlippage, calcReceivedLP} from '../utils'
+import {CreateTXPayloadParams} from "./SwapModule";
 
 
 interface ICalculateRatesParams {
@@ -196,7 +204,51 @@ export class LiquidityModule implements IModule {
       lpSupply: lpSupply
     });
 
-
     return { rate: optimalAmount.toFixed(0), receiveLp };
+  }
+
+  async addLiquidityPayload (params: CreateTXPayloadParams): Promise<TxPayloadCallFunction> {
+    const slippage = d(params.slippage);
+    if (slippage.gte(1) || slippage.lte(0)) {
+      throw new Error(`Invalid slippage (${params.slippage}) value, it should be from 0 to 1`);
+    }
+
+    const { modules } = this.sdk.networkOptions;
+    const functionName = composeType(modules.Scripts, 'add_liquidity');
+
+    const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const typeArguments = [
+      params.fromToken,
+      params.toToken,
+      curve
+    ];
+
+    const isPlussed = params.interactiveToken === 'from';
+
+    const fromAmountWithSlippage = withSlippage(
+      d(params.slippage),
+      d(params.fromAmount),
+      isPlussed
+    ).toFixed(0);
+
+    const toAmountWithSlippage = withSlippage(
+      d(params.slippage),
+      d(params.toAmount),
+      isPlussed
+    ).toFixed(0);
+
+    const args = [
+      params.fromAmount,
+      fromAmountWithSlippage,
+      params.toAmount,
+      toAmountWithSlippage
+    ] as string[];
+
+    return {
+      type: 'entry_function_payload',
+      function: functionName,
+      typeArguments,
+      arguments: args
+    }
   }
 }
