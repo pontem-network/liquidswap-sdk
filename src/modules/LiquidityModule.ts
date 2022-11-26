@@ -58,8 +58,8 @@ export class LiquidityModule implements IModule {
         RESOURCES_ACCOUNT,
         liquidityPoolType
       );
-        return Boolean(liquidityPoolResource?.data?.type);
-      } catch (_e) {
+      return Boolean(liquidityPoolResource?.type);
+    } catch (_e) {
       return false;
     }
   }
@@ -207,7 +207,7 @@ export class LiquidityModule implements IModule {
     return { rate: optimalAmount.toFixed(0), receiveLp };
   }
 
-  async addLiquidityPayload (params: CreateTXPayloadParams): Promise<TxPayloadCallFunction> {
+  async createAddLiquidityPayload (params: CreateTXPayloadParams): Promise<TxPayloadCallFunction> {
     const slippage = d(params.slippage);
     if (slippage.gte(1) || slippage.lte(0)) {
       throw new Error(`Invalid slippage (${params.slippage}) value, it should be from 0 to 1`);
@@ -216,39 +216,54 @@ export class LiquidityModule implements IModule {
     const isPoolExisted = await this.checkPoolExistence(params);
 
     if (!isPoolExisted) {
-      throw new Error(`Liquidity Pool for ${params.fromToken} & ${params.toToken} is not existed`);
+      console.log(`Liquidity Pool for ${params.fromToken} & ${params.toToken} is not existed`);
     }
 
     const { modules } = this.sdk.networkOptions;
-    const functionName = composeType(modules.Scripts, 'add_liquidity');
+
+    const functionName = composeType(modules.Scripts, isPoolExisted ? 'add_liquidity' : 'register_pool_and_add_liquidity');
 
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
-    const typeArguments = [
-      params.fromToken,
-      params.toToken,
-      curve
-    ];
 
-    const isPlussed = params.interactiveToken === 'from';
+    const isSorted = is_sorted(params.fromToken, params.toToken);
+
+    const typeArguments = isSorted
+      ? [
+          params.fromToken,
+          params.toToken,
+          curve
+        ]
+      : [
+          params.toToken,
+          params.fromToken,
+          curve
+        ];
 
     const fromAmountWithSlippage = withSlippage(
       d(params.slippage),
       d(params.fromAmount),
-      isPlussed
+      false
     ).toFixed(0);
 
     const toAmountWithSlippage = withSlippage(
       d(params.slippage),
       d(params.toAmount),
-      isPlussed
+      false
     ).toFixed(0);
 
-    const args = [
-      params.fromAmount,
-      fromAmountWithSlippage,
-      params.toAmount,
-      toAmountWithSlippage
-    ] as string[];
+    const args = isSorted ?
+      [
+        params.fromAmount.toString(),
+        fromAmountWithSlippage,
+        params.toAmount.toString(),
+        toAmountWithSlippage
+      ]
+    : [
+        params.toAmount.toString(),
+        toAmountWithSlippage,
+        params.fromAmount.toString(),
+        fromAmountWithSlippage
+      ];
 
     return {
       type: 'entry_function_payload',
