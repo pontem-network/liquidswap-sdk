@@ -42,7 +42,7 @@ export class LiquidityModule implements IModule {
     this._sdk = sdk;
   }
 
-  async checkPoolExistence(params: ICalculateRatesParams): Promise<boolean> {
+  async checkPoolExistence(params: Omit<ICalculateRatesParams, 'amount'>): Promise<boolean> {
     const modulesLiquidityPool = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -211,6 +211,12 @@ export class LiquidityModule implements IModule {
     const slippage = d(params.slippage);
     if (slippage.gte(1) || slippage.lte(0)) {
       throw new Error(`Invalid slippage (${params.slippage}) value, it should be from 0 to 1`);
+    }
+
+    const isPoolExisted = await this.checkPoolExistence(params);
+
+    if (!isPoolExisted) {
+      throw new Error(`Liquidity Pool for ${params.fromToken} & ${params.toToken} is not existed`);
     }
 
     const { modules } = this.sdk.networkOptions;
