@@ -3,21 +3,24 @@ import {SDK} from "../sdk";
 import {AptosCoinInfoResource, AptosResource, AptosResourceType, CurveType, AptosPoolResource} from "../types/aptos";
 import Decimal from "decimal.js";
 import {CURVE_STABLE, CURVE_UNCORRELATED, MODULES_ACCOUNT, NETWORKS_MODULES, RESOURCES_ACCOUNT} from "../constants";
-import {composeType, d, extractAddressFromType, getPoolLpStr, getPoolStr, is_sorted, getOptimalLiquidityAmount} from '../utils'
+import {composeType, d, extractAddressFromType, getPoolLpStr, getPoolStr, is_sorted, getOptimalLiquidityAmount, withSlippage, calcReceivedLP} from '../utils'
 
 
-type CalculateRatesParams = {
+interface ICalculateRatesParams {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
   amount: Decimal | number;
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
-};
+  slippage: number;
+}
 
-export interface IPoolExist {
-  fromCoin: string;
-  toCoin: string;
-  curve: string;
+interface ICalculateSupplyParams extends Pick<ICalculateRatesParams, 'slippage' | 'interactiveToken'>{
+  toAmount: Decimal | number;
+  fromAmount: Decimal | number;
+  toReserve: Decimal | number;
+  fromReserve: Decimal | number;
+  lpSupply?: number;
 }
 
 export class LiquidityModule implements IModule {
@@ -31,7 +34,7 @@ export class LiquidityModule implements IModule {
     this._sdk = sdk;
   }
 
-  async checkPoolExistence(params: CalculateRatesParams): Promise<boolean> {
+  async checkPoolExistence(params: ICalculateRatesParams): Promise<boolean> {
     const modulesLiquidityPool = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -53,7 +56,7 @@ export class LiquidityModule implements IModule {
     }
   }
 
-  async getLiquidityPoolResource(params: CalculateRatesParams) {
+  async getLiquidityPoolResource(params: ICalculateRatesParams) {
     const modulesLiquidityPool = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -76,7 +79,7 @@ export class LiquidityModule implements IModule {
     return { liquidityPoolResource };
   }
 
-  async getLiquiditySupplyResource(params: CalculateRatesParams) {
+  async getLiquiditySupplyResource(params: ICalculateRatesParams) {
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
     const lpString = getPoolLpStr(params.fromToken, params.toToken, curve);
@@ -95,7 +98,31 @@ export class LiquidityModule implements IModule {
     return { liquidityPoolResource };
   }
 
-  async calculateRateAndSupply(params: CalculateRatesParams): Promise<{rate: string, lpSupply: string}> {
+  calculateSupply (params: ICalculateSupplyParams) {
+    const value = calcReceivedLP({
+      x: withSlippage(
+        d(params.slippage),
+        params.interactiveToken === 'from' ? d(params.fromAmount) : d(params.toAmount),
+        params.interactiveToken === 'from'
+      ),
+      y: withSlippage(
+        d(params.slippage),
+        params.interactiveToken === 'from' ? d(params.toAmount) : d(params.fromAmount),
+        params.interactiveToken !== 'from'
+      ),
+      xReserve: d(params.fromReserve),
+      yReserve: d(params.toReserve),
+      lpSupply: params.lpSupply,
+    });
+
+    if (value <= 0) {
+      return;
+    }
+
+    return value;
+  }
+
+  async calculateRateAndSupply(params: ICalculateRatesParams): Promise<{rate: string, receiveLp: number | undefined}> {
     const { modules } = this.sdk.networkOptions;
 
     let fromCoinInfo;
@@ -163,7 +190,16 @@ export class LiquidityModule implements IModule {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const lpSupply = lpSupplyResponse.data.supply.vec[0].integer.vec[0].value;
+    const receiveLp = this.calculateSupply({
+      slippage: params.slippage,
+      interactiveToken: params.interactiveToken,
+      fromReserve,
+      toReserve,
+      fromAmount: params.interactiveToken === 'from' ? params.amount : optimalAmount,
+      toAmount: params.interactiveToken === 'from' ? optimalAmount : params.amount
+    });
 
-    return { rate: optimalAmount.toFixed(0), lpSupply };
+
+    return { rate: optimalAmount.toFixed(0), receiveLp };
   }
 }

@@ -23,8 +23,8 @@ export function calcReceivedLP({
 }: {
   x: number;
   y: number;
-  xReserve: number;
-  yReserve: number;
+  xReserve: Decimal;
+  yReserve: Decimal;
   lpSupply?: number;
 }): number {
   const dxReserve = d(xReserve);
