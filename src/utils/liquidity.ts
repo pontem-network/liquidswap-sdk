@@ -56,21 +56,21 @@ export function calcOutputBurnLiquidity({
   lpSupply,
   toBurn,
 }: {
-  xReserve: number;
-  yReserve: number;
-  lpSupply: number;
-  toBurn: number;
+  xReserve: Decimal;
+  yReserve: Decimal;
+  lpSupply: Decimal;
+  toBurn: Decimal;
 }) {
-  const xReturn = d(toBurn).mul(xReserve).div(lpSupply);
-  const yReturn = d(toBurn).mul(yReserve).div(lpSupply);
+  const xReturn = toBurn.mul(xReserve).div(lpSupply);
+  const yReturn = toBurn.mul(yReserve).div(lpSupply);
 
   if (xReturn.eq(0) || yReturn.eq(0)) {
     return undefined;
   }
 
   return {
-    x: xReturn.toNumber(),
-    y: yReturn.toNumber(),
+    x: xReturn,
+    y: yReturn,
   };
 }
 
