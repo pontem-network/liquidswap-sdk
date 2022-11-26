@@ -115,14 +115,10 @@ export class LiquidityModule implements IModule {
       lpSupply: params.lpSupply,
     });
 
-    if (value <= 0) {
-      return;
-    }
-
     return value;
   }
 
-  async calculateRateAndSupply(params: ICalculateRatesParams): Promise<{rate: string, receiveLp: number | undefined}> {
+  async calculateRateAndSupply(params: ICalculateRatesParams): Promise<{rate: string, receiveLp: string}> {
     const { modules } = this.sdk.networkOptions;
 
     let fromCoinInfo;
@@ -196,7 +192,8 @@ export class LiquidityModule implements IModule {
       fromReserve,
       toReserve,
       fromAmount: params.interactiveToken === 'from' ? params.amount : optimalAmount,
-      toAmount: params.interactiveToken === 'from' ? optimalAmount : params.amount
+      toAmount: params.interactiveToken === 'from' ? optimalAmount : params.amount,
+      lpSupply: lpSupply
     });
 
 

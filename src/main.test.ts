@@ -305,9 +305,10 @@ describe('Swap Module', () => {
       amount: 100000000, // 1 APTOS
       curveType: 'uncorrelated',
       interactiveToken: 'from',
+      slippage: 0.005,
     });
 
-    console.log(`100000000 APT → ${output.rate} USDT && lpSupply ${output.lpSupply}`);
+    console.log(`100000000 APT → ${output.rate} USDT && lpSupply ${output.receiveLp}`);
 
     expect(typeof output).toBe('object');
     expect(output.rate.length).toBeGreaterThan(0);

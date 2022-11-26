@@ -26,7 +26,7 @@ export function calcReceivedLP({
   xReserve: Decimal;
   yReserve: Decimal;
   lpSupply?: number;
-}): number {
+}): string {
   const dxReserve = d(xReserve);
   const dyReserve = d(yReserve);
   const dx = d(x);
@@ -34,13 +34,13 @@ export function calcReceivedLP({
   const dSupply = d(lpSupply);
 
   if (dxReserve.eq(0) || dyReserve.eq(0)) {
-    return Decimal.sqrt(dx.mul(dy)).minus(MINIMAL_LIQUIDITY).toNumber();
+    return Decimal.sqrt(dx.mul(dy)).minus(MINIMAL_LIQUIDITY).toFixed(0);
   }
 
   const xLp = dx.mul(dSupply).div(dxReserve);
   const yLp = dy.mul(dSupply).div(dyReserve);
 
-  return Decimal.min(xLp, yLp).toNumber();
+  return Decimal.min(xLp, yLp).toFixed(0);
 }
 
 /**
