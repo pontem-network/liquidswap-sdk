@@ -1,7 +1,7 @@
-import { Buffer } from "buffer";
+import { Buffer } from 'buffer';
 import Decimal from 'decimal.js';
 
-import { checkAddress } from "./hex";
+import { checkAddress } from './hex';
 
 const EQUAL = 0;
 const LESS_THAN = 1;
@@ -99,14 +99,14 @@ export function composeType(address: string, generics: string[]): string;
 export function composeType(
   address: string,
   struct: string,
-  generics?: string[]
+  generics?: string[],
 ): string;
 
 export function composeType(
   address: string,
   module: string,
   struct: string,
-  generics?: string[]
+  generics?: string[],
 ): string;
 
 export function composeType(address: string, ...args: unknown[]): string {
@@ -130,10 +130,16 @@ export function composeType(address: string, ...args: unknown[]): string {
  * and the price at which the trade is executed.
  * @param {Decimal} value - value to calculate slippage
  */
-export function withSlippage(slippage: Decimal, value: Decimal, isPlussed: boolean) {
+export function withSlippage(
+  slippage: Decimal,
+  value: Decimal,
+  isPlussed: boolean,
+) {
   const multiply = new Decimal(10000);
   const slippagePercent = slippage.mul(multiply);
-  return isPlussed ? value.plus(value.mul(slippagePercent).div(multiply)).toNumber() : value.minus(value.mul(slippagePercent).div(multiply)).toNumber();
+  return isPlussed
+    ? value.plus(value.mul(slippagePercent).div(multiply)).toNumber()
+    : value.minus(value.mul(slippagePercent).div(multiply)).toNumber();
 }
 
 export function extractAddressFromType(type: string) {
@@ -142,7 +148,7 @@ export function extractAddressFromType(type: string) {
 
 export function checkAptosType(
   type: any,
-  options: { leadingZero: boolean; } = { leadingZero: true }
+  options: { leadingZero: boolean } = { leadingZero: true },
 ): boolean {
   if (typeof type !== 'string') {
     return false;
@@ -159,7 +165,7 @@ export function checkAptosType(
 
   const genericsString = _type.match(/(<.+>)$/);
   const generics = genericsString?.[1]?.match(
-    /(\w+::\w+::\w+)(?:<.*?>(?!>))?/g
+    /(\w+::\w+::\w+)(?:<.*?>(?!>))?/g,
   );
 
   if (generics) {
@@ -191,5 +197,3 @@ export function checkAptosType(
     parts[2].length >= 1
   );
 }
-
-

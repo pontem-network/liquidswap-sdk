@@ -1,8 +1,9 @@
-import { AptosClient } from "aptos";
-import { SwapModule } from "./modules/SwapModule";
-import { ResourcesModule } from "./modules/ResourcesModule";
-import { AptosResourceType } from "./types/aptos";
-import { NETWORKS_MODULES } from "./constants";
+import { AptosClient } from 'aptos';
+import { SwapModule } from './modules/SwapModule';
+import { ResourcesModule } from './modules/ResourcesModule';
+import { AptosResourceType } from './types/aptos';
+import { LiquidityModule } from './modules/LiquidityModule';
+import { NETWORKS_MODULES } from './constants';
 
 const initialNetworkOptions = {
   nativeToken: '0x1::aptos_coin::AptosCoin',
@@ -27,10 +28,10 @@ export interface SdkOptions {
   networkOptions?: INetworkOptions;
 }
 
-
 export class SDK {
   protected _client: AptosClient;
   protected _swap: SwapModule;
+  protected _liquidity: LiquidityModule;
   protected _resources: ResourcesModule;
   protected _networkOptions: Required<INetworkOptions>;
 
@@ -40,6 +41,10 @@ export class SDK {
 
   get Resources() {
     return this._resources;
+  }
+
+  get Liquidity() {
+    return this._liquidity;
   }
 
   get client() {
@@ -63,5 +68,6 @@ export class SDK {
     this._client = new AptosClient(options.nodeUrl);
     this._swap = new SwapModule(this);
     this._resources = new ResourcesModule(this);
+    this._liquidity = new LiquidityModule(this);
   }
 }
