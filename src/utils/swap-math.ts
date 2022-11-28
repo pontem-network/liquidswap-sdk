@@ -16,7 +16,7 @@ export function getCoinOutWithFees(
   coinInVal: Decimal,
   reserveInSize: Decimal,
   reserveOutSize: Decimal,
-  fee: Decimal
+  fee: Decimal,
 ): Decimal {
   const { feePct, feeScale } = { feePct: fee, feeScale: d(DENOMINATOR) };
   const feeMultiplier = feeScale.minus(feePct);
@@ -37,11 +37,17 @@ export function getCoinInWithFees(
   coinOutVal: Decimal,
   reserveOutSize: Decimal,
   reserveInSize: Decimal,
-  fee: Decimal
+  fee: Decimal,
 ): Decimal {
   const feeMultiplier = DENOMINATOR.minus(fee);
-  const newReservesOutSize = (reserveOutSize.minus(coinOutVal)).mul(feeMultiplier);
-  return coinOutVal.mul(DENOMINATOR).mul(reserveInSize).div(newReservesOutSize).plus(1);
+  const newReservesOutSize = reserveOutSize
+    .minus(coinOutVal)
+    .mul(feeMultiplier);
+  return coinOutVal
+    .mul(DENOMINATOR)
+    .mul(reserveInSize)
+    .div(newReservesOutSize)
+    .plus(1);
 }
 
 /**
@@ -60,14 +66,10 @@ export function getCoinsInWithFeesStable(
   reserveIn: Decimal,
   scaleOut: Decimal,
   scaleIn: Decimal,
-  fee: Decimal
+  fee: Decimal,
 ): Decimal {
   const r = coin_in(coinOut, scaleOut, scaleIn, reserveOut, reserveIn);
-  return r
-    .plus(1)
-    .mul(DENOMINATOR)
-    .div(DENOMINATOR.minus(fee))
-    .plus(1);
+  return r.plus(1).mul(DENOMINATOR).div(DENOMINATOR.minus(fee)).plus(1);
 }
 
 /**
@@ -84,7 +86,7 @@ export function coin_in(
   scaleOut: Decimal,
   scaleIn: Decimal,
   reserveOut: Decimal,
-  reserveIn: Decimal
+  reserveIn: Decimal,
 ): Decimal {
   const xy = lp_value(reserveIn, scaleIn, reserveOut, scaleOut);
 
@@ -113,7 +115,7 @@ export function getCoinsOutWithFeesStable(
   reserveOut: Decimal,
   scaleIn: Decimal,
   scaleOut: Decimal,
-  fee: Decimal
+  fee: Decimal,
 ): Decimal {
   let coin_in_val_after_fees = new Decimal(0);
   const coin_in_val_scaled = coinIn.mul(DENOMINATOR.minus(fee));
@@ -127,7 +129,7 @@ export function getCoinsOutWithFeesStable(
     scaleIn,
     scaleOut,
     reserveIn,
-    reserveOut
+    reserveOut,
   );
 }
 
@@ -145,7 +147,7 @@ export function coin_out(
   scaleIn: Decimal,
   scaleOut: Decimal,
   reserveIn: Decimal,
-  reserveOut: Decimal
+  reserveOut: Decimal,
 ): Decimal {
   const xy = lp_value(reserveIn, scaleIn, reserveOut, scaleOut);
 
@@ -213,7 +215,7 @@ export function lp_value(
   x_coin: Decimal,
   x_scale: Decimal,
   y_coin: Decimal,
-  y_scale: Decimal
+  y_scale: Decimal,
 ): Decimal {
   const x = x_coin.mul(e8).div(x_scale);
   const y = y_coin.mul(e8).div(y_scale);
