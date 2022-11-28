@@ -191,5 +191,3 @@ export function checkAptosType(
     parts[2].length >= 1
   );
 }
-
-
