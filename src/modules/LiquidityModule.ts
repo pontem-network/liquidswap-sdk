@@ -27,7 +27,7 @@ import { CreateTXPayloadParams } from "./SwapModule";
 interface ICreateBurnLiquidityPayload {
   fromToken: AptosResourceType;
   toToken: AptosResourceType;
-  burnAmount: number;
+  burnAmount: Decimal | number;
   slippage: number;
   curveType: CurveType;
 }
@@ -41,11 +41,12 @@ interface ICalculateRatesParams {
   slippage: number;
 }
 
-interface ICalculateSupplyParams extends Pick<ICalculateRatesParams, 'slippage' | 'interactiveToken'>{
+interface ICalculateSupplyParams extends Pick<ICalculateRatesParams, 'slippage'>{
   toAmount: Decimal | number;
   fromAmount: Decimal | number;
   toReserve: Decimal | number;
   fromReserve: Decimal | number;
+  isSorted: boolean;
   lpSupply?: number;
 }
 
@@ -76,7 +77,6 @@ export class LiquidityModule implements IModule {
     );
 
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
-
     const liquidityPoolType = getPoolStr(params.fromToken, params.toToken, curve, modulesLiquidityPool);
 
     try {
@@ -107,8 +107,9 @@ export class LiquidityModule implements IModule {
         RESOURCES_ACCOUNT,
         liquidityPoolType
       );
+
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
     return { liquidityPoolResource };
   }
@@ -136,16 +137,16 @@ export class LiquidityModule implements IModule {
     const value = calcReceivedLP({
       x: withSlippage(
         d(params.slippage),
-        params.interactiveToken === 'from' ? d(params.fromAmount) : d(params.toAmount),
+        params.isSorted ? d(params.fromAmount) : d(params.toAmount),
         false
       ),
       y: withSlippage(
         d(params.slippage),
-        params.interactiveToken === 'from' ? d(params.toAmount) : d(params.fromAmount),
+        params.isSorted ? d(params.toAmount) : d(params.fromAmount),
         false
       ),
-      xReserve: d(params.fromReserve),
-      yReserve: d(params.toReserve),
+      xReserve: params.isSorted ? d(params.fromReserve) : d(params.toReserve),
+      yReserve: params.isSorted ? d(params.toReserve) : d(params.fromReserve),
       lpSupply: params.lpSupply,
     });
 
@@ -183,13 +184,13 @@ export class LiquidityModule implements IModule {
       throw new Error('To Coin not exists');
     }
 
+    const isSorted = is_sorted(params.fromToken, params.toToken);
+
     const { liquidityPoolResource } = await this.getLiquidityPoolResource(params);
 
     if (!liquidityPoolResource) {
       throw new Error(`LiquidityPool not existed`);
     }
-
-    const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const fromReserve = isSorted ?
       d(liquidityPoolResource.data.coin_x_reserve.value) :
@@ -228,12 +229,12 @@ export class LiquidityModule implements IModule {
 
     const receiveLp = this.calculateSupply({
       slippage: params.slippage,
-      interactiveToken: params.interactiveToken,
       fromReserve,
       toReserve,
       fromAmount: params.interactiveToken === 'from' ? params.amount : optimalAmount,
-      toAmount: params.interactiveToken === 'from' ? optimalAmount : params.amount,
-      lpSupply: lpSupply
+      toAmount: params.interactiveToken === 'to' ? params.amount : optimalAmount,
+      lpSupply: lpSupply,
+      isSorted
     });
 
     return { rate: optimalAmount.toFixed(0), receiveLp };
@@ -247,16 +248,9 @@ export class LiquidityModule implements IModule {
 
     const isPoolExisted = await this.checkPoolExistence(params);
 
-    if (!isPoolExisted) {
-      console.log(`Liquidity Pool for ${params.fromToken} & ${params.toToken} is not existed`);
-    }
-
     const { modules } = this.sdk.networkOptions;
-
     const functionName = composeType(modules.Scripts, isPoolExisted ? 'add_liquidity' : 'register_pool_and_add_liquidity');
-
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
-
     const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const typeArguments = isSorted
@@ -312,10 +306,9 @@ export class LiquidityModule implements IModule {
     }
 
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
-
     const { modules } = this.sdk.networkOptions;
-
     const { liquidityPoolResource: lpSupplyResponse } = await this.getLiquiditySupplyResource(params);
+
     if (!lpSupplyResponse) {
       throw new Error(`lpSupplyResponse not existed`);
     }
@@ -357,8 +350,8 @@ export class LiquidityModule implements IModule {
     const yOutput = output?.y.toFixed(0) ?? '0';
 
     const args = isSorted
-      ? [params.burnAmount, xOutput, yOutput]
-      : [params.burnAmount, yOutput, xOutput];
+      ? [params.burnAmount.toString(), xOutput, yOutput]
+      : [params.burnAmount.toString(), yOutput, xOutput];
 
     const functionName = composeType(
       modules.Scripts,
@@ -380,7 +373,7 @@ export class LiquidityModule implements IModule {
       type: 'entry_function_payload',
       function: functionName,
       typeArguments,
-      args
+      arguments: args,
     }
   }
 

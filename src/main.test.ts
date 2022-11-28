@@ -314,7 +314,55 @@ describe('Swap Module', () => {
     expect(output.rate.length).toBeGreaterThan(0);
   });
 
-  test('createAddLiquidityPayload (uncorrelated from mode high)', async () => {
+  test('calculateLiquidityRates (to mode), uncorrelated', async () => {
+    const output = await sdk.Liquidity.calculateRateAndSupply({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDC,
+      amount: 1000000, // 1 USDC
+      curveType: 'uncorrelated',
+      interactiveToken: 'to',
+      slippage: 0.005,
+    });
+
+    console.log(`1000000 USDC → ${output.rate} APT && receiveLp ${output.receiveLp}`);
+
+    expect(typeof output).toBe('object');
+    expect(output.rate.length).toBeGreaterThan(0);
+  });
+
+  test('calculateLiquidityRates (from mode), stable', async () => {
+    const output = await sdk.Liquidity.calculateRateAndSupply({
+      fromToken: TokensMapping.USDC,
+      toToken: TokensMapping.USDT,
+      amount: 2000000, // 2 USDC
+      curveType: 'stable',
+      interactiveToken: 'from',
+      slippage: 0.005,
+    });
+
+    console.log(`2000000 USDC → ${output.rate} USDT && receiveLp ${output.receiveLp}`);
+
+    expect(typeof output).toBe('object');
+    expect(output.rate.length).toBeGreaterThan(0);
+  });
+
+  test('calculateLiquidityRates (to mode), stable', async () => {
+    const output = await sdk.Liquidity.calculateRateAndSupply({
+      fromToken: TokensMapping.USDC,
+      toToken: TokensMapping.USDT,
+      amount: 2000000, // 2 USDT
+      curveType: 'stable',
+      interactiveToken: 'to',
+      slippage: 0.005,
+    });
+
+    console.log(`2000000 USDT → ${output.rate} USDC && receiveLp ${output.receiveLp}`);
+
+    expect(typeof output).toBe('object');
+    expect(output.rate.length).toBeGreaterThan(0);
+  });
+
+  test('createAddLiquidityPayload (uncorrelated from mode)', async () => {
       const output = await sdk.Liquidity.createAddLiquidityPayload({
         fromToken: TokensMapping.APTOS,
         toToken: TokensMapping.USDC,
@@ -338,13 +386,16 @@ describe('Swap Module', () => {
       });
     });
 
-  test('createBurnLiquidityPayload (uncorrelated from mode normal)', async () => {
-    const output = await sdk.Liquidity.createBurnLiquidityPayload({
+  test('createAddLiquidityPayload (uncorrelated to mode)', async () => {
+    const output = await sdk.Liquidity.createAddLiquidityPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDC,
+      fromAmount: 22335, // 0.00022335 APTOS
+      toAmount: 1000, // 0.001 USDC
+      interactiveToken: 'to',
       slippage: 0.005,
+      stableSwapType: 'normal',
       curveType: 'uncorrelated',
-      burnAmount: 0.1
     });
 
     expect(output).toStrictEqual({
@@ -355,7 +406,53 @@ describe('Swap Module', () => {
         TokensMapping.APTOS,
         CURVE_UNCORRELATED
       ],
-      arguments: ["19", "19", "400", "398"]
+      arguments: ["1000", "995", "22335", "22223"]
     });
   });
+
+  test('createAddLiquidityPayload (uncorrelated from mode)', async () => {
+    const output = await sdk.Liquidity.createAddLiquidityPayload({
+      fromToken: "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdcCoin",
+      toToken: "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO",
+      fromAmount: 1000, // 0.001 clUSDC
+      toAmount: 100000, // 0.001 MOJO
+      interactiveToken: 'from',
+      slippage: 0.005,
+      stableSwapType: 'normal',
+      curveType: 'uncorrelated',
+    });
+
+    expect(output).toStrictEqual({
+      type: 'entry_function_payload',
+      function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::register_pool_and_add_liquidity',
+      typeArguments: [
+        "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO",
+        "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdcCoin",
+        CURVE_UNCORRELATED
+      ],
+      arguments: ["100000", "99500", "1000", "995"]
+    });
+  });
+
+  test('createBurnLiquidityPayload (uncorrelated)', async () => {
+    const output = await sdk.Liquidity.createBurnLiquidityPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDC,
+      slippage: 0.005,
+      curveType: 'uncorrelated',
+      burnAmount: 100000
+    });
+
+    expect(output).toEqual({
+      type: 'entry_function_payload',
+      function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::remove_liquidity',
+      typeArguments: [
+        TokensMapping.USDC,
+        TokensMapping.APTOS,
+        CURVE_UNCORRELATED
+      ],
+      arguments: ["100000", expect.any(String), expect.any(String)]
+    });
+  });
+
 });
