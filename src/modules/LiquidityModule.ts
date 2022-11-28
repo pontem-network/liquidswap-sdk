@@ -329,8 +329,8 @@ export class LiquidityModule implements IModule {
       lpSupply,
     });
 
-    const xOutput = output?.x.toFixed(0) ?? '0';
-    const yOutput = output?.y.toFixed(0) ?? '0';
+    const xOutput = output?.x ?? '0';
+    const yOutput = output?.y ?? '0';
 
     const isSorted = is_sorted(params.fromToken, params.toToken);
 
@@ -390,9 +390,9 @@ export class LiquidityModule implements IModule {
     }
 
     return {
-      x: withSlippage(d(params.slippage), outputVal['x'], false),
-      y: withSlippage(d(params.slippage), outputVal['y'], false),
-      withoutSlippage: { x: outputVal['x'], y: outputVal['y'] }
+      x: withSlippage(d(params.slippage), outputVal['x'], false).toFixed(0),
+      y: withSlippage(d(params.slippage), outputVal['y'], false).toFixed(0),
+      withoutSlippage: { x: outputVal['x'].toFixed(0), y: outputVal['y'].toFixed(0) }
     }
   }
 }
