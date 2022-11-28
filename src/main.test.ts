@@ -337,4 +337,25 @@ describe('Swap Module', () => {
         arguments: ["19", "19", "400", "398"]
       });
     });
+
+  test('createBurnLiquidityPayload (uncorrelated from mode normal)', async () => {
+    const output = await sdk.Liquidity.createBurnLiquidityPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDC,
+      slippage: 0.005,
+      curveType: 'uncorrelated',
+      burnAmount: 0.1
+    });
+
+    expect(output).toStrictEqual({
+      type: 'entry_function_payload',
+      function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::add_liquidity',
+      typeArguments: [
+        TokensMapping.USDC,
+        TokensMapping.APTOS,
+        CURVE_UNCORRELATED
+      ],
+      arguments: ["19", "19", "400", "398"]
+    });
+  });
 });

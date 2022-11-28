@@ -21,8 +21,16 @@ import {
   calcReceivedLP,
   calcOutputBurnLiquidity,
 } from '../utils'
-import {CreateTXPayloadParams} from "./SwapModule";
+import { CreateTXPayloadParams } from "./SwapModule";
 
+
+interface ICreateBurnLiquidityPayload {
+  fromToken: AptosResourceType;
+  toToken: AptosResourceType;
+  burnAmount: number;
+  slippage: number;
+  curveType: CurveType;
+}
 
 interface ICalculateRatesParams {
   fromToken: AptosResourceType;
@@ -82,7 +90,7 @@ export class LiquidityModule implements IModule {
     }
   }
 
-  async getLiquidityPoolResource(params: Omit<ICalculateRatesParams, 'amount'>) {
+  async getLiquidityPoolResource(params: Omit<ICalculateRatesParams, 'amount' | 'interactiveToken'>) {
     const modulesLiquidityPool = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -105,7 +113,7 @@ export class LiquidityModule implements IModule {
     return { liquidityPoolResource };
   }
 
-  async getLiquiditySupplyResource(params: Omit<ICalculateRatesParams, 'amount'>) {
+  async getLiquiditySupplyResource(params: Omit<ICalculateRatesParams, 'amount' | 'interactiveToken'>) {
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
     const lpString = getPoolLpStr(params.fromToken, params.toToken, curve);
@@ -297,7 +305,7 @@ export class LiquidityModule implements IModule {
     }
   }
 
-  async createBurnLiquidityPayload (params: CreateTXPayloadParams) {
+  async createBurnLiquidityPayload (params: ICreateBurnLiquidityPayload) {
     const slippage = d(params.slippage);
     if (slippage.gte(1) || slippage.lte(0)) {
       throw new Error(`Invalid slippage (${params.slippage}) value, it should be from 0 to 1`);
@@ -322,18 +330,40 @@ export class LiquidityModule implements IModule {
       console.log(e);
     }
 
-    const output = this.calculateOutputBurn({
+    const { liquidityPoolResource } = await this.getLiquidityPoolResource(params);
+
+    if (!liquidityPoolResource) {
+      throw new Error(`LiquidityPool not existed`);
+    }
+
+    const isSorted = is_sorted(params.fromToken, params.toToken);
+
+    const fromReserve = isSorted ?
+      d(liquidityPoolResource.data.coin_x_reserve.value) :
+      d(liquidityPoolResource.data.coin_y_reserve.value);
+    const toReserve = isSorted ?
+      d(liquidityPoolResource.data.coin_y_reserve.value) :
+      d(liquidityPoolResource.data.coin_x_reserve.value);
+
+    const output = await this.calculateOutputBurn({
       lpSupply,
       slippage: params.slippage,
-      toReserve: params.
-    })
+      fromReserve,
+      toReserve,
+      burnAmount: params.burnAmount,
+    });
+
+    const xOutput = output?.x.toFixed(0) ?? '0';
+    const yOutput = output?.y.toFixed(0) ?? '0';
+
+    const args = isSorted
+      ? [params.burnAmount, xOutput, yOutput]
+      : [params.burnAmount, yOutput, xOutput];
 
     const functionName = composeType(
       modules.Scripts,
       'remove_liquidity',
     );
-
-    const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const typeArguments = isSorted
       ? [
