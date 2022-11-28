@@ -371,7 +371,7 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })
 ```
 
-### A lot of additional examples located here: '[src/main.test.ts](src/main.test.ts)';
+### A lot of additional examples located here: [`src/main.test.ts`](src/main.test.ts);
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -410,7 +410,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL v3 License. See `LICENSE` for more information.
+Distributed under the GPL v3 License. See [`LICENSE`](LICENSE) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
