@@ -1,3 +1,10 @@
+<!-- PROJECT SHIELDS -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![GNUv3 License][license-shield]][license-url]
+
 # LiquidSwap SDK
 
 The typescript SDK for [Liquidswap](https://liquidswap.com).
@@ -232,3 +239,17 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 ```
 
 ### For additional examples feel free to explore '[src/main.test.ts](src/main.test.ts)' file;
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[contributors-url]: https://github.com/pontem-network/liquidswap-sdk/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[forks-url]: https://github.com/pontem-network/liquidswap-sdk/network/members
+[stars-shield]: https://img.shields.io/github/stars/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[stars-url]: https://github.com/pontem-network/liquidswap-sdk/stargazers
+[issues-shield]: https://img.shields.io/github/issues/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[issues-url]: https://github.com/pontem-network/liquidswap-sdk/issues
+[license-shield]: https://img.shields.io/github/license/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[license-url]: https://github.com/pontem-network/liquidswap-sdk/blob/master/LICENSE
