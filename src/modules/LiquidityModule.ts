@@ -58,6 +58,9 @@ interface ICalculateBurnLiquidityParams {
   curveType: CurveType;
 }
 
+type TGetResourcesPayload = Omit<ICalculateRatesParams, 'amount' | 'slippage' | 'interactiveToken'>;
+
+
 export class LiquidityModule implements IModule {
   protected _sdk: SDK;
 
@@ -69,7 +72,7 @@ export class LiquidityModule implements IModule {
     this._sdk = sdk;
   }
 
-  async checkPoolExistence(params: Omit<ICalculateRatesParams, 'amount'>): Promise<boolean> {
+  async checkPoolExistence(params: TGetResourcesPayload): Promise<boolean> {
     const modulesLiquidityPool = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -90,7 +93,7 @@ export class LiquidityModule implements IModule {
     }
   }
 
-  async getLiquidityPoolResource(params: Omit<ICalculateRatesParams, 'amount' | 'interactiveToken'>) {
+  async getLiquidityPoolResource(params: TGetResourcesPayload) {
     const modulesLiquidityPool = composeType(
       MODULES_ACCOUNT,
       'liquidity_pool',
@@ -114,7 +117,7 @@ export class LiquidityModule implements IModule {
     return { liquidityPoolResource };
   }
 
-  async getLiquiditySupplyResource(params: Omit<ICalculateRatesParams, 'amount' | 'interactiveToken'>) {
+  async getLiquiditySupplyResource(params: TGetResourcesPayload) {
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
 
     const lpString = getPoolLpStr(params.fromToken, params.toToken, curve);

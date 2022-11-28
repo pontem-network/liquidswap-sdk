@@ -6,6 +6,9 @@ The typescript SDK for [Liquidswap](https://liquidswap.com).
 
     npm i @pontem/liquidswap-sdk
 
+# Roadmap:
+  * Integrate aptos-sdk to provide opportunity successfully complete a transaction and receive a hash.
+
 # Usage
 
 ### Init SDK
@@ -231,4 +234,4 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })()
 ```
 
-### For additional examples feel free to explore '[src/main.test.ts](src/main.test.ts)' file;
+### A lot of additional examples located here: '[src/main.test.ts](src/main.test.ts)';
