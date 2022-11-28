@@ -43,14 +43,5 @@ type TxPayloadInstallModule = {
 
 export type TAptosTxPayload = TxPayloadCallFunction | TxPayloadInstallModule;
 
-export type AptosCreateTx = {
-  sender: string;
-  maxGasAmount: string;
-  gasUnitPrice: string;
-  gasCurrencyCode: string;
-  expiration: string;
-  payload: TAptosTxPayload;
-};
-
 export type CurveType = 'uncorrelated' | 'stable';
 
