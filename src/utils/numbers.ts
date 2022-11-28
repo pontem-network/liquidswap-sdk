@@ -1,4 +1,4 @@
-import Decimal from "decimal.js";
+import Decimal from 'decimal.js';
 
 export function d(value?: Decimal.Value): Decimal.Instance {
   if (Decimal.isDecimal(value)) {
@@ -11,7 +11,10 @@ export function decimalsMultiplier(decimals?: Decimal.Value): Decimal.Instance {
   return d(10).pow(d(decimals).abs());
 }
 
-export function convertValueToDecimal(value: number | string, decimals: number | undefined = 0) {
+export function convertValueToDecimal(
+  value: number | string,
+  decimals: number | undefined = 0,
+) {
   const mul = decimalsMultiplier(decimals);
 
   return d(value).mul(mul);

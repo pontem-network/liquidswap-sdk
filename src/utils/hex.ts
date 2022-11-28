@@ -17,7 +17,7 @@ export function shortAddress(address: string, start = 4, end = 4) {
 
 export function checkAddress(
   address: any,
-  options: { leadingZero: boolean; } = { leadingZero: true }
+  options: { leadingZero: boolean } = { leadingZero: true },
 ): boolean {
   if (typeof address !== 'string') {
     return false;
@@ -66,7 +66,7 @@ export function toBuffer(v: any): Buffer {
 
 export function checkAptosType(
   type: any,
-  options: { leadingZero: boolean; } = { leadingZero: true }
+  options: { leadingZero: boolean } = { leadingZero: true },
 ): boolean {
   if (typeof type !== 'string') {
     return false;
@@ -83,7 +83,7 @@ export function checkAptosType(
 
   const genericsString = _type.match(/(<.+>)$/);
   const generics = genericsString?.[1]?.match(
-    /(\w+::\w+::\w+)(?:<.*?>(?!>))?/g
+    /(\w+::\w+::\w+)(?:<.*?>(?!>))?/g,
   );
 
   if (generics) {

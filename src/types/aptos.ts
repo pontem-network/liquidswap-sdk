@@ -1,8 +1,8 @@
 export type AptosResourceType = string;
 
 export type AptosResource<T = unknown> = {
-  data: T,
-  type: string,
+  data: T;
+  type: string;
 };
 
 export type AptosCoinInfoResource = {
@@ -15,8 +15,8 @@ export type AptosCoinInfoResource = {
 };
 
 export type AptosPoolResource = {
-  coin_x_reserve: { value: string; };
-  coin_y_reserve: { value: string; };
+  coin_x_reserve: { value: string };
+  coin_y_reserve: { value: string };
   last_block_timestamp: string;
   last_price_x_cumulative: string;
   last_price_y_cumulative: string;
@@ -38,10 +38,9 @@ export type TxPayloadCallFunction = {
 
 type TxPayloadInstallModule = {
   type: 'module_bundle_payload';
-  modules: { bytecode: string; }[];
+  modules: { bytecode: string }[];
 };
 
 export type TAptosTxPayload = TxPayloadCallFunction | TxPayloadInstallModule;
 
 export type CurveType = 'uncorrelated' | 'stable';
-
