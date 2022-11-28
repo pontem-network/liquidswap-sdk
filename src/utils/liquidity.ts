@@ -1,7 +1,7 @@
-import { Decimal } from "decimal.js";
+import { Decimal } from 'decimal.js';
 
-import { d } from "./numbers";
-import { RESOURCES_ACCOUNT } from "../constants";
+import { d } from './numbers';
+import { RESOURCES_ACCOUNT } from '../constants';
 import { is_sorted, composeType } from './contracts';
 
 /**
@@ -77,7 +77,7 @@ export function calcOutputBurnLiquidity({
 export function getOptimalLiquidityAmount(
   xDesired: Decimal,
   xReserve: Decimal,
-  yReserve: Decimal
+  yReserve: Decimal,
 ): Decimal {
   return xDesired.mul(yReserve).div(xReserve);
 }
@@ -103,7 +103,7 @@ export function getPoolStr(
   coinX: string,
   coinY: string,
   curve: string,
-  modulesLiquidityPool: string
+  modulesLiquidityPool: string,
 ): string {
   const [sortedX, sortedY] = is_sorted(coinX, coinY)
     ? [coinX, coinY]
