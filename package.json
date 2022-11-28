@@ -4,7 +4,7 @@
   "description": "SDK to use LiquidSwap functions",
   "author": "Igor Demko <igor@pontem.network>",
   "repository": "https://github.com/pontem-network/liquidswap-sdk",
-  "license": "MIT",
+  "license": "GNU GPLV3",
   "keywords": [
     "aptos",
     "blockchain",
