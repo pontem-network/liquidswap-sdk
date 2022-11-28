@@ -231,4 +231,11 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })()
 ```
 
+### You want to calculate rate /add pool liquidity for a pair of tokens
+```typescript
+(async () => {
+
+})()
+```
+
 ### For additional examples feel free to explore '[src/main.test.ts](src/main.test.ts)' file;

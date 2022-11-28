@@ -51,11 +51,12 @@ interface ICalculateSupplyParams extends Pick<ICalculateRatesParams, 'slippage'>
 }
 
 interface ICalculateBurnLiquidityParams {
-  toReserve: Decimal | number;
-  fromReserve: Decimal | number;
+  fromToken: string;
+  toToken: string;
   slippage: number;
   burnAmount: Decimal | number;
   lpSupply: number;
+  curveType: CurveType;
 }
 
 export class LiquidityModule implements IModule {
@@ -323,31 +324,15 @@ export class LiquidityModule implements IModule {
       console.log(e);
     }
 
-    const { liquidityPoolResource } = await this.getLiquidityPoolResource(params);
-
-    if (!liquidityPoolResource) {
-      throw new Error(`LiquidityPool not existed`);
-    }
-
-    const isSorted = is_sorted(params.fromToken, params.toToken);
-
-    const fromReserve = isSorted ?
-      d(liquidityPoolResource.data.coin_x_reserve.value) :
-      d(liquidityPoolResource.data.coin_y_reserve.value);
-    const toReserve = isSorted ?
-      d(liquidityPoolResource.data.coin_y_reserve.value) :
-      d(liquidityPoolResource.data.coin_x_reserve.value);
-
     const output = await this.calculateOutputBurn({
+      ...params,
       lpSupply,
-      slippage: params.slippage,
-      fromReserve,
-      toReserve,
-      burnAmount: params.burnAmount,
     });
 
     const xOutput = output?.x.toFixed(0) ?? '0';
     const yOutput = output?.y.toFixed(0) ?? '0';
+
+    const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const args = isSorted
       ? [params.burnAmount.toString(), xOutput, yOutput]
@@ -378,9 +363,24 @@ export class LiquidityModule implements IModule {
   }
 
   async calculateOutputBurn (params: ICalculateBurnLiquidityParams) {
+    const { liquidityPoolResource } = await this.getLiquidityPoolResource(params);
+
+    if (!liquidityPoolResource) {
+      throw new Error(`LiquidityPool not existed`);
+    }
+
+    const isSorted = is_sorted(params.fromToken, params.toToken);
+
+    const fromReserve = isSorted ?
+      d(liquidityPoolResource.data.coin_x_reserve.value) :
+      d(liquidityPoolResource.data.coin_y_reserve.value);
+    const toReserve = isSorted ?
+      d(liquidityPoolResource.data.coin_y_reserve.value) :
+      d(liquidityPoolResource.data.coin_x_reserve.value);
+
     const outputVal = calcOutputBurnLiquidity({
-      xReserve: d(params.fromReserve),
-      yReserve: d(params.toReserve),
+      xReserve: fromReserve,
+      yReserve: toReserve,
       lpSupply: d(params.lpSupply),
       toBurn: d(params.burnAmount),
     });
