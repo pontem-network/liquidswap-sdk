@@ -1,24 +1,39 @@
-<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@pontem/liquidswap-sdk</title><meta name="description" content="Documentation for @pontem/liquidswap-sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@pontem/liquidswap-sdk</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@pontem/liquidswap-sdk </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@pontem/liquidswap-sdk</title><meta name="description" content="Documentation for @pontem/liquidswap-sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@pontem/liquidswap-sdk</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@pontem/liquidswap-sdk </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography"><p><a name="readme-top"></a></p>
+<!-- PROJECT SHIELDS -->
+<p><a href="https://github.com/pontem-network/liquidswap-sdk/graphs/contributors"><img src="https://img.shields.io/github/contributors/pontem-network/liquidswap-sdk.svg?style=for-the-badge" alt="Contributors"></a>
+<a href="https://github.com/pontem-network/liquidswap-sdk/network/members"><img src="https://img.shields.io/github/forks/pontem-network/liquidswap-sdk.svg?style=for-the-badge" alt="Forks"></a>
+<a href="https://github.com/pontem-network/liquidswap-sdk/stargazers"><img src="https://img.shields.io/github/stars/pontem-network/liquidswap-sdk.svg?style=for-the-badge" alt="Stargazers"></a>
+<a href="https://github.com/pontem-network/liquidswap-sdk/issues"><img src="https://img.shields.io/github/issues/pontem-network/liquidswap-sdk.svg?style=for-the-badge" alt="Issues"></a>
+<a href="https://github.com/pontem-network/liquidswap-sdk/blob/master/LICENSE"><img src="https://img.shields.io/github/license/pontem-network/liquidswap-sdk.svg?style=for-the-badge" alt="GNUv3 License"></a></p>
+
 <a href="#liquidswap-sdk" id="liquidswap-sdk" style="color: inherit; text-decoration: none;">
   <h1>LiquidSwap SDK</h1>
 </a>
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
 <p>The typescript SDK for <a href="https://liquidswap.com">Liquidswap</a>.</p>
 
 <a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
-  <h1>Installation</h1>
+  <h2>Installation</h2>
 </a>
 <pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">i</span><span class="hl-1"> @</span><span class="hl-0">pontem</span><span class="hl-1">/</span><span class="hl-0">liquidswap</span><span class="hl-1">-</span><span class="hl-0">sdk</span>
 </code></pre>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<a href="#roadmap" id="roadmap" style="color: inherit; text-decoration: none;">
-  <h1>Roadmap:</h1>
-</a>
-<ul>
-<li>Integrate aptos-sdk to provide opportunity successfully complete a transaction and receive a hash.</li>
-</ul>
+<!-- GETTING STARTED -->
 
 <a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-  <h1>Usage</h1>
+  <h2>Usage</h2>
 </a>
 
 <a href="#init-sdk" id="init-sdk" style="color: inherit; text-decoration: none;">
@@ -70,18 +85,66 @@
 </code></pre>
 
 <a href="#calculate-output-burn-for-x-and-y-coin-with-slippage-and-without-slippage" id="calculate-output-burn-for-x-and-y-coin-with-slippage-and-without-slippage" style="color: inherit; text-decoration: none;">
-  <h3>Calculate Output Burn for x and y coin with slippage and without slippage.</h3>
+  <h3>Calculate Output Burn for x and y coin with slippage and without slippage</h3>
 </a>
 <pre><code class="language-typescript"><span class="hl-1">(</span><span class="hl-4">async</span><span class="hl-1">()</span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">output</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">sdk</span><span class="hl-1">.</span><span class="hl-0">Liquidity</span><span class="hl-1">.</span><span class="hl-6">calculateOutputBurn</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-0">fromToken:</span><span class="hl-1"> </span><span class="hl-3">&quot;0x1::aptos_coin::AptosCoin&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">toToken:</span><span class="hl-1"> </span><span class="hl-3">&quot;0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">slippage:</span><span class="hl-1"> </span><span class="hl-8">0.005</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">curveType:</span><span class="hl-1"> </span><span class="hl-3">&#39;uncorrelated&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">burnAmount:</span><span class="hl-1"> </span><span class="hl-8">100000</span><span class="hl-1">,</span><br/><span class="hl-1">  });</span><br/><br/><span class="hl-1">  </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-0">output</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-7">/**</span><br/><span class="hl-7">   * {</span><br/><span class="hl-7">   *   x: &#39;504061&#39;,</span><br/><span class="hl-7">       y: &#39;22430&#39;,</span><br/><span class="hl-7">       withoutSlippage: {</span><br/><span class="hl-7">         x: &#39;506594&#39;,</span><br/><span class="hl-7">         y: &#39;22543&#39;</span><br/><span class="hl-7">       }</span><br/><span class="hl-7">     }</span><br/><span class="hl-7">   * */</span><br/><span class="hl-1">})</span>
 </code></pre>
 
 <a href="#create-burn-liquidity-payload" id="create-burn-liquidity-payload" style="color: inherit; text-decoration: none;">
-  <h3>Create Burn Liquidity payload.</h3>
+  <h3>Create Burn Liquidity payload</h3>
 </a>
 <pre><code class="language-typescript"><span class="hl-1">(</span><span class="hl-4">async</span><span class="hl-1">() </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">output</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">sdk</span><span class="hl-1">.</span><span class="hl-0">Liquidity</span><span class="hl-1">.</span><span class="hl-6">createBurnLiquidityPayload</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-0">fromToken:</span><span class="hl-1"> </span><span class="hl-3">&quot;0x1::aptos_coin::AptosCoin&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">toToken:</span><span class="hl-1"> </span><span class="hl-3">&quot;0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">slippage:</span><span class="hl-1"> </span><span class="hl-8">0.005</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">curveType:</span><span class="hl-1"> </span><span class="hl-3">&#39;uncorrelated&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">burnAmount:</span><span class="hl-1"> </span><span class="hl-8">100000</span><span class="hl-1">,</span><br/><span class="hl-1">  });</span><br/><br/><span class="hl-1">  </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-0">output</span><span class="hl-1">);</span><br/><br/><span class="hl-1">  </span><span class="hl-7">/**</span><br/><span class="hl-7">   *</span><br/><span class="hl-7">   {</span><br/><span class="hl-7">     type: &#39;entry_function_payload&#39;,</span><br/><span class="hl-7">     function: &#39;0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::remove_liquidity&#39;,</span><br/><span class="hl-7">     type_arguments: [</span><br/><span class="hl-7">       &#39;0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC&#39;,</span><br/><span class="hl-7">       &#39;0x1::aptos_coin::AptosCoin&#39;,</span><br/><span class="hl-7">       &#39;0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated&#39;</span><br/><span class="hl-7">     ],</span><br/><span class="hl-7">     arguments: [ &#39;100000&#39;, &#39;22411&#39;, &#39;504489&#39; ]</span><br/><span class="hl-7">   }</span><br/><span class="hl-7">   * */</span><br/><span class="hl-1">})</span>
 </code></pre>
 
-<a href="#a-lot-of-additional-examples-located-here-39srcmaintestts39" id="a-lot-of-additional-examples-located-here-39srcmaintestts39" style="color: inherit; text-decoration: none;">
-  <h3>A lot of additional examples located here: &#39;<a href="src/main.test.ts">src/main.test.ts</a>&#39;;</h3>
+<a href="#a-lot-of-additional-examples-located-here-srcmaintestts" id="a-lot-of-additional-examples-located-here-srcmaintestts" style="color: inherit; text-decoration: none;">
+  <h3>A lot of additional examples located here: <a href="src/main.test.ts"><code>src/main.test.ts</code></a>;</h3>
 </a>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ROADMAP -->
+
+<a href="#roadmap" id="roadmap" style="color: inherit; text-decoration: none;">
+  <h2>Roadmap</h2>
+</a>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Update to work with the Contract v3</li>
+<li><input checked="" disabled="" type="checkbox"> Prepare transaction payload</li>
+<li><input checked="" disabled="" type="checkbox"> Swap: unstable / stable (normal and high gas)</li>
+<li><input disabled="" type="checkbox"> Liquidity: add / redeem LP</li>
+<li><input disabled="" type="checkbox"> Pools: check pool / create pool</li>
+<li><input disabled="" type="checkbox"> Staking: stake / harvest / unstake</li>
+</ul>
+<p>See the <a href="https://github.com/pontem-network/liquidswap-sdk/issues">open issues</a> for a full list of proposed features (and known issues).</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- CONTRIBUTING -->
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+<p>Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are <strong>greatly appreciated</strong>.</p>
+<p>If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag &quot;enhancement&quot;.
+Don&#39;t forget to give the project a star! Thanks again!</p>
+<ol>
+<li>Fork the Project</li>
+<li>Create your Feature Branch (<code>git checkout -b feature/AmazingFeature</code>)</li>
+<li>Commit your Changes (<code>git commit -m &#39;Add some AmazingFeature&#39;</code>)</li>
+<li>Push to the Branch (<code>git push origin feature/AmazingFeature</code>)</li>
+<li>Open a Pull Request</li>
+</ol>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- LICENSE -->
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h2>License</h2>
+</a>
+<p>Distributed under the GPL v3 License. See <a href="LICENSE"><code>LICENSE</code></a> for more information.</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 </div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-reference"><a href="modules.html#default" class="tsd-kind-icon">default</a></li><li class="tsd-kind-class"><a href="classes/LiquidityModule.html" class="tsd-kind-icon">Liquidity<wbr/>Module</a></li><li class="tsd-kind-class"><a href="classes/ResourcesModule.html" class="tsd-kind-icon">Resources<wbr/>Module</a></li><li class="tsd-kind-class"><a href="classes/SDK.html" class="tsd-kind-icon">SDK</a></li><li class="tsd-kind-class"><a href="classes/SwapModule.html" class="tsd-kind-icon">Swap<wbr/>Module</a></li><li class="tsd-kind-interface"><a href="interfaces/SdkOptions.html" class="tsd-kind-icon">Sdk<wbr/>Options</a></li><li class="tsd-kind-type-alias"><a href="modules.html#CalculateRatesParams" class="tsd-kind-icon">Calculate<wbr/>Rates<wbr/>Params</a></li><li class="tsd-kind-type-alias"><a href="modules.html#CreateTXPayloadParams" class="tsd-kind-icon">CreateTXPayload<wbr/>Params</a></li><li class="tsd-kind-function"><a href="modules.html#convertDecimalToFixedString" class="tsd-kind-icon">convert<wbr/>Decimal<wbr/>To<wbr/>Fixed<wbr/>String</a></li><li class="tsd-kind-function"><a href="modules.html#convertValueToDecimal" class="tsd-kind-icon">convert<wbr/>Value<wbr/>To<wbr/>Decimal</a></li><li class="tsd-kind-function"><a href="modules.html#getCoinInWithFees" class="tsd-kind-icon">get<wbr/>Coin<wbr/>In<wbr/>With<wbr/>Fees</a></li><li class="tsd-kind-function"><a href="modules.html#getCoinOutWithFees" class="tsd-kind-icon">get<wbr/>Coin<wbr/>Out<wbr/>With<wbr/>Fees</a></li><li class="tsd-kind-function"><a href="modules.html#getCoinsInWithFeesStable" class="tsd-kind-icon">get<wbr/>Coins<wbr/>In<wbr/>With<wbr/>Fees<wbr/>Stable</a></li><li class="tsd-kind-function"><a href="modules.html#getCoinsOutWithFeesStable" class="tsd-kind-icon">get<wbr/>Coins<wbr/>Out<wbr/>With<wbr/>Fees<wbr/>Stable</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
