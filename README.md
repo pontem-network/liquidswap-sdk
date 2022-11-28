@@ -1,15 +1,36 @@
+<a name="readme-top"></a>
+
+<!-- PROJECT SHIELDS -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![GNUv3 License][license-shield]][license-url]
+
 # LiquidSwap SDK
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
 The typescript SDK for [Liquidswap](https://liquidswap.com).
 
-# Installation
+## Installation
 
     npm i @pontem/liquidswap-sdk
 
-# Roadmap:
-  * Integrate aptos-sdk to provide opportunity successfully complete a transaction and receive a hash.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-# Usage
+<!-- GETTING STARTED -->
+## Usage
 
 ### Init SDK
 
@@ -33,6 +54,7 @@ const sdk = new SDK({
   */
 })
 ```
+
 ### Convert 15 coins to Decimal type with 8 decimals (coins like APTOS, BTC, etc);
 
 ```typescript
@@ -42,7 +64,6 @@ or
 const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin with 8 decimals)
 
 ```
-
 
 ### Swap EXACTLY 1 APTOS to SLIPPAGED layerzero USDT amount
 
@@ -294,7 +315,7 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })
 ```
 
-### Calculate Output Burn for x and y coin with slippage and without slippage.
+### Calculate Output Burn for x and y coin with slippage and without slippage
 
 ```typescript
 (async()=> {
@@ -320,7 +341,7 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })
 ```
 
-### Create Burn Liquidity payload.
+### Create Burn Liquidity payload
 
 ```typescript
 (async() => {
@@ -350,4 +371,60 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })
 ```
 
-### A lot of additional examples located here: '[src/main.test.ts](src/main.test.ts)';
+### A lot of additional examples located here: [`src/main.test.ts`](src/main.test.ts);
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [x] Update to work with the Contract v3
+- [x] Prepare transaction payload
+- [x] Swap: unstable / stable (normal and high gas)
+- [ ] Liquidity: add / redeem LP
+- [ ] Pools: check pool / create pool
+- [ ] Staking: stake / harvest / unstake
+
+See the [open issues](https://github.com/pontem-network/liquidswap-sdk/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the GPL v3 License. See [`LICENSE`](LICENSE) for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[contributors-url]: https://github.com/pontem-network/liquidswap-sdk/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[forks-url]: https://github.com/pontem-network/liquidswap-sdk/network/members
+[stars-shield]: https://img.shields.io/github/stars/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[stars-url]: https://github.com/pontem-network/liquidswap-sdk/stargazers
+[issues-shield]: https://img.shields.io/github/issues/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[issues-url]: https://github.com/pontem-network/liquidswap-sdk/issues
+[license-shield]: https://img.shields.io/github/license/pontem-network/liquidswap-sdk.svg?style=for-the-badge
+[license-url]: https://github.com/pontem-network/liquidswap-sdk/blob/master/LICENSE
+
