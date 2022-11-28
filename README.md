@@ -6,6 +6,9 @@ The typescript SDK for [Liquidswap](https://liquidswap.com).
 
     npm i @pontem/liquidswap-sdk
 
+# Roadmap:
+  * Integrate aptos-sdk to provide opportunity successfully complete a transaction and receive a hash.
+
 # Usage
 
 ### Init SDK
@@ -30,7 +33,7 @@ const sdk = new SDK({
   */
 })
 ```
-### You want to convert 15 coins to Decimal type with 8 decimals (coins like APTOS, BTC, etc);
+### Convert 15 coins to Decimal type with 8 decimals (coins like APTOS, BTC, etc);
 
 ```typescript
 // convertValueToDecimal return Decimal type;
@@ -41,7 +44,7 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 ```
 
 
-### You want swap EXACTLY 1 APTOS to SLIPPAGED layerzero USDT amount
+### Swap EXACTLY 1 APTOS to SLIPPAGED layerzero USDT amount
 
 ```typescript
 (async () => {
@@ -90,7 +93,8 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })()
 ```
 
-### You want get EXACTLY 1 USDT and send SLIPPAGED APTOS amount
+### Get EXACTLY 1 USDT and send SLIPPAGED APTOS amount
+
 ```typescript
 (async () => {
   // Get APTOS amount
@@ -137,7 +141,8 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })()
 ```
 
-### You want swap EXACTLY 1 APTOS to wormhole WETH with curve - 'stable', stableSwapType - 'normal' and 0.5% slippage
+### Swap EXACTLY 1 APTOS to wormhole WETH with curve - 'stable', stableSwapType - 'normal' and 0.5% slippage
+
 ```typescript
 (async () => {
   // Get WETH amount
@@ -184,7 +189,8 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })()
 ```
 
-### You want to get EXACTLY 1 USDA and send SLIPPAGED APTOS amount with curve - 'stable', stableSwapType - 'high' and 0.5% slippage
+### Get EXACTLY 1 USDA and send SLIPPAGED APTOS amount with curve - 'stable', stableSwapType - 'high' and 0.5% slippage
+
 ```typescript
 (async () => {
   // Get APTOS amount
@@ -231,4 +237,117 @@ const decimalValue2 = convertValueToDecimal('0.005', 8); // 500000 (0.005 coin w
 })()
 ```
 
-### For additional examples feel free to explore '[src/main.test.ts](src/main.test.ts)' file;
+### Check Pool Existence
+
+```typescript
+(async() => {
+  const output = await sdk.Liquidity.checkPoolExistence({
+    fromToken: "0x1::aptos_coin::AptosCoin",
+    toToken: "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC",
+    curveType: 'uncorrelated',
+  });
+
+  console.log(output); // true
+})
+```
+
+### Creating Liquidity Pool for pair APTOS / lzUSDC
+
+```typescript
+(async () => {
+  //get USDC amount
+  const { rate, receiveLp } = await sdk.Liquidity.calculateRateAndMinReceivedLP({
+    fromToken: TokensMapping.APTOS,
+    toToken: TokensMapping.USDC,
+    amount: 100000000, // 1 APTOS
+    curveType: 'uncorrelated',
+    interactiveToken: 'from',
+    slippage: 0.005,
+  });
+  console.log(rate) // '4472498' ('4.472498' USDC)
+  console.log(receiveLp) // '19703137' ('19.703137' Minimum Received LP)
+
+  const payload = await sdk.Liquidity.createAddLiquidityPayload({
+    fromToken: TokensMapping.APTOS,
+    toToken: TokensMapping.USDC,
+    fromAmount: 100000000, // 1 APTOS
+    toAmount: 4472498, // '4.472498' USDC)
+    interactiveToken: 'from',
+    slippage: 0.005,
+    stableSwapType: 'normal',
+    curveType: 'uncorrelated',
+  })
+
+  console.log(payload);
+  /**
+   * {
+      type: 'entry_function_payload',
+      function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::add_liquidity',
+      type_arguments: [
+        "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC",
+        "0x1::aptos_coin::AptosCoin",
+        "0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated",
+      ],
+      arguments: ['100000000', '99500000', '4472498', '4450136'],
+    }
+  * */
+})
+```
+
+### Calculate Output Burn for x and y coin with slippage and without slippage.
+
+```typescript
+(async()=> {
+  const output = await sdk.Liquidity.calculateOutputBurn({
+    fromToken: "0x1::aptos_coin::AptosCoin",
+    toToken: "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC",
+    slippage: 0.005,
+    curveType: 'uncorrelated',
+    burnAmount: 100000,
+  });
+
+  console.log(output);
+  /**
+   * {
+   *   x: '504061',
+       y: '22430',
+       withoutSlippage: {
+         x: '506594',
+         y: '22543'
+       }
+     }
+   * */
+})
+```
+
+### Create Burn Liquidity payload.
+
+```typescript
+(async() => {
+  const output = await sdk.Liquidity.createBurnLiquidityPayload({
+    fromToken: "0x1::aptos_coin::AptosCoin",
+    toToken: "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC",
+    slippage: 0.005,
+    curveType: 'uncorrelated',
+    burnAmount: 100000,
+  });
+
+  console.log(output);
+
+  /**
+   *
+   {
+     type: 'entry_function_payload',
+     function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::remove_liquidity',
+     type_arguments: [
+       '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC',
+       '0x1::aptos_coin::AptosCoin',
+       '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'
+     ],
+     arguments: [ '100000', '22411', '504489' ]
+   }
+   * */
+})
+```
+
+### A lot of additional examples located here: '[src/main.test.ts](src/main.test.ts)';

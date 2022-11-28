@@ -10,6 +10,10 @@ const TokensMapping: Record<string, string> = {
   USDC: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC', // layerzero USDC
 };
 
+/**
+ * TESTS FOR SWAP MODULE
+ *  */
+
 describe('Swap Module', () => {
   const sdk = new SDK({
     nodeUrl: 'https://fullnode.mainnet.aptoslabs.com/v1',
@@ -143,7 +147,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.USDT,
         CURVE_UNCORRELATED,
@@ -168,7 +172,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.USDT,
         CURVE_UNCORRELATED,
@@ -193,7 +197,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
-      typeArguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
       arguments: ['4000000', '37629'],
     });
   });
@@ -214,7 +218,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
-      typeArguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
       arguments: ['4018976', '37810'],
     });
   });
@@ -235,7 +239,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      typeArguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
       arguments: ['100000000', '174381'],
     });
   });
@@ -256,14 +260,13 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      typeArguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
       arguments: ['402045', '4339'],
     });
   });
 
   test('createSwapTransactionPayload Errors', () => {
     expect.assertions(2);
-
     try {
       sdk.Swap.createSwapTransactionPayload({
         fromToken: TokensMapping.APTOS,
@@ -299,7 +302,7 @@ describe('Swap Module', () => {
     }
   });
   test('calculateLiquidityRates (from mode), uncorrelated', async () => {
-    const output = await sdk.Liquidity.calculateRateAndSupply({
+    const output = await sdk.Liquidity.calculateRateAndMinReceivedLP({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDC,
       amount: 100000000, // 1 APTOS
@@ -309,15 +312,19 @@ describe('Swap Module', () => {
     });
 
     console.log(
-      `100000000 APT → ${output.rate} USDT && receiveLp ${output.receiveLp}`,
+      `100000000 APT → ${output.rate} USDC && receiveLp ${output.receiveLp}`,
     );
 
     expect(typeof output).toBe('object');
     expect(output.rate.length).toBeGreaterThan(0);
   });
 
+  /**
+   * TESTS FOR LIQUIDITY MODULE
+   *  */
+
   test('calculateLiquidityRates (to mode), uncorrelated', async () => {
-    const output = await sdk.Liquidity.calculateRateAndSupply({
+    const output = await sdk.Liquidity.calculateRateAndMinReceivedLP({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDC,
       amount: 1000000, // 1 USDC
@@ -335,7 +342,7 @@ describe('Swap Module', () => {
   });
 
   test('calculateLiquidityRates (from mode), stable', async () => {
-    const output = await sdk.Liquidity.calculateRateAndSupply({
+    const output = await sdk.Liquidity.calculateRateAndMinReceivedLP({
       fromToken: TokensMapping.USDC,
       toToken: TokensMapping.USDT,
       amount: 2000000, // 2 USDC
@@ -353,7 +360,7 @@ describe('Swap Module', () => {
   });
 
   test('calculateLiquidityRates (to mode), stable', async () => {
-    const output = await sdk.Liquidity.calculateRateAndSupply({
+    const output = await sdk.Liquidity.calculateRateAndMinReceivedLP({
       fromToken: TokensMapping.USDC,
       toToken: TokensMapping.USDT,
       amount: 2000000, // 2 USDT
@@ -386,7 +393,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::add_liquidity',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.USDC,
         TokensMapping.APTOS,
         CURVE_UNCORRELATED,
@@ -411,7 +418,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::add_liquidity',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.USDC,
         TokensMapping.APTOS,
         CURVE_UNCORRELATED,
@@ -438,7 +445,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::register_pool_and_add_liquidity',
-      typeArguments: [
+      type_arguments: [
         '0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO',
         '0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdcCoin',
         CURVE_UNCORRELATED,
@@ -456,11 +463,13 @@ describe('Swap Module', () => {
       burnAmount: 100000,
     });
 
+    console.log('createBurnLiquidityPayload', output);
+
     expect(output).toEqual({
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::remove_liquidity',
-      typeArguments: [
+      type_arguments: [
         TokensMapping.USDC,
         TokensMapping.APTOS,
         CURVE_UNCORRELATED,
@@ -478,8 +487,6 @@ describe('Swap Module', () => {
       burnAmount: 100000,
     });
 
-    console.log('calculateOutputBurn', output);
-
     expect(output).toEqual({
       x: expect.any(String),
       y: expect.any(String),
@@ -488,5 +495,26 @@ describe('Swap Module', () => {
         y: expect.any(String),
       },
     });
+  });
+
+  test('Check Pool Existence ', async () => {
+    const output = await sdk.Liquidity.checkPoolExistence({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDC,
+      curveType: 'uncorrelated',
+    });
+
+    expect(output).toEqual(true);
+  });
+  test('Check Pool Existence ', async () => {
+    const output = await sdk.Liquidity.checkPoolExistence({
+      fromToken:
+        '0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdcCoin',
+      toToken:
+        '0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO',
+      curveType: 'uncorrelated',
+    });
+
+    expect(output).toEqual(false);
   });
 });
