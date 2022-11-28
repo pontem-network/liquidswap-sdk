@@ -55,7 +55,6 @@ interface ICalculateBurnLiquidityParams {
   toToken: string;
   slippage: number;
   burnAmount: Decimal | number;
-  lpSupply: number;
   curveType: CurveType;
 }
 
@@ -308,26 +307,8 @@ export class LiquidityModule implements IModule {
 
     const curve = params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
     const { modules } = this.sdk.networkOptions;
-    const { liquidityPoolResource: lpSupplyResponse } = await this.getLiquiditySupplyResource(params);
 
-    if (!lpSupplyResponse) {
-      throw new Error(`lpSupplyResponse not existed`);
-    }
-
-    let lpSupply;
-    try {
-      // TODO: fix typing
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      lpSupply = lpSupplyResponse.data.supply.vec[0].integer.vec[0].value;
-    } catch (e) {
-      console.log(e);
-    }
-
-    const output = await this.calculateOutputBurn({
-      ...params,
-      lpSupply,
-    });
+    const output = await this.calculateOutputBurn(params);
 
     const xOutput = output?.x ?? '0';
     const yOutput = output?.y ?? '0';
@@ -364,6 +345,21 @@ export class LiquidityModule implements IModule {
 
   async calculateOutputBurn (params: ICalculateBurnLiquidityParams) {
     const { liquidityPoolResource } = await this.getLiquidityPoolResource(params);
+    const { liquidityPoolResource: lpSupplyResponse } = await this.getLiquiditySupplyResource(params);
+
+    if (!lpSupplyResponse) {
+      throw new Error(`lpSupplyResponse not existed`);
+    }
+
+    let lpSupply;
+    try {
+      // TODO: fix typing
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      lpSupply = lpSupplyResponse.data.supply.vec[0].integer.vec[0].value;
+    } catch (e) {
+      console.log(e);
+    }
 
     if (!liquidityPoolResource) {
       throw new Error(`LiquidityPool not existed`);
@@ -381,7 +377,7 @@ export class LiquidityModule implements IModule {
     const outputVal = calcOutputBurnLiquidity({
       xReserve: fromReserve,
       yReserve: toReserve,
-      lpSupply: d(params.lpSupply),
+      lpSupply: d(lpSupply),
       toBurn: d(params.burnAmount),
     });
 

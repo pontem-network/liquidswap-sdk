@@ -455,4 +455,24 @@ describe('Swap Module', () => {
     });
   });
 
+  test('calculateOutputBurn', async () => {
+    const output = await sdk.Liquidity.calculateOutputBurn({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDC,
+      slippage: 0.005,
+      curveType: 'uncorrelated',
+      burnAmount: 100000
+    });
+
+    console.log('calculateOutputBurn', output);
+
+    expect(output).toEqual({
+      "x": expect.any(String),
+      "y": expect.any(String),
+      "withoutSlippage": {
+        "x": expect.any(String),
+        "y": expect.any(String),
+      },
+    });
+  });
 });
