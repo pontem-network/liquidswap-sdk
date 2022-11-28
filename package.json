@@ -25,6 +25,7 @@
     "clean": "rm -rf dist build package",
     "ts-node": "ts-node",
     "docs": "typedoc --entryPoints src/main.ts",
+    "format": "prettier --write 'src/**/*.{js,ts,json}' '*.{js,ts,json}'",
     "build": "tsc -p tsconfig.json",
     "build-all": "yarn clean && yarn build"
   },
@@ -37,6 +38,7 @@
     "esbuild": "^0.14.38",
     "eslint": "^8.14.0",
     "jest": "27.0.0",
+    "prettier": "^2.8.0",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
     "typedoc": "^0.22.15",
