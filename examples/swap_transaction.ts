@@ -42,7 +42,7 @@ dotenv.config();
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
 
   try {
-    const usdtBalance = await coinClient.checkBalance(alice, {coinType: TokensMapping.USDT});
+    const usdtBalance = await coinClient.checkBalance(alice, {coinType: 'USDT'});
 
     console.log(`Alice USDT balance: ${usdtBalance}`);
   } catch(e) {
@@ -56,9 +56,12 @@ dotenv.config();
       arguments: []
     }
     try {
-      const generatedTransaction = await client.generateTransaction(alice.address(), registerPayloadUSDT);
-      const hash = await client.generateSignSubmitWaitForTransaction(alice, generatedTransaction);
-      console.log(`Registered USDT coin ${hash}`);
+      const rawTxn = await client.generateTransaction(alice.address(), registerPayloadUSDT);
+      const bcsTxn = await client.signTransaction(alice, rawTxn);
+      const { hash } = await client.submitTransaction(bcsTxn);
+      await client.waitForTransaction(hash);
+
+      console.log(`Registered USDT coin ${hash} submitted`);
     } catch (e) {
       console.log(e)
     }
@@ -73,6 +76,8 @@ dotenv.config();
     interactiveToken: 'from',
   });
 
+  console.log('usdtRate', usdtRate);
+
   // create payload for swap transaction
   const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
@@ -85,11 +90,19 @@ dotenv.config();
       curveType: 'uncorrelated',
   }) as TxPayloadCallFunction;
 
-  const generatedTransaction = await client.generateTransaction(alice.address(), swapTransactionPayload);
+  console.log('swapTransactionPayload', swapTransactionPayload);
 
-  const txnHash = await client.generateSignSubmitTransaction(alice, generatedTransaction);
+  const rawTxn = await client.generateTransaction(alice.address(), swapTransactionPayload);
+  console.log(1);
+  const bcsTxn = await client.signTransaction(alice, rawTxn);
+  console.log(2);
 
-  const signed = await client.waitForTransaction(txnHash);
+  const { hash } = await client.submitTransaction(bcsTxn)
+  console.log(3);
 
-  console.log(`Transaction {txnHash} is signed with status: ${signed}`);
+  await client.waitForTransaction(hash);
+
+  console.log(4);
+
+  console.log(`Transaction ${hash} is signed`);
 })();
