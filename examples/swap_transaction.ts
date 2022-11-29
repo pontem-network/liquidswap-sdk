@@ -5,6 +5,13 @@ import { AptosClient, FaucetClient, AptosAccount, CoinClient } from 'aptos';
 
 import { NODE_URL, TokensMapping, FAUCET_URL } from "./common";
 
+export type TxPayloadCallFunction = {
+  type: 'entry_function_payload';
+  function: string;
+  type_arguments: string[];
+  arguments: string[];
+};
+
 dotenv.config();
 
 (async() => {
@@ -27,9 +34,8 @@ dotenv.config();
 
   // check balances
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
-  console.log(`Bob: ${await coinClient.checkBalance(bob)}`);
 
-
+  // get Rate for USDT coin.
   const usdtRate = await sdk.Swap.calculateRates({
     fromToken: TokensMapping.APTOS,
     toToken: TokensMapping.USDT,
@@ -38,6 +44,7 @@ dotenv.config();
     interactiveToken: 'from',
   });
 
+  // create payload for swap transaction
   const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
@@ -47,9 +54,13 @@ dotenv.config();
       slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'uncorrelated',
-  });
+  }) as TxPayloadCallFunction;
 
+  const generatedTransaction = await client.generateTransaction(alice.address(), swapTransactionPayload);
 
+  const txnHash = await client.generateSignSubmitTransaction(alice, generatedTransaction);
 
-  // await client.waitForTransaction(txnHash);
+  const signed = await client.waitForTransaction(txnHash);
+
+  console.log(`Transaction {txnHash} is signed with status: ${signed}`);
 })();

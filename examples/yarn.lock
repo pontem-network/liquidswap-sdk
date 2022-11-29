@@ -32,10 +32,10 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.1.3.tgz#360afc77610e0a61f3417e497dcf36862e4f8111"
   integrity sha512-CE0FCR57H2acVI5UOzIGSSIYxZ6v/HOhDR0Ro9VLyhnzLwx0o8W1mmgaqlEUx4049qJDlIBRztv5k+MM8vbO3A==
 
-"@pontem/liquidswap-sdk@latest":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@pontem/liquidswap-sdk/-/liquidswap-sdk-0.4.0.tgz#cd9faeee2768b63f3427e01db8191d8a625ecbb3"
-  integrity sha512-R1vh88KpJwUtlujNXlKhDFFQj0WWFHM2cd+W043IUm3wOxCoZxpZLzk3iOItMgxuzRwWoX7yU/dQm7wSMFplIA==
+"@pontem/liquidswap-sdk@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@pontem/liquidswap-sdk/-/liquidswap-sdk-0.5.0.tgz#89919c8b607d2218a788ecae402e1e4b8c5a7659"
+  integrity sha512-mlNYCg2JEDup4mnrPG3jaMgshCq4Y7/nFAoU8pA4pYWhnyBKixI8vgVZ5PCV+deeVo+sPKKNAxiE7mU36QfEmg==
   dependencies:
     aptos "^1.3.17"
     axios "^0.27.2"
