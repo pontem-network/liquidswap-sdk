@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@pontem/liquidswap-sdk": "latest",
+    "aptos": "^1.3.17",
     "dotenv": "16.0.1"
   },
   "devDependencies": {
