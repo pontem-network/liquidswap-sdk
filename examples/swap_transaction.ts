@@ -1,9 +1,8 @@
 import dotenv from "dotenv";
 import SDK from "@pontem/liquidswap-sdk";
-import Decimal from "decimal.js";
-import { AptosClient, FaucetClient, AptosAccount, CoinClient } from 'aptos';
+import { FaucetClient, AptosAccount, CoinClient } from 'aptos';
 
-import { NODE_URL, TokensMapping, FAUCET_URL } from "./common";
+import { NODE_URL, TokensMapping, FAUCET_URL, MODULES_ACCOUNT } from "./common";
 
 export type TxPayloadCallFunction = {
   type: 'entry_function_payload';
@@ -12,28 +11,56 @@ export type TxPayloadCallFunction = {
   arguments: string[];
 };
 
-dotenv.config();
+dotenv.config({ override: true });
 
 (async() => {
 
   // setup
   const sdk = new SDK({
     nodeUrl: NODE_URL,
+    networkOptions: {
+      modules: {
+        Scripts: `${MODULES_ACCOUNT}::scripts_v2`,
+        CoinInfo: '0x1::coin::CoinInfo',
+        CoinStore: '0x1::coin::CoinStore'
+      }
+    }
   });
-  const client = new AptosClient(NODE_URL);
+  const client = sdk.client;
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
   const coinClient = new CoinClient(client);
 
-  // create local accounts
+  // create local account
   const alice = new AptosAccount();
-  const bob = new AptosAccount();
 
-  // make Faucet create and fund accounts
+  // make Faucet create and fund account
   await faucetClient.fundAccount(alice.address(), 100_000_000);
-  await faucetClient.fundAccount(bob.address(), 0);
 
   // check balances
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
+
+  try {
+    const usdtBalance = await coinClient.checkBalance(alice, {coinType: ''});
+
+    console.log(`Alice USDT balance: ${usdtBalance}`);
+  } catch(e) {
+    console.log(e);
+    //need to register USDT
+    const registerPayloadUSDT = {
+      function: "0x1::managed_coin::register",
+      type_arguments: [
+        TokensMapping.USDT
+    ],
+      arguments: []
+    }
+    try {
+      const generatedTransaction = await client.generateTransaction(alice.address(), registerPayloadUSDT);
+      const hash = await client.generateSignSubmitWaitForTransaction(alice, generatedTransaction);
+      console.log(`Registered USDT coin ${hash}`);
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   // get Rate for USDT coin.
   const usdtRate = await sdk.Swap.calculateRates({
@@ -48,8 +75,8 @@ dotenv.config();
   const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      fromAmount: new Decimal(100000000), // 1 APTOS
-      toAmount: new Decimal(usdtRate), // 4.304638 USDT
+      fromAmount: 100000000, // 1 APTOS
+      toAmount: Number(usdtRate), // USDT
       interactiveToken: 'from',
       slippage: 0.005,
       stableSwapType: 'high',

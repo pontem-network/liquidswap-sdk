@@ -70,6 +70,8 @@ type TGetResourcesPayload = Omit<
   'amount' | 'slippage' | 'interactiveToken'
 >;
 
+type TCreateLiquidityPoolTXPayloadParams = Omit<CreateTXPayloadParams, 'stableSwapType'>;
+
 export class LiquidityModule implements IModule {
   protected _sdk: SDK;
 
@@ -269,7 +271,7 @@ export class LiquidityModule implements IModule {
   }
 
   async createAddLiquidityPayload(
-    params: CreateTXPayloadParams,
+    params: TCreateLiquidityPoolTXPayloadParams,
   ): Promise<TxPayloadCallFunction> {
     const slippage = d(params.slippage);
     if (slippage.gte(1) || slippage.lte(0)) {

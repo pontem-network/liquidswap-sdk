@@ -385,7 +385,6 @@ describe('Swap Module', () => {
       toAmount: 19, // 0.000019 USDC
       interactiveToken: 'from',
       slippage: 0.005,
-      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     });
 
@@ -410,7 +409,6 @@ describe('Swap Module', () => {
       toAmount: 1000, // 0.001 USDC
       interactiveToken: 'to',
       slippage: 0.005,
-      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     });
 
@@ -437,7 +435,6 @@ describe('Swap Module', () => {
       toAmount: 100000, // 0.001 MOJO
       interactiveToken: 'from',
       slippage: 0.005,
-      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     });
 
