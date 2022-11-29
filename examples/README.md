@@ -9,5 +9,5 @@
 - [ ] Check pool existence
 - [ ] Create pool with liquidity
 - [ ] Add liquidity to pool
-- [ ] Swap in created poool
+- [ ] Swap in created pool
 - [ ] Redeem LP coin from pool
