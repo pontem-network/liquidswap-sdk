@@ -3,7 +3,7 @@ import { SwapModule } from './modules/SwapModule';
 import { ResourcesModule } from './modules/ResourcesModule';
 import { AptosResourceType } from './types/aptos';
 import { LiquidityModule } from './modules/LiquidityModule';
-import { NETWORKS_MODULES } from './constants';
+import { NETWORKS_MODULES, MODULES_ACCOUNT, RESOURCES_ACCOUNT } from './constants';
 
 const initialNetworkOptions = {
   nativeToken: '0x1::aptos_coin::AptosCoin',
@@ -12,6 +12,8 @@ const initialNetworkOptions = {
     CoinInfo: NETWORKS_MODULES.CoinInfo,
     CoinStore: NETWORKS_MODULES.CoinStore,
   },
+  resourceAccount: RESOURCES_ACCOUNT,
+  moduleAccount: MODULES_ACCOUNT,
 };
 
 interface INetworkOptions {
@@ -21,11 +23,18 @@ interface INetworkOptions {
     CoinStore: AptosResourceType;
     Scripts: AptosResourceType;
   } & Record<string, AptosResourceType>;
+  resourceAccount?: string;
+  moduleAccount?: string;
 }
 
 export interface SdkOptions {
   nodeUrl: string;
   networkOptions?: INetworkOptions;
+}
+
+interface ICurves {
+  stable: string;
+  uncorrelated: string;
 }
 
 export class SDK {
@@ -34,6 +43,7 @@ export class SDK {
   protected _liquidity: LiquidityModule;
   protected _resources: ResourcesModule;
   protected _networkOptions: Required<INetworkOptions>;
+  protected _curves: ICurves;
 
   get Swap() {
     return this._swap;
@@ -55,6 +65,10 @@ export class SDK {
     return this._networkOptions;
   }
 
+  get curves() {
+    return this._curves;
+  }
+
   constructor(options: SdkOptions) {
     this._networkOptions = initialNetworkOptions;
     if (options.networkOptions) {
@@ -64,10 +78,20 @@ export class SDK {
       if (options.networkOptions?.modules) {
         this._networkOptions.modules = options.networkOptions.modules;
       }
+      if (options.networkOptions?.moduleAccount) {
+        this._networkOptions.moduleAccount = options.networkOptions.moduleAccount;
+      }
+      if (options.networkOptions?.resourceAccount) {
+        this._networkOptions.resourceAccount = options.networkOptions.resourceAccount;
+      }
     }
     this._client = new AptosClient(options.nodeUrl);
     this._swap = new SwapModule(this);
     this._resources = new ResourcesModule(this);
     this._liquidity = new LiquidityModule(this);
+    this._curves = {
+      uncorrelated: `${this._networkOptions.moduleAccount}::curves::Uncorrelated`,
+      stable: `${this._networkOptions.moduleAccount}::curves::Stable`
+    }
   }
 }

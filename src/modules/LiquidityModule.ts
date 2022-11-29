@@ -1,3 +1,5 @@
+import Decimal from 'decimal.js';
+
 import { IModule } from '../interfaces/IModule';
 import { SDK } from '../sdk';
 import {
@@ -8,14 +10,7 @@ import {
   AptosPoolResource,
   TxPayloadCallFunction,
 } from '../types/aptos';
-import Decimal from 'decimal.js';
-import {
-  CURVE_STABLE,
-  CURVE_UNCORRELATED,
-  MODULES_ACCOUNT,
-  NETWORKS_MODULES,
-  RESOURCES_ACCOUNT,
-} from '../constants';
+
 import {
   composeType,
   d,
@@ -28,6 +23,7 @@ import {
   calcReceivedLP,
   calcOutputBurnLiquidity,
 } from '../utils';
+
 import { CreateTXPayloadParams } from './SwapModule';
 
 interface ICreateBurnLiquidityPayload {
@@ -84,14 +80,15 @@ export class LiquidityModule implements IModule {
   }
 
   async checkPoolExistence(params: TGetResourcesPayload): Promise<boolean> {
+    const { moduleAccount, resourceAccount } = this.sdk.networkOptions;
+    const curves = this.sdk.curves;
     const modulesLiquidityPool = composeType(
-      MODULES_ACCOUNT,
+      moduleAccount,
       'liquidity_pool',
       'LiquidityPool',
     );
 
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const curve = curves[params.curveType];
     const liquidityPoolType = getPoolStr(
       params.fromToken,
       params.toToken,
@@ -102,7 +99,7 @@ export class LiquidityModule implements IModule {
     try {
       const liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosResource>(
-          RESOURCES_ACCOUNT,
+          resourceAccount,
           liquidityPoolType,
         );
       return Boolean(liquidityPoolResource?.type);
@@ -112,13 +109,14 @@ export class LiquidityModule implements IModule {
   }
 
   async getLiquidityPoolResource(params: TGetResourcesPayload) {
+    const { moduleAccount, resourceAccount } = this.sdk.networkOptions;
+    const curves = this.sdk.curves;
     const modulesLiquidityPool = composeType(
-      MODULES_ACCOUNT,
+      moduleAccount,
       'liquidity_pool',
       'LiquidityPool',
     );
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const curve = curves[params.curveType];
 
     const liquidityPoolType = getPoolStr(
       params.fromToken,
@@ -132,7 +130,7 @@ export class LiquidityModule implements IModule {
     try {
       liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-          RESOURCES_ACCOUNT,
+          resourceAccount,
           liquidityPoolType,
         );
     } catch (e) {
@@ -142,8 +140,10 @@ export class LiquidityModule implements IModule {
   }
 
   async getLiquiditySupplyResource(params: TGetResourcesPayload) {
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const curves = this.sdk.curves;
+    const { modules, resourceAccount } = this.sdk.networkOptions;
+
+    const curve = curves[params.curveType];
 
     const lpString = getPoolLpStr(params.fromToken, params.toToken, curve);
 
@@ -152,8 +152,8 @@ export class LiquidityModule implements IModule {
     try {
       liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
-          RESOURCES_ACCOUNT,
-          composeType(NETWORKS_MODULES.CoinInfo, [lpString]),
+          resourceAccount,
+          composeType(modules.CoinInfo, [lpString]),
         );
     } catch (e) {
       console.log(e);
@@ -283,12 +283,15 @@ export class LiquidityModule implements IModule {
     const isPoolExisted = await this.checkPoolExistence(params);
 
     const { modules } = this.sdk.networkOptions;
+    const curves = this.sdk.curves;
+
     const functionName = composeType(
       modules.Scripts,
       isPoolExisted ? 'add_liquidity' : 'register_pool_and_add_liquidity',
     );
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+
+
+    const curve = curves[params.curveType];
     const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const typeArguments = isSorted
@@ -337,8 +340,9 @@ export class LiquidityModule implements IModule {
       );
     }
 
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const curves = this.sdk.curves;
+    const curve = curves[params.curveType];
+
     const { modules } = this.sdk.networkOptions;
 
     const output = await this.calculateOutputBurn(params);

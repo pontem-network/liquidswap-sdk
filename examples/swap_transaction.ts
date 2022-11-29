@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import SDK from "@pontem/liquidswap-sdk";
 import { FaucetClient, AptosAccount, CoinClient } from 'aptos';
 
-import { NODE_URL, TokensMapping, FAUCET_URL, MODULES_ACCOUNT } from "./common";
+import {NODE_URL, TokensMapping, FAUCET_URL, MODULES_ACCOUNT, RESOURCE_ACCOUNT} from "./common";
 
 export type TxPayloadCallFunction = {
   type: 'entry_function_payload';
@@ -11,7 +11,7 @@ export type TxPayloadCallFunction = {
   arguments: string[];
 };
 
-dotenv.config({ override: true });
+dotenv.config();
 
 (async() => {
 
@@ -19,12 +19,14 @@ dotenv.config({ override: true });
   const sdk = new SDK({
     nodeUrl: NODE_URL,
     networkOptions: {
+      resourceAccount: RESOURCE_ACCOUNT,
+      moduleAccount: MODULES_ACCOUNT,
       modules: {
         Scripts: `${MODULES_ACCOUNT}::scripts_v2`,
         CoinInfo: '0x1::coin::CoinInfo',
         CoinStore: '0x1::coin::CoinStore'
-      }
-    }
+      },
+    },
   });
   const client = sdk.client;
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
@@ -40,7 +42,7 @@ dotenv.config({ override: true });
   console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
 
   try {
-    const usdtBalance = await coinClient.checkBalance(alice, {coinType: ''});
+    const usdtBalance = await coinClient.checkBalance(alice, {coinType: TokensMapping.USDT});
 
     console.log(`Alice USDT balance: ${usdtBalance}`);
   } catch(e) {
