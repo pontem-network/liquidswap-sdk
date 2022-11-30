@@ -15,7 +15,6 @@ import {
   composeType,
   d,
   extractAddressFromType,
-  getPoolLpStr,
   getPoolStr,
   is_sorted,
   getOptimalLiquidityAmount,
@@ -144,6 +143,23 @@ export class LiquidityModule implements IModule {
     const { modules, resourceAccount } = this.sdk.networkOptions;
 
     const curve = curves[params.curveType];
+
+    function getPoolLpStr(
+      coinX: string,
+      coinY: string,
+      curve: string,
+    ): string {
+      const [sortedX, sortedY] = is_sorted(coinX, coinY)
+        ? [coinX, coinY]
+        : [coinY, coinX];
+      return composeType(
+        //
+        resourceAccount,
+        'lp_coin',
+        'LP',
+        [sortedX, sortedY, curve],
+      );
+    }
 
     const lpString = getPoolLpStr(params.fromToken, params.toToken, curve);
 

@@ -5,7 +5,8 @@
   "main": "index.js",
   "license": "GPU v3",
   "scripts": {
-    "swap": "ts-node swap_transaction.ts"
+    "swap": "ts-node swap_transaction.ts",
+    "pool": "ts-node pool_transaction.ts"
   },
   "dependencies": {
     "@pontem/liquidswap-sdk": "file:../",

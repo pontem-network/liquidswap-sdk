@@ -30,42 +30,58 @@ dotenv.config();
   });
   const client = new AptosClient(NODE_URL);
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
-  const pontemFaucetClient = new FaucetClient(NODE_URL, 'pontem_node_url')
 
   const coinClient = new CoinClient(client);
 
   // create local accounts
   const alice = new AptosAccount();
 
-  // make Faucet create and fund accounts
-  await faucetClient.fundAccount(alice.address(), 100_000_000);
-  await pontemFaucetClient.fundAccount(alice.address(), 100_000_000);
+  try {
 
-  // check balances
-  console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
+    // make Faucet create and fund accounts
+    await faucetClient.fundAccount(alice.address(), 100_000_000);
 
-  const poolExisted = await sdk.Liquidity.checkPoolExistence({
-    fromToken: TokensMapping.APTOS,
-    toToken: TokensMapping.USDT,
-    curveType: 'stable'
-  });
+    // check balances
+    console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
 
-  console.log(`Pool existed: ${poolExisted}`);
+    const poolExisted = await sdk.Liquidity.checkPoolExistence({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      curveType: 'uncorrelated'
+    });
 
-  if (!poolExisted) {
+    console.log(`Pool existed: ${poolExisted}`);
+
+    const { rate, receiveLp } = await sdk.Liquidity.calculateRateAndMinReceivedLP({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      amount: 100000000, // 1 USDT
+      curveType: 'uncorrelated',
+      interactiveToken: 'to',
+      slippage: 0.005,
+    });
+
+    console.log(`rate: ${rate}, Minimum receive Lp: ${receiveLp}`);
+
     const createPoolPayload = await sdk.Liquidity.createAddLiquidityPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      fromAmount: 10000000, // 0.000004 APTOS
-      toAmount: 19, // 0.000019 USDC
-      interactiveToken: 'from',
+      fromAmount: Number(rate), // APTOS
+      toAmount: 100000000, // 1 USDT
+      interactiveToken: 'to',
       slippage: 0.005,
       curveType: 'uncorrelated',
     });
-    console.log(createPoolPayload);
 
+    console.log('createPoolPayload', createPoolPayload);
+
+    const rawTxn = await client.generateTransaction(alice.address(), createPoolPayload);
+    const bcsTxn = await client.signTransaction(alice, rawTxn);
+    const { hash } = await client.submitTransaction(bcsTxn);
+    await client.waitForTransaction(hash);
+    console.log(`Transaction ${hash} is submitted`);
+
+  } catch(e) {
+    console.log(e)
   }
-
-
-
 })();

@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import SDK from "@pontem/liquidswap-sdk";
-import { FaucetClient, AptosAccount, CoinClient } from 'aptos';
+import {AptosAccount, CoinClient, FaucetClient} from 'aptos';
 
-import {NODE_URL, TokensMapping, FAUCET_URL, MODULES_ACCOUNT, RESOURCE_ACCOUNT} from "./common";
+import {NODE_URL, TokensMapping, MODULES_ACCOUNT, RESOURCE_ACCOUNT, FAUCET_URL} from "./common";
 
 export type TxPayloadCallFunction = {
   type: 'entry_function_payload';
@@ -12,6 +12,7 @@ export type TxPayloadCallFunction = {
 };
 
 dotenv.config();
+
 
 (async() => {
 
@@ -24,62 +25,63 @@ dotenv.config();
       modules: {
         Scripts: `${MODULES_ACCOUNT}::scripts_v2`,
         CoinInfo: '0x1::coin::CoinInfo',
-        CoinStore: '0x1::coin::CoinStore'
+        CoinStore: '0x1::coin::CoinStore',
       },
     },
   });
   const client = sdk.client;
-  const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
   const coinClient = new CoinClient(client);
 
   // create local account
   const alice = new AptosAccount();
 
-  // make Faucet create and fund account
+  const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
+
   await faucetClient.fundAccount(alice.address(), 100_000_000);
 
-  // check balances
-  console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
-
   try {
-    const usdtBalance = await coinClient.checkBalance(alice, {coinType: 'USDT'});
+    const balance = await coinClient.checkBalance(alice);
+    console.log(balance);
 
-    console.log(`Alice USDT balance: ${usdtBalance}`);
-  } catch(e) {
-    console.log(e);
-    //need to register USDT
-    const registerPayloadUSDT = {
-      function: "0x1::managed_coin::register",
-      type_arguments: [
-        TokensMapping.USDT
-    ],
-      arguments: []
-    }
     try {
-      const rawTxn = await client.generateTransaction(alice.address(), registerPayloadUSDT);
-      const bcsTxn = await client.signTransaction(alice, rawTxn);
-      const { hash } = await client.submitTransaction(bcsTxn);
-      await client.waitForTransaction(hash);
+      const usdtBalance = await coinClient.checkBalance(alice, {coinType: TokensMapping.USDT});
 
-      console.log(`Registered USDT coin ${hash} submitted`);
-    } catch (e) {
-      console.log(e)
+      console.log(`Alice USDT balance: ${usdtBalance}`);
+    } catch(e) {
+      console.log(e);
+      //need to register USDT
+      const registerPayloadUSDT = {
+        function: "0x1::managed_coin::register",
+        type_arguments: [
+          TokensMapping.USDT
+        ],
+        arguments: []
+      }
+      try {
+        const rawTxn = await client.generateTransaction(alice.address(), registerPayloadUSDT);
+        const bcsTxn = await client.signTransaction(alice, rawTxn);
+        const { hash } = await client.submitTransaction(bcsTxn);
+        await client.waitForTransaction(hash);
+
+        console.log(`Registered USDT coin ${hash} submitted`);
+      } catch (e) {
+        console.log(e)
+      }
     }
-  }
 
-  // get Rate for USDT coin.
-  const usdtRate = await sdk.Swap.calculateRates({
-    fromToken: TokensMapping.APTOS,
-    toToken: TokensMapping.USDT,
-    amount: 100000000, // 1 APTOS
-    curveType: 'uncorrelated',
-    interactiveToken: 'from',
-  });
+    // get Rate for USDT coin.
+    const usdtRate = await sdk.Swap.calculateRates({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      amount: 100000000, // 1 APTOS
+      curveType: 'uncorrelated',
+      interactiveToken: 'from',
+    });
 
-  console.log('usdtRate', usdtRate);
+    console.log('usdtRate', usdtRate);
 
-  // create payload for swap transaction
-  const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
+    // create payload for swap transaction
+    const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
       fromAmount: 100000000, // 1 APTOS
@@ -88,21 +90,18 @@ dotenv.config();
       slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'uncorrelated',
-  }) as TxPayloadCallFunction;
+    }) as TxPayloadCallFunction;
 
-  console.log('swapTransactionPayload', swapTransactionPayload);
+    console.log('swapTransactionPayload', swapTransactionPayload);
 
-  const rawTxn = await client.generateTransaction(alice.address(), swapTransactionPayload);
-  console.log(1);
-  const bcsTxn = await client.signTransaction(alice, rawTxn);
-  console.log(2);
+    const rawTxn = await client.generateTransaction(alice.address(), swapTransactionPayload);
+    const bcsTxn = await client.signTransaction(alice, rawTxn);
+    const { hash } = await client.submitTransaction(bcsTxn);
+    await client.waitForTransaction(hash);
+    console.log(`Transaction ${hash} is submitted`);
 
-  const { hash } = await client.submitTransaction(bcsTxn)
-  console.log(3);
+  } catch (e) {
+    console.log(e);
+  }
 
-  await client.waitForTransaction(hash);
-
-  console.log(4);
-
-  console.log(`Transaction ${hash} is signed`);
 })();
