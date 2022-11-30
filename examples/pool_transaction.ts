@@ -4,13 +4,6 @@ import { AptosClient, FaucetClient, AptosAccount, CoinClient } from 'aptos';
 
 import {NODE_URL, TokensMapping, FAUCET_URL, RESOURCE_ACCOUNT, MODULES_ACCOUNT} from "./common";
 
-export type TxPayloadCallFunction = {
-  type: 'entry_function_payload';
-  function: string;
-  type_arguments: string[];
-  arguments: string[];
-};
-
 dotenv.config();
 
 (async() => {
@@ -44,42 +37,72 @@ dotenv.config();
     // check balances
     console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
 
+    //check pool existence
     const poolExisted = await sdk.Liquidity.checkPoolExistence({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
       curveType: 'uncorrelated'
     });
-
     console.log(`Pool existed: ${poolExisted}`);
 
+    // get rate and Minimum received LP
     const { rate, receiveLp } = await sdk.Liquidity.calculateRateAndMinReceivedLP({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      amount: 100000000, // 1 USDT
+      amount: 100000000, // 1 APTOS
       curveType: 'uncorrelated',
-      interactiveToken: 'to',
+      interactiveToken: 'from',
       slippage: 0.005,
     });
-
     console.log(`rate: ${rate}, Minimum receive Lp: ${receiveLp}`);
 
-    const createPoolPayload = await sdk.Liquidity.createAddLiquidityPayload({
+    // get payload to add LiquidityPool
+    const addLiquidityPoolPayload = await sdk.Liquidity.createAddLiquidityPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      fromAmount: Number(rate), // APTOS
-      toAmount: 100000000, // 1 USDT
-      interactiveToken: 'to',
+      fromAmount: 100000000, // 1 APTOS
+      toAmount: Number(rate), // USDT
+      interactiveToken: 'from',
       slippage: 0.005,
       curveType: 'uncorrelated',
     });
+    console.log('Add liquidity pool payload', addLiquidityPoolPayload);
 
-    console.log('createPoolPayload', createPoolPayload);
+    // sign and submit payload
+    const addLiquidityRawTxn = await client.generateTransaction(alice.address(), addLiquidityPoolPayload);
+    const addLiquidityBcsTxn = await client.signTransaction(alice, addLiquidityRawTxn);
+    const { hash: addLiquidityHash } = await client.submitTransaction(addLiquidityBcsTxn);
+    await client.waitForTransaction(addLiquidityHash);
+    console.log(`Add liquidity transaction with hash ${addLiquidityHash} is submitted`);
 
-    const rawTxn = await client.generateTransaction(alice.address(), createPoolPayload);
-    const bcsTxn = await client.signTransaction(alice, rawTxn);
-    const { hash } = await client.submitTransaction(bcsTxn);
-    await client.waitForTransaction(hash);
-    console.log(`Transaction ${hash} is submitted`);
+    // calculate Burn Liquidity Minimum received values
+    const outputBurnValues = await sdk.Liquidity.calculateOutputBurn({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      slippage: 0.005,
+      curveType: 'uncorrelated',
+      burnAmount: Number(receiveLp),
+    });
+
+    console.log(`coin X: ${outputBurnValues?.x}, coin Y: ${outputBurnValues?.y},\n
+    withoutSlippage: coin X: ${outputBurnValues?.withoutSlippage.x} coin Y: ${outputBurnValues?.withoutSlippage.y} `);
+
+    const burnLiquidityPayload = await sdk.Liquidity.createBurnLiquidityPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      slippage: 0.005,
+      curveType: 'uncorrelated',
+      burnAmount: Number(receiveLp),
+    });
+
+    console.log('Burn liquidity payload: ', burnLiquidityPayload);
+
+    // sign and submit payload
+    const burnLiquidityRawTxn = await client.generateTransaction(alice.address(), burnLiquidityPayload);
+    const burnLiquidityBcsTxn = await client.signTransaction(alice, burnLiquidityRawTxn);
+    const { hash: burnLiquidityHash } = await client.submitTransaction(burnLiquidityBcsTxn);
+    await client.waitForTransaction(burnLiquidityHash);
+    console.log(`Burn liquidity transaction ${burnLiquidityHash} is submitted`);
 
   } catch(e) {
     console.log(e)

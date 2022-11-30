@@ -2,12 +2,24 @@
 
 ## Quickstart
 
-```
+```console
   yarn install
 ```
 
-- [ ] Check pool existence
-- [ ] Create pool with liquidity
-- [ ] Add liquidity to pool
-- [ ] Swap in created pool
-- [ ] Redeem LP coin from pool
+## Test Swap:
+
+```console
+  yarn swap
+```
+
+## Test Liquidity Pools:
+
+```console
+  yarn pool
+```
+
+- [x] Check pool existence
+- [x] Create pool with liquidity if not existed
+- [x] Add liquidity to pool
+- [x] Swap in created pool
+- [x] Redeem LP coin from pool
