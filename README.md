@@ -25,7 +25,13 @@ The typescript SDK for [Liquidswap](https://liquidswap.com).
 
 ## Installation
 
+For NPM:
+
     npm i @pontem/liquidswap-sdk
+
+For Yarn:
+
+    yarn add @pontem/liquidswap-sdk
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
