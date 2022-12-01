@@ -396,7 +396,11 @@ For Yarn:
   ```
 </details>
 
-### A lot of additional examples located here: [`src/main.test.ts`](src/main.test.ts);
+### More examples
+
+Additional examples you can find in: [`src/main.test.ts`](src/main.test.ts).
+
+Examples working with Aptos SDK can be found in the [examples](examples) directory.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -406,8 +410,9 @@ For Yarn:
 - [x] Update to work with the Contract v3
 - [x] Prepare transaction payload
 - [x] Swap: unstable / stable (normal and high gas)
-- [ ] Liquidity: add / redeem LP
-- [ ] Pools: check pool / create pool
+- [x] Liquidity: add / redeem LP
+- [x] Pools: check pool / create pool
+- [x] Examples with Aptos SDK
 - [ ] Staking: stake / harvest / unstake
 
 See the [open issues](https://github.com/pontem-network/liquidswap-sdk/issues) for a full list of proposed features (and known issues).
