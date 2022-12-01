@@ -36,11 +36,6 @@ export type TxPayloadCallFunction = {
   arguments: string[];
 };
 
-type TxPayloadInstallModule = {
-  type: 'module_bundle_payload';
-  modules: { bytecode: string }[];
-};
-
-export type TAptosTxPayload = TxPayloadCallFunction | TxPayloadInstallModule;
+export type TAptosTxPayload = TxPayloadCallFunction;
 
 export type CurveType = 'uncorrelated' | 'stable';

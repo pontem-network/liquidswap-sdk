@@ -8,8 +8,6 @@ export const COINS_ACCOUNT =
   process.env.VUE_APP_COINS_ACCOUNT ||
   '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9';
 
-export const CURVE_UNCORRELATED = `${MODULES_ACCOUNT}::curves::Uncorrelated`;
-export const CURVE_STABLE = `${MODULES_ACCOUNT}::curves::Stable`;
 export const COIN_INFO = '0x1::coin::CoinInfo';
 export const COIN_STORE = '0x1::coin::CoinStore';
 

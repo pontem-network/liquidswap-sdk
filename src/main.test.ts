@@ -1,4 +1,4 @@
-import { CURVE_UNCORRELATED, CURVE_STABLE } from './constants';
+import { MODULES_ACCOUNT, RESOURCES_ACCOUNT } from './constants';
 import SDK from './main';
 import { convertValueToDecimal } from './utils';
 
@@ -17,7 +17,14 @@ const TokensMapping: Record<string, string> = {
 describe('Swap Module', () => {
   const sdk = new SDK({
     nodeUrl: 'https://fullnode.mainnet.aptoslabs.com/v1',
+    networkOptions: {
+      resourceAccount: RESOURCES_ACCOUNT,
+      moduleAccount: MODULES_ACCOUNT
+    }
   });
+
+  const curves = sdk.curves;
+
   test('calculateRates (from mode)', async () => {
     const output = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
@@ -75,7 +82,7 @@ describe('Swap Module', () => {
     } catch (e) {
       expect(e).toMatchObject(
         new Error(
-          `LiquidityPool (0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::liquidity_pool::LiquidityPool<${TokensMapping.BTC},${TokensMapping.WETH},${CURVE_STABLE}>) not found`,
+          `LiquidityPool (0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::liquidity_pool::LiquidityPool<${TokensMapping.BTC},${TokensMapping.WETH},${curves.stable}>) not found`,
         ),
       );
     }
@@ -150,7 +157,7 @@ describe('Swap Module', () => {
       type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.USDT,
-        CURVE_UNCORRELATED,
+        curves.uncorrelated,
       ],
       arguments: ['100000000', '4283115'],
     });
@@ -175,7 +182,7 @@ describe('Swap Module', () => {
       type_arguments: [
         TokensMapping.APTOS,
         TokensMapping.USDT,
-        CURVE_UNCORRELATED,
+        curves.uncorrelated,
       ],
       arguments: ['23327874', '1000000'],
     });
@@ -197,7 +204,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
-      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, curves.stable],
       arguments: ['4000000', '37629'],
     });
   });
@@ -218,7 +225,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
-      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, curves.stable],
       arguments: ['4018976', '37810'],
     });
   });
@@ -239,7 +246,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, curves.stable],
       arguments: ['100000000', '174381'],
     });
   });
@@ -260,7 +267,7 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, CURVE_STABLE],
+      type_arguments: [TokensMapping.APTOS, TokensMapping.WETH, curves.stable],
       arguments: ['402045', '4339'],
     });
   });
@@ -385,7 +392,6 @@ describe('Swap Module', () => {
       toAmount: 19, // 0.000019 USDC
       interactiveToken: 'from',
       slippage: 0.005,
-      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     });
 
@@ -396,7 +402,7 @@ describe('Swap Module', () => {
       type_arguments: [
         TokensMapping.USDC,
         TokensMapping.APTOS,
-        CURVE_UNCORRELATED,
+        curves.uncorrelated,
       ],
       arguments: ['19', '19', '400', '398'],
     });
@@ -410,7 +416,6 @@ describe('Swap Module', () => {
       toAmount: 1000, // 0.001 USDC
       interactiveToken: 'to',
       slippage: 0.005,
-      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     });
 
@@ -421,7 +426,7 @@ describe('Swap Module', () => {
       type_arguments: [
         TokensMapping.USDC,
         TokensMapping.APTOS,
-        CURVE_UNCORRELATED,
+        curves.uncorrelated,
       ],
       arguments: ['1000', '995', '22335', '22223'],
     });
@@ -437,7 +442,6 @@ describe('Swap Module', () => {
       toAmount: 100000, // 0.001 MOJO
       interactiveToken: 'from',
       slippage: 0.005,
-      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     });
 
@@ -448,7 +452,7 @@ describe('Swap Module', () => {
       type_arguments: [
         '0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO',
         '0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdcCoin',
-        CURVE_UNCORRELATED,
+        curves.uncorrelated,
       ],
       arguments: ['100000', '99500', '1000', '995'],
     });
@@ -472,7 +476,7 @@ describe('Swap Module', () => {
       type_arguments: [
         TokensMapping.USDC,
         TokensMapping.APTOS,
-        CURVE_UNCORRELATED,
+        curves.uncorrelated,
       ],
       arguments: ['100000', expect.any(String), expect.any(String)],
     });

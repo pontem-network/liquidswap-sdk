@@ -20,12 +20,6 @@ import {
   d,
   is_sorted,
 } from '../utils';
-import {
-  MODULES_ACCOUNT,
-  RESOURCES_ACCOUNT,
-  CURVE_STABLE,
-  CURVE_UNCORRELATED,
-} from '../constants';
 
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
@@ -156,6 +150,7 @@ export class SwapModule implements IModule {
   }
 
   createSwapTransactionPayload(params: CreateTXPayloadParams): TAptosTxPayload {
+    const curves = this.sdk.curves;
     const slippage = d(params.slippage);
 
     if (slippage.gte(1) || slippage.lte(0)) {
@@ -178,8 +173,7 @@ export class SwapModule implements IModule {
         : 'swap_into',
     );
 
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const curve = curves[params.curveType];
 
     const typeArguments = [params.fromToken, params.toToken, curve];
 
@@ -203,8 +197,11 @@ export class SwapModule implements IModule {
   }
 
   async getLiquidityPoolResource(params: CalculateRatesParams) {
+    const { resourceAccount, moduleAccount } = this.sdk.networkOptions;
+    const curves = this.sdk.curves;
+
     const modulesLiquidityPool = composeType(
-      MODULES_ACCOUNT,
+      moduleAccount,
       'liquidity_pool',
       'LiquidityPool',
     );
@@ -215,8 +212,7 @@ export class SwapModule implements IModule {
         : [coinY, coinX];
       return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
     }
-    const curve =
-      params.curveType === 'stable' ? CURVE_STABLE : CURVE_UNCORRELATED;
+    const curve = curves[params.curveType];
 
     const liquidityPoolType = getPoolStr(
       params.fromToken,
@@ -229,7 +225,7 @@ export class SwapModule implements IModule {
     try {
       liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-          RESOURCES_ACCOUNT,
+          resourceAccount,
           liquidityPoolType,
         );
     } catch (e) {
