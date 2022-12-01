@@ -38,6 +38,8 @@ dotenv.config();
 
   await faucetClient.fundAccount(alice.address(), 100_000_000);
 
+  console.log(`Account Balance ${await coinClient.checkBalance(alice)}`);
+
   // Register account with coin
   try {
     const coinRegisterPayload = {
@@ -59,9 +61,6 @@ dotenv.config();
   }
 
   try {
-    const balance = await coinClient.checkBalance(alice);
-    console.log('Account Balance: ', balance);
-
     // get Rate for USDT coin.
     const usdtRate = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
