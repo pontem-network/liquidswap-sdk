@@ -35,7 +35,26 @@ dotenv.config();
     await faucetClient.fundAccount(alice.address(), 100_000_000);
 
     // check balances
-    console.log(`Alice: ${await coinClient.checkBalance(alice)}`);
+    console.log(`Alice balance: ${await coinClient.checkBalance(alice)}`);
+
+    // Register account with coin
+    try {
+      const coinRegisterPayload = {
+        type: 'entry_function_payload',
+        function: '0x1::managed_coin::register',
+        type_arguments: [TokensMapping.USDT],
+        arguments: [],
+      }
+
+      const rawTxn = await client.generateTransaction(alice.address(), coinRegisterPayload);
+      const bcsTxn = await client.signTransaction(alice, rawTxn);
+      const { hash } = await client.submitTransaction(bcsTxn);
+      await client.waitForTransaction(hash);
+
+      console.log(`Coin ${TokensMapping.USDT} successfully Registered to Alice account`);
+    } catch(e) {
+      console.log("Coin register error: ", e);
+    }
 
     //check pool existence
     const poolExisted = await sdk.Liquidity.checkPoolExistence({
