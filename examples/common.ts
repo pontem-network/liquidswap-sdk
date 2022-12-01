@@ -9,3 +9,16 @@ export const TokensMapping = {
   APTOS: '0x1::aptos_coin::AptosCoin', // APTOS
   USDT: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::USDT', //devnet USDT
 };
+
+export type TxPayloadCallFunction = {
+  type: 'entry_function_payload';
+  function: string;
+  type_arguments: string[];
+  arguments: string[];
+};
+
+export const NETWORKS_MAPPING = {
+  TESTNET: 'testnet',
+  DEVNET: 'devnet',
+  MAINNET: 'mainnet'
+};

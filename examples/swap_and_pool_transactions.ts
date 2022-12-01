@@ -2,7 +2,15 @@ import dotenv from "dotenv";
 import SDK from "@pontem/liquidswap-sdk";
 import { AptosClient, FaucetClient, AptosAccount, CoinClient } from 'aptos';
 
-import {NODE_URL, TokensMapping, FAUCET_URL, RESOURCE_ACCOUNT, MODULES_ACCOUNT} from "./common";
+import {
+  NODE_URL,
+  TokensMapping,
+  FAUCET_URL,
+  RESOURCE_ACCOUNT,
+  MODULES_ACCOUNT,
+  TxPayloadCallFunction,
+  NETWORKS_MAPPING,
+} from "./common";
 
 dotenv.config();
 
@@ -34,8 +42,8 @@ dotenv.config();
     // make Faucet create and fund accounts
     await faucetClient.fundAccount(alice.address(), 100_000_000);
 
-    // check balances
-    console.log(`Alice balance: ${await coinClient.checkBalance(alice)}`);
+    // check balance
+    console.log(`Account balance: ${await coinClient.checkBalance(alice)}`);
 
     // Register account with coin
     try {
@@ -52,11 +60,43 @@ dotenv.config();
       await client.waitForTransaction(hash);
 
       console.log(`Coin ${TokensMapping.USDT} successfully Registered to Alice account`);
-      console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=devnet`);
+      console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.DEVNET}`);
 
     } catch(e) {
       console.log("Coin register error: ", e);
     }
+
+    // get Rate for USDT coin.
+    const usdtRate = await sdk.Swap.calculateRates({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      amount: 10000000, // 0.1 APTOS
+      curveType: 'uncorrelated',
+      interactiveToken: 'from',
+    });
+
+    console.log('SsdtRate: ', usdtRate);
+
+    // create payload for swap transaction
+    const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
+      fromToken: TokensMapping.APTOS,
+      toToken: TokensMapping.USDT,
+      fromAmount: 10000000, // 0.1 APTOS
+      toAmount: Number(usdtRate), // USDT
+      interactiveToken: 'from',
+      slippage: 0.005,
+      stableSwapType: 'normal',
+      curveType: 'uncorrelated',
+    }) as TxPayloadCallFunction;
+
+    console.log('Swap Transaction Payload: ', swapTransactionPayload);
+
+    const rawTxn = await client.generateTransaction(alice.address(), swapTransactionPayload);
+    const bcsTxn = await client.signTransaction(alice, rawTxn);
+    const { hash } = await client.submitTransaction(bcsTxn);
+    await client.waitForTransaction(hash);
+    console.log(`Swap transaction ${hash} is submitted.`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.DEVNET}`);
 
     //check pool existence
     const poolExisted = await sdk.Liquidity.checkPoolExistence({
@@ -95,7 +135,7 @@ dotenv.config();
     const { hash: addLiquidityHash } = await client.submitTransaction(addLiquidityBcsTxn);
     await client.waitForTransaction(addLiquidityHash);
     console.log(`Add liquidity transaction with hash ${addLiquidityHash} is submitted`);
-    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${addLiquidityHash}?network=devnet`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${addLiquidityHash}?network=${NETWORKS_MAPPING.DEVNET}`);
 
     // calculate Burn Liquidity Minimum received values
     const outputBurnValues = await sdk.Liquidity.calculateOutputBurn({
@@ -125,7 +165,7 @@ dotenv.config();
     const { hash: burnLiquidityHash } = await client.submitTransaction(burnLiquidityBcsTxn);
     await client.waitForTransaction(burnLiquidityHash);
     console.log(`Burn liquidity transaction ${burnLiquidityHash} is submitted`);
-    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${burnLiquidityHash}?network=devnet`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${burnLiquidityHash}?network=${NETWORKS_MAPPING.DEVNET}`);
 
 
   } catch(e) {

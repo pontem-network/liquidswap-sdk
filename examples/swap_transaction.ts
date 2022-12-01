@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 import SDK from "@pontem/liquidswap-sdk";
 import { AptosAccount, CoinClient, FaucetClient } from 'aptos';
 
-import { NODE_URL, TokensMapping, MODULES_ACCOUNT, RESOURCE_ACCOUNT, FAUCET_URL } from "./common";
+import { NODE_URL, TokensMapping, MODULES_ACCOUNT, RESOURCE_ACCOUNT, FAUCET_URL, NETWORKS_MAPPING } from "./common";
 
-export type TxPayloadCallFunction = {
+type TxPayloadCallFunction = {
   type: 'entry_function_payload';
   function: string;
   type_arguments: string[];
@@ -12,7 +12,6 @@ export type TxPayloadCallFunction = {
 };
 
 dotenv.config();
-
 
 (async() => {
 
@@ -54,14 +53,14 @@ dotenv.config();
     await client.waitForTransaction(hash);
 
     console.log(`Coin ${TokensMapping.USDT} successfully Registered to Alice account`);
-    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=devnet`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.DEVNET}`);
   } catch(e) {
     console.log("Coin register error: ", e);
   }
 
   try {
     const balance = await coinClient.checkBalance(alice);
-    console.log('Balance: ', balance);
+    console.log('Account Balance: ', balance);
 
     // get Rate for USDT coin.
     const usdtRate = await sdk.Swap.calculateRates({
@@ -93,7 +92,7 @@ dotenv.config();
     const { hash } = await client.submitTransaction(bcsTxn);
     await client.waitForTransaction(hash);
     console.log(`Swap transaction ${hash} is submitted.`);
-    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=devnet`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.DEVNET}`);
 
   } catch (e) {
     console.log(e);

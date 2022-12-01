@@ -6,7 +6,7 @@
   "license": "GPU v3",
   "scripts": {
     "swap": "ts-node swap_transaction.ts",
-    "pool": "ts-node pool_transaction.ts"
+    "pool": "ts-node swap_and_pool_transactions.ts"
   },
   "dependencies": {
     "@pontem/liquidswap-sdk": "file:../",
