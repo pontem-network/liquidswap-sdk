@@ -52,6 +52,8 @@ dotenv.config();
       await client.waitForTransaction(hash);
 
       console.log(`Coin ${TokensMapping.USDT} successfully Registered to Alice account`);
+      console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=devnet`);
+
     } catch(e) {
       console.log("Coin register error: ", e);
     }
@@ -68,7 +70,7 @@ dotenv.config();
     const { rate, receiveLp } = await sdk.Liquidity.calculateRateAndMinReceivedLP({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      amount: 100000000, // 1 APTOS
+      amount: 10000000, // 0.1 APTOS
       curveType: 'uncorrelated',
       interactiveToken: 'from',
       slippage: 0.005,
@@ -79,7 +81,7 @@ dotenv.config();
     const addLiquidityPoolPayload = await sdk.Liquidity.createAddLiquidityPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      fromAmount: 100000000, // 1 APTOS
+      fromAmount: 10000000, // 0.1 APTOS
       toAmount: Number(rate), // USDT
       interactiveToken: 'from',
       slippage: 0.005,
@@ -93,6 +95,7 @@ dotenv.config();
     const { hash: addLiquidityHash } = await client.submitTransaction(addLiquidityBcsTxn);
     await client.waitForTransaction(addLiquidityHash);
     console.log(`Add liquidity transaction with hash ${addLiquidityHash} is submitted`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${addLiquidityHash}?network=devnet`);
 
     // calculate Burn Liquidity Minimum received values
     const outputBurnValues = await sdk.Liquidity.calculateOutputBurn({
@@ -122,6 +125,8 @@ dotenv.config();
     const { hash: burnLiquidityHash } = await client.submitTransaction(burnLiquidityBcsTxn);
     await client.waitForTransaction(burnLiquidityHash);
     console.log(`Burn liquidity transaction ${burnLiquidityHash} is submitted`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${burnLiquidityHash}?network=devnet`);
+
 
   } catch(e) {
     console.log(e)

@@ -54,6 +54,7 @@ dotenv.config();
     await client.waitForTransaction(hash);
 
     console.log(`Coin ${TokensMapping.USDT} successfully Registered to Alice account`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=devnet`);
   } catch(e) {
     console.log("Coin register error: ", e);
   }
@@ -66,7 +67,7 @@ dotenv.config();
     const usdtRate = await sdk.Swap.calculateRates({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      amount: 100000000, // 1 APTOS
+      amount: 10000000, // 0.1 APTOS
       curveType: 'uncorrelated',
       interactiveToken: 'from',
     });
@@ -77,11 +78,11 @@ dotenv.config();
     const swapTransactionPayload = await sdk.Swap.createSwapTransactionPayload({
       fromToken: TokensMapping.APTOS,
       toToken: TokensMapping.USDT,
-      fromAmount: 100000000, // 1 APTOS
+      fromAmount: 10000000, // 0.1 APTOS
       toAmount: Number(usdtRate), // USDT
       interactiveToken: 'from',
       slippage: 0.005,
-      stableSwapType: 'high',
+      stableSwapType: 'normal',
       curveType: 'uncorrelated',
     }) as TxPayloadCallFunction;
 
@@ -91,10 +92,10 @@ dotenv.config();
     const bcsTxn = await client.signTransaction(alice, rawTxn);
     const { hash } = await client.submitTransaction(bcsTxn);
     await client.waitForTransaction(hash);
-    console.log(`Swap transaction ${hash} is submitted`);
+    console.log(`Swap transaction ${hash} is submitted.`);
+    console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=devnet`);
 
   } catch (e) {
     console.log(e);
   }
-
 })();
