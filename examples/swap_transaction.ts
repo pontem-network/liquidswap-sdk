@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import SDK from "@pontem/liquidswap-sdk";
-import {AptosAccount, CoinClient, FaucetClient} from 'aptos';
+import { AptosAccount, CoinClient } from 'aptos';
 
-import {NODE_URL, TokensMapping, MODULES_ACCOUNT, RESOURCE_ACCOUNT, FAUCET_URL} from "./common";
+import { NODE_URL, TokensMapping, MODULES_ACCOUNT, RESOURCE_ACCOUNT } from "./common";
 
 export type TxPayloadCallFunction = {
   type: 'entry_function_payload';
@@ -35,9 +35,50 @@ dotenv.config();
   // create local account
   const alice = new AptosAccount();
 
-  const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
+  // const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
+  //
+  // await faucetClient.fundAccount(alice.address(), 100_000_000);
 
-  await faucetClient.fundAccount(alice.address(), 100_000_000);
+  const { moduleAccount } = sdk.networkOptions;
+
+
+  // Register account with coin
+  try {
+    const cointRegisterPayload = {
+      type: 'entry_function_payload',
+      function: '0x1::managed_coin::register',
+      type_arguments: [TokensMapping.APTOS],
+      arguments: [],
+    }
+
+    const rawTxn = await client.generateTransaction(alice.address(), cointRegisterPayload);
+    console.log(1);
+    const bcsTxn = await client.signTransaction(alice, rawTxn);
+    console.log(2);
+    const { hash } = await client.submitTransaction(bcsTxn);
+    console.log(3);
+    await client.waitForTransaction(hash);
+
+    console.log('Coin successfully Registered to Alice account');
+  } catch(e) {
+    console.log("Coin register error: ", e);
+  }
+
+  try {
+    const faucetPayload = {
+      type: 'entry_function_payload',
+      function: `${moduleAccount}::faucet::request`,
+      type_arguments: [TokensMapping.APTOS],
+      arguments: [moduleAccount],
+    };
+    const rawTxn = await client.generateTransaction(alice.address(), faucetPayload);
+    const bcsTxn = await client.signTransaction(alice, rawTxn);
+    const { hash } = await client.submitTransaction(bcsTxn);
+    await client.waitForTransaction(hash);
+
+  } catch (e) {
+    console.log('Faucet topup error', e);
+  }
 
   try {
     const balance = await coinClient.checkBalance(alice);
