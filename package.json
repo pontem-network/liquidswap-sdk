@@ -1,6 +1,6 @@
 {
   "name": "@pontem/liquidswap-sdk",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "SDK to use LiquidSwap functions",
   "author": "Igor Demko <igor@pontem.network>",
   "repository": "https://github.com/pontem-network/liquidswap-sdk",
