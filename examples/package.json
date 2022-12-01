@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "license": "GPU v3",
+  "license": "GPL-3.0",
   "scripts": {
     "swap": "ts-node swap_transaction.ts",
     "pool": "ts-node swap_and_pool_transactions.ts"
