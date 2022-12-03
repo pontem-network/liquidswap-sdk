@@ -198,6 +198,16 @@ export class LiquidityModule implements IModule {
     return value;
   }
 
+  async getAmountIn(params: Omit<ICalculateRatesParams, 'interactiveToken'>) {
+    const { rate } = await this.calculateRateAndMinReceivedLP({ ...params, interactiveToken: 'from' });
+    return rate;
+  }
+
+  async getAmountOut(params: Omit<ICalculateRatesParams, 'interactiveToken'>) {
+    const { rate } = await this.calculateRateAndMinReceivedLP({ ...params, interactiveToken: 'to' });
+    return rate;
+  }
+
   async calculateRateAndMinReceivedLP(
     params: ICalculateRatesParams,
   ): Promise<{ rate: string; receiveLp: string }> {

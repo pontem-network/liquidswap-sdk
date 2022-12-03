@@ -398,7 +398,7 @@ For Yarn:
 
 ### More examples
 
-Additional examples you can find in: [`src/main.test.ts`](src/main.test.ts).
+Additional examples you can find in follow directory: [`src/tests/`](src/tests/).
 
 Examples working with Aptos SDK can be found in the [examples](examples) directory.
 

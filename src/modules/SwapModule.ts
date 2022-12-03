@@ -51,6 +51,14 @@ export class SwapModule implements IModule {
     this._sdk = sdk;
   }
 
+  async getAmountIn(params: Omit<CalculateRatesParams, 'interactiveToken'>) {
+    return await this.calculateRates({ ...params, interactiveToken: 'from' });
+  }
+
+  async getAmountOut(params: Omit<CalculateRatesParams, 'interactiveToken'>) {
+    return await this.calculateRates({ ...params, interactiveToken: 'to' });
+  }
+
   async calculateRates(params: CalculateRatesParams): Promise<string> {
     const { modules } = this.sdk.networkOptions;
 
