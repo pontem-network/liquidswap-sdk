@@ -398,9 +398,9 @@ For Yarn:
 
 ### More examples
 
-Additional examples you can find in: [`src/main.test.ts`](src/main.test.ts).
+More examples you can find in the following directory: [`src/tests/`](src/tests/).
 
-Examples working with Aptos SDK can be found in the [examples](examples) directory.
+Code examples to work with Aptos SDK can be found in the [examples](examples) directory.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
