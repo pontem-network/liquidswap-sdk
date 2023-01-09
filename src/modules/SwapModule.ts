@@ -38,7 +38,9 @@ export type CreateTXPayloadParams = {
   slippage: number;
   stableSwapType: 'high' | 'normal';
   curveType: CurveType;
-};
+}
+
+type GetLiquidityPoolResourceParams = Pick<CalculateRatesParams, 'fromToken' | 'toToken' | 'curveType'>;
 
 export class SwapModule implements IModule {
   protected _sdk: SDK;
@@ -204,7 +206,7 @@ export class SwapModule implements IModule {
     };
   }
 
-  async getLiquidityPoolResource(params: CalculateRatesParams) {
+  async getLiquidityPoolResource(params: GetLiquidityPoolResourceParams) {
     const { resourceAccount, moduleAccount } = this.sdk.networkOptions;
     const curves = this.sdk.curves;
 
