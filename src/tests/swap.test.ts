@@ -194,7 +194,7 @@ describe('Swap Module', () => {
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
       type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['4000000', '37629'],
+      arguments: ['4000000', '37818'],
     });
   });
 
@@ -215,7 +215,7 @@ describe('Swap Module', () => {
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
       type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['4018976', '37810'],
+      arguments: ['3998981', '37810'],
     });
   });
 
@@ -236,7 +236,7 @@ describe('Swap Module', () => {
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
       type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['100000000', '174381'],
+      arguments: ['100000000', '175257'],
     });
   });
 
@@ -257,7 +257,7 @@ describe('Swap Module', () => {
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
       type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['402045', '4339'],
+      arguments: ['400045', '4339'],
     });
   });
 

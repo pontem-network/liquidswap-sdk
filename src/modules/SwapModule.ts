@@ -190,11 +190,11 @@ export class SwapModule implements IModule {
     const fromAmount =
       params.interactiveToken === 'from'
         ? params.fromAmount
-        : withSlippage(slippage, d(params.fromAmount), true).toFixed(0);
+        : params.curveType === 'stable' ? params.fromAmount : withSlippage(slippage, d(params.fromAmount), true).toFixed(0);
     const toAmount =
       params.interactiveToken === 'to'
         ? params.toAmount
-        : withSlippage(slippage, d(params.toAmount), false).toFixed(0);
+        : params.curveType === 'stable' ? params.toAmount : withSlippage(slippage, d(params.toAmount), false).toFixed(0);
 
     const args = [fromAmount.toString(), toAmount.toString()];
 
