@@ -179,10 +179,10 @@ describe('Swap Module', () => {
 
   test('createSwapTransactionPayload (stable from mode high)', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TOKENS_MAPPING.APTOS,
+      fromToken: TOKENS_MAPPING.USDT,
       toToken: TOKENS_MAPPING.WETH,
-      fromAmount: 4000000, // 0.04 APTOS
-      toAmount: 37818, // 0.00037818 WETH
+      fromAmount: 150000, // 0.15 USDT
+      toAmount: 91, // 0.000091WETH
       interactiveToken: 'from',
       slippage: 0.005,
       stableSwapType: 'high',
@@ -193,17 +193,17 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
-      type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['4000000', '37818'],
+      type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stable],
+      arguments: ['150000', '90'],
     });
   });
 
   test('createSwapTransactionPayload (stable to mode high)', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TOKENS_MAPPING.APTOS,
+      fromToken: TOKENS_MAPPING.USDT,
       toToken: TOKENS_MAPPING.WETH,
-      fromAmount: convertValueToDecimal('0.03998981', 8),
-      toAmount: convertValueToDecimal('0.0003781', 8),
+      fromAmount: convertValueToDecimal('0.097835', 6),
+      toAmount: convertValueToDecimal('0.00006', 6),
       interactiveToken: 'to',
       slippage: 0.005,
       stableSwapType: 'high',
@@ -214,17 +214,17 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_into',
-      type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['3998981', '37810'],
+      type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stable],
+      arguments: ['97835', '60'],
     });
   });
 
   test('createSwapTransactionPayload (stable from mode normal)', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TOKENS_MAPPING.APTOS,
+      fromToken: TOKENS_MAPPING.USDT,
       toToken: TOKENS_MAPPING.WETH,
-      fromAmount: convertValueToDecimal('1', 8),
-      toAmount: convertValueToDecimal('0.00175257', 8),
+      fromAmount: convertValueToDecimal('0.1', 6),
+      toAmount: convertValueToDecimal('0.00006', 6),
       interactiveToken: 'from',
       slippage: 0.005,
       stableSwapType: 'normal',
@@ -235,17 +235,17 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['100000000', '175257'],
+      type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stable],
+      arguments: ['100000', '59'],
     });
   });
 
   test('createSwapTransactionPayload (stable to mode normal)', () => {
     const output = sdk.Swap.createSwapTransactionPayload({
-      fromToken: TOKENS_MAPPING.APTOS,
+      fromToken: TOKENS_MAPPING.USDT,
       toToken: TOKENS_MAPPING.WETH,
-      fromAmount: convertValueToDecimal('0.00400045', 8),
-      toAmount: convertValueToDecimal('0.00004339', 8),
+      fromAmount: convertValueToDecimal('0.081473', 6),
+      toAmount: convertValueToDecimal('0.00005', 6),
       interactiveToken: 'to',
       slippage: 0.005,
       stableSwapType: 'normal',
@@ -256,8 +256,8 @@ describe('Swap Module', () => {
       type: 'entry_function_payload',
       function:
         '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap_unchecked',
-      type_arguments: [TOKENS_MAPPING.APTOS, TOKENS_MAPPING.WETH, curves.stable],
-      arguments: ['400045', '4339'],
+      type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stable],
+      arguments: ['81473', '50'],
     });
   });
 
