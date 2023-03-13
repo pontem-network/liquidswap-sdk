@@ -3,7 +3,7 @@ import { SwapModule } from './modules/SwapModule';
 import { ResourcesModule } from './modules/ResourcesModule';
 import { AptosResourceType } from './types/aptos';
 import { LiquidityModule } from './modules/LiquidityModule';
-import { NETWORKS_MODULES, MODULES_ACCOUNT, RESOURCES_ACCOUNT } from './constants';
+import { NETWORKS_MODULES, MODULES_ACCOUNT, RESOURCES_ACCOUNT, MODULES_V05_ACCOUNT, RESOURCES_V05_ACCOUNT } from './constants';
 
 const initialNetworkOptions = {
   nativeToken: '0x1::aptos_coin::AptosCoin',
@@ -14,6 +14,8 @@ const initialNetworkOptions = {
   },
   resourceAccount: RESOURCES_ACCOUNT,
   moduleAccount: MODULES_ACCOUNT,
+  moduleAccountV05: MODULES_V05_ACCOUNT,
+  resourceAccountV05: RESOURCES_V05_ACCOUNT
 };
 
 interface INetworkOptions {
@@ -25,6 +27,8 @@ interface INetworkOptions {
   } & Record<string, AptosResourceType>;
   resourceAccount?: string;
   moduleAccount?: string;
+  moduleAccountV05?: string;
+  resourceAccountV05?: string;
 }
 
 export interface SdkOptions {
@@ -32,9 +36,11 @@ export interface SdkOptions {
   networkOptions?: INetworkOptions;
 }
 
-interface ICurves {
+export interface ICurves {
   stable: string;
   uncorrelated: string;
+  stableV05: string;
+  uncorrelatedV05: string;
 }
 
 export class SDK {
@@ -91,7 +97,9 @@ export class SDK {
     this._liquidity = new LiquidityModule(this);
     this._curves = {
       uncorrelated: `${this._networkOptions.moduleAccount}::curves::Uncorrelated`,
-      stable: `${this._networkOptions.moduleAccount}::curves::Stable`
+      stable: `${this._networkOptions.moduleAccount}::curves::Stable`,
+      uncorrelatedV05: `${this._networkOptions.moduleAccountV05}::curves::Uncorrelated`,
+      stableV05: `${this._networkOptions.resourceAccountV05}::curves::Stable`
     }
   }
 }
