@@ -243,7 +243,7 @@ export function getCurve(type: CurveType, curves: ICurves, contract?: number): s
     }
     return curves.uncorrelatedV05;
   }
-  if (type === 'uncorrelated') {
+  if (type === 'stable') {
     return curves.stable;
   }
   return curves.uncorrelated;

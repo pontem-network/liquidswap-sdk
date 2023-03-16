@@ -14,8 +14,8 @@ import {
   is_sorted,
   withSlippage,
 } from '../utils';
-import {VERSION_0, VERSION_0_5} from "../constants";
-import {getCurve} from "../utils/contracts";
+import { VERSION_0, VERSION_0_5 } from "../constants";
+import { getCurve } from "../utils/contracts";
 
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
@@ -23,7 +23,7 @@ export type CalculateRatesParams = {
   amount: Decimal | number;
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
-  version: typeof VERSION_0 | typeof VERSION_0_5;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 };
 
 export type CreateTXPayloadParams = {
@@ -35,7 +35,7 @@ export type CreateTXPayloadParams = {
   slippage: number;
   stableSwapType: 'high' | 'normal';
   curveType: CurveType;
-  version: typeof VERSION_0 | typeof VERSION_0_5;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 }
 
 type GetLiquidityPoolResourceParams = Pick<CalculateRatesParams, 'fromToken' | 'toToken' | 'curveType' | 'version'>;
@@ -181,7 +181,7 @@ export class SwapModule implements IModule {
         : 'swap_into',
     );
 
-    const curve = curves[params.curveType];
+    const curve = getCurve(params.curveType, curves, params.version);
 
     const typeArguments = [params.fromToken, params.toToken, curve];
 
@@ -231,7 +231,6 @@ export class SwapModule implements IModule {
         : [coinY, coinX];
       return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
     }
-    // const curve = curves[params.curveType];
 
     const liquidityPoolType = getPoolStr(
       params.fromToken,
