@@ -1,4 +1,12 @@
-import { MODULES_ACCOUNT, RESOURCES_ACCOUNT, TOKENS_MAPPING } from '../constants';
+import {
+  MODULES_ACCOUNT,
+  MODULES_V05_ACCOUNT,
+  RESOURCES_ACCOUNT,
+  RESOURCES_V05_ACCOUNT,
+  TOKENS_MAPPING,
+  VERSION_0,
+  VERSION_0_5
+} from '../constants';
 import SDK from '../main';
 import { convertValueToDecimal } from '../utils';
 
@@ -8,11 +16,121 @@ describe('Swap Module', () => {
     nodeUrl: 'https://fullnode.mainnet.aptoslabs.com/v1',
     networkOptions: {
       resourceAccount: RESOURCES_ACCOUNT,
-      moduleAccount: MODULES_ACCOUNT
+      moduleAccount: MODULES_ACCOUNT,
+      resourceAccountV05: RESOURCES_V05_ACCOUNT,
+      moduleAccountV05: MODULES_V05_ACCOUNT
     }
   });
 
   const curves = sdk.curves;
+
+  test('calculateRates (from mode) stable version v0.5', async () => {
+    const output = await sdk.Swap.calculateRates({
+      fromToken: TOKENS_MAPPING.USDC,
+      toToken: TOKENS_MAPPING.USDT,
+      amount: 1000000, // 1 USDC
+      curveType: 'stable',
+      interactiveToken: 'from',
+      version: VERSION_0_5
+    });
+
+    console.log(`1000000 LayerZero USDC → ${output} LayerZero USDT`);
+
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
+  });
+
+  test('calculateRates (to mode) stable version v0.5', async () => {
+    const output = await sdk.Swap.calculateRates({
+      fromToken: TOKENS_MAPPING.USDC,
+      toToken: TOKENS_MAPPING.USDT,
+      amount: 100000, // 0.1 USDT
+      curveType: 'stable',
+      interactiveToken: 'to',
+      version: VERSION_0_5
+    });
+
+    console.log(`100000 LayerZero USDT → ${output} LayerZero USDC`);
+
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
+  });
+
+  test('calculateRates (from mode) uncorrelated version v0.5', async () => {
+    const output = await sdk.Swap.calculateRates({
+      fromToken: TOKENS_MAPPING.USDT,
+      toToken: TOKENS_MAPPING.WETH,
+      amount: 150000, // 0.15 USDT
+      curveType: 'uncorrelated',
+      interactiveToken: 'from',
+      version: VERSION_0_5
+    });
+
+    console.log(`150000 LayerZero USDT → ${output} LayerZero WETH`);
+
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
+  });
+
+  test('calculateRates (to mode) uncorrelated version v0.5', async () => {
+    const output = await sdk.Swap.calculateRates({
+      fromToken: TOKENS_MAPPING.WETH,
+      toToken: TOKENS_MAPPING.USDT,
+      amount: 150000, // 0.15 USDT
+      curveType: 'uncorrelated',
+      interactiveToken: 'to',
+      version: VERSION_0_5
+    });
+
+    console.log(`150000 LayerZero USDT → ${output} LayerZero WETH`);
+
+    expect(typeof output).toBe('string');
+    expect(output.length).toBeGreaterThan(0);
+  });
+
+  test('createSwapTransactionPayload (stable from mode high) v0.5', () => {
+    const output = sdk.Swap.createSwapTransactionPayload({
+      fromToken: TOKENS_MAPPING.USDT,
+      toToken: TOKENS_MAPPING.WETH,
+      fromAmount: 150000, // 0.15 layerzero USDT
+      toAmount: 146, // 0.0000146 wormhole WETH
+      interactiveToken: 'from',
+      slippage: 0.005,
+      stableSwapType: 'high',
+      curveType: 'stable',
+      version: VERSION_0_5
+    });
+
+    expect(output).toStrictEqual({
+      type: 'entry_function_payload',
+      function:
+        '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
+      type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stableV05],
+      arguments: ['150000', '145'],
+    });
+  });
+
+  test('createSwapTransactionPayload (stable from mode high) v0.5', () => {
+    const output = sdk.Swap.createSwapTransactionPayload({
+      fromToken: TOKENS_MAPPING.USDT,
+      toToken: TOKENS_MAPPING.WETH,
+      fromAmount: 150000, // 0.15 layerzero USDT
+      toAmount: 146, // 0.0000146 wormhole WETH
+      interactiveToken: 'from',
+      slippage: 0.005,
+      stableSwapType: 'normal',
+      curveType: 'stable',
+      version: VERSION_0_5
+    });
+
+    expect(output).toStrictEqual({
+      type: 'entry_function_payload',
+      function:
+        '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
+      type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stableV05],
+      arguments: ['150000', '145'],
+    });
+  });
 
   test('calculateRates (from mode)', async () => {
     const output = await sdk.Swap.calculateRates({
@@ -21,6 +139,7 @@ describe('Swap Module', () => {
       amount: 100000000, // 1 APTOS
       curveType: 'uncorrelated',
       interactiveToken: 'from',
+      version: VERSION_0
     });
 
     console.log(`100000000 APT → ${output} USDT`);
@@ -36,6 +155,7 @@ describe('Swap Module', () => {
       amount: 1000000, // 1 USDT
       curveType: 'uncorrelated',
       interactiveToken: 'to',
+      version: VERSION_0
     });
 
     console.log(`${output} APT → 1000000 USDT`);
@@ -51,6 +171,7 @@ describe('Swap Module', () => {
       amount: 100000000, // 1 APTOS
       curveType: 'stable',
       interactiveToken: 'from',
+      version: VERSION_0
     });
 
     console.log(`100000000 APT → ${output} WETH`);
@@ -67,6 +188,7 @@ describe('Swap Module', () => {
         amount: 100000000, // 1 WETH
         curveType: 'stable',
         interactiveToken: 'to',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(
@@ -83,6 +205,7 @@ describe('Swap Module', () => {
         amount: 100000000, // 1 WETH
         curveType: 'stable',
         interactiveToken: 'to',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(new Error('From Coin not exists'));
@@ -95,6 +218,7 @@ describe('Swap Module', () => {
         amount: 100000000, // 1 WETH
         curveType: 'stable',
         interactiveToken: 'to',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(new Error('To Coin not exists'));
@@ -107,6 +231,7 @@ describe('Swap Module', () => {
         amount: 100000000, // 1 WETH
         curveType: 'stable',
         interactiveToken: 'to',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(
@@ -121,6 +246,7 @@ describe('Swap Module', () => {
         amount: 0, // 0 WETH
         curveType: 'stable',
         interactiveToken: 'to',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(new Error('Amount equals zero or undefined'));
@@ -137,6 +263,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'uncorrelated',
+      version: VERSION_0
     });
 
     expect(output).toStrictEqual({
@@ -162,6 +289,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'uncorrelated',
+      version: VERSION_0
     });
 
     expect(output).toStrictEqual({
@@ -187,6 +315,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'stable',
+      version: VERSION_0
     });
 
     expect(output).toStrictEqual({
@@ -208,6 +337,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
       stableSwapType: 'high',
       curveType: 'stable',
+      version: VERSION_0
     });
 
     expect(output).toStrictEqual({
@@ -229,6 +359,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
       stableSwapType: 'normal',
       curveType: 'stable',
+      version: VERSION_0
     });
 
     expect(output).toStrictEqual({
@@ -250,6 +381,7 @@ describe('Swap Module', () => {
       slippage: 0.005,
       stableSwapType: 'normal',
       curveType: 'stable',
+      version: VERSION_0
     });
 
     expect(output).toStrictEqual({
@@ -273,6 +405,7 @@ describe('Swap Module', () => {
         slippage: -0.01,
         stableSwapType: 'high',
         curveType: 'stable',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(
@@ -290,6 +423,7 @@ describe('Swap Module', () => {
         slippage: 1.01,
         stableSwapType: 'high',
         curveType: 'stable',
+        version: VERSION_0
       });
     } catch (e) {
       expect(e).toMatchObject(
@@ -303,6 +437,7 @@ describe('Swap Module', () => {
       toToken: TOKENS_MAPPING.USDT,
       amount: 100000000, // 1 APTOS
       curveType: 'uncorrelated',
+      version: VERSION_0
     });
 
     console.log(`100000000 APT → ${output} USDT`);
@@ -316,6 +451,7 @@ describe('Swap Module', () => {
       toToken: TOKENS_MAPPING.USDT,
       amount: 1000000, // 1 USDT
       curveType: 'uncorrelated',
+      version: VERSION_0
     });
 
     console.log(`${output} APT → 1000000 USDT`);

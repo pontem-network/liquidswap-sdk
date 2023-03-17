@@ -99,7 +99,7 @@ export class SDK {
       uncorrelated: `${this._networkOptions.moduleAccount}::curves::Uncorrelated`,
       stable: `${this._networkOptions.moduleAccount}::curves::Stable`,
       uncorrelatedV05: `${this._networkOptions.moduleAccountV05}::curves::Uncorrelated`,
-      stableV05: `${this._networkOptions.resourceAccountV05}::curves::Stable`
+      stableV05: `${this._networkOptions.moduleAccountV05}::curves::Stable`
     }
   }
 }

@@ -169,8 +169,13 @@ export class SwapModule implements IModule {
 
     const { modules } = this.sdk.networkOptions;
 
+
+
+
     const isUnchecked =
-      params.curveType === 'stable' && params.stableSwapType === 'normal';
+      params.version === VERSION_0 &&
+      params.curveType === 'stable' &&
+      params.stableSwapType === 'normal';
 
     const functionName = composeType(
       modules.Scripts,
