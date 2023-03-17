@@ -90,6 +90,12 @@ export class SDK {
       if (options.networkOptions?.resourceAccount) {
         this._networkOptions.resourceAccount = options.networkOptions.resourceAccount;
       }
+      if (options.networkOptions?.moduleAccountV05) {
+        this._networkOptions.moduleAccountV05 = options.networkOptions.moduleAccountV05;
+      }
+      if (options.networkOptions?.resourceAccountV05) {
+        this._networkOptions.resourceAccountV05 = options.networkOptions.resourceAccountV05;
+      }
     }
     this._client = new AptosClient(options.nodeUrl);
     this._swap = new SwapModule(this);
