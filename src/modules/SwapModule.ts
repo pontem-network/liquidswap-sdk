@@ -1,25 +1,21 @@
 import Decimal from 'decimal.js';
 
-import { SDK } from '../sdk';
-import { IModule } from '../interfaces/IModule';
+import {SDK} from '../sdk';
+import {IModule} from '../interfaces/IModule';
+import {AptosCoinInfoResource, AptosPoolResource, AptosResourceType, CurveType, TAptosTxPayload,} from '../types/aptos';
 import {
-  AptosCoinInfoResource,
-  AptosPoolResource,
-  AptosResourceType,
-  TAptosTxPayload,
-  CurveType,
-} from '../types/aptos';
-import {
-  withSlippage,
   composeType,
+  d,
   extractAddressFromType,
   getCoinInWithFees,
   getCoinOutWithFees,
-  getCoinsOutWithFeesStable,
   getCoinsInWithFeesStable,
-  d,
+  getCoinsOutWithFeesStable,
   is_sorted,
+  withSlippage,
 } from '../utils';
+import { VERSION_0, VERSION_0_5 } from "../constants";
+import { getCurve } from "../utils/contracts";
 
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
@@ -27,6 +23,7 @@ export type CalculateRatesParams = {
   amount: Decimal | number;
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 };
 
 export type CreateTXPayloadParams = {
@@ -38,9 +35,10 @@ export type CreateTXPayloadParams = {
   slippage: number;
   stableSwapType: 'high' | 'normal';
   curveType: CurveType;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 }
 
-type GetLiquidityPoolResourceParams = Pick<CalculateRatesParams, 'fromToken' | 'toToken' | 'curveType'>;
+type GetLiquidityPoolResourceParams = Pick<CalculateRatesParams, 'fromToken' | 'toToken' | 'curveType' | 'version'>;
 
 export class SwapModule implements IModule {
   protected _sdk: SDK;
@@ -171,8 +169,13 @@ export class SwapModule implements IModule {
 
     const { modules } = this.sdk.networkOptions;
 
+
+
+
     const isUnchecked =
-      params.curveType === 'stable' && params.stableSwapType === 'normal';
+      params.version === VERSION_0 &&
+      params.curveType === 'stable' &&
+      params.stableSwapType === 'normal';
 
     const functionName = composeType(
       modules.Scripts,
@@ -183,7 +186,7 @@ export class SwapModule implements IModule {
         : 'swap_into',
     );
 
-    const curve = curves[params.curveType];
+    const curve = getCurve(params.curveType, curves, params.version);
 
     const typeArguments = [params.fromToken, params.toToken, curve];
 
@@ -211,11 +214,18 @@ export class SwapModule implements IModule {
   }
 
   async getLiquidityPoolResource(params: GetLiquidityPoolResourceParams) {
-    const { resourceAccount, moduleAccount } = this.sdk.networkOptions;
+    const { resourceAccount, moduleAccount, resourceAccountV05, moduleAccountV05 } = this.sdk.networkOptions;
     const curves = this.sdk.curves;
 
+    const version = params.version;
+
+    const curve = getCurve(params.curveType, curves, version);
+
+    const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
+    const resourceAcc = version === VERSION_0_5 ? resourceAccountV05 : resourceAccount;
+
     const modulesLiquidityPool = composeType(
-      moduleAccount,
+      moduleAcc,
       'liquidity_pool',
       'LiquidityPool',
     );
@@ -226,7 +236,6 @@ export class SwapModule implements IModule {
         : [coinY, coinX];
       return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
     }
-    const curve = curves[params.curveType];
 
     const liquidityPoolType = getPoolStr(
       params.fromToken,
@@ -239,7 +248,7 @@ export class SwapModule implements IModule {
     try {
       liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-          resourceAccount,
+          resourceAcc,
           liquidityPoolType,
         );
     } catch (e) {

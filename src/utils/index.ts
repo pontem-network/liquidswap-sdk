@@ -14,7 +14,6 @@ export {
   calcReceivedLP,
   calcOutputBurnLiquidity,
   getOptimalLiquidityAmount,
-  getPoolLpStr,
   getPoolStr,
 } from './liquidity';
 export {

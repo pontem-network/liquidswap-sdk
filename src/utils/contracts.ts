@@ -1,7 +1,17 @@
 import { Buffer } from 'buffer';
 import Decimal from 'decimal.js';
 
+import { ICurves } from '../sdk';
+
+import {
+  VERSION_0_5,
+  VERSION_0,
+  SCRIPTS_V1,
+  SCRIPTS_V2,
+} from '../constants';
+
 import { checkAddress } from './hex';
+import {CurveType} from "../types/aptos";
 
 const EQUAL = 0;
 const LESS_THAN = 1;
@@ -196,4 +206,45 @@ export function checkAptosType(
     parts[1].length >= 1 &&
     parts[2].length >= 1
   );
+}
+
+/**
+ * Get Script Modules Name for a Contract Version
+ *
+ * @throws Unknown contract version requested
+ *
+ * @param contract version number
+ * @returns script with scripts module name value
+ */
+export function getScriptsFor(version: number): string {
+  if (version === VERSION_0_5) return SCRIPTS_V1;
+  switch (version) {
+    case VERSION_0:
+      return SCRIPTS_V2;
+    case VERSION_0_5:
+      return SCRIPTS_V1;
+  }
+  throw new Error('Unknown contract version requested');
+}
+
+/**
+ * Compute full curve type for given contract version
+ *
+ * @param type short name of curve
+ * @param contract version
+ * @param curves curves from sdk
+ * @returns curve full type
+ *
+ */
+export function getCurve(type: CurveType, curves: ICurves, contract?: number): string {
+  if (contract === VERSION_0_5) {
+    if (type === 'stable') {
+      return curves.stableV05;
+    }
+    return curves.uncorrelatedV05;
+  }
+  if (type === 'stable') {
+    return curves.stable;
+  }
+  return curves.uncorrelated;
 }

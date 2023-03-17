@@ -1,7 +1,6 @@
 import { Decimal } from 'decimal.js';
 
 import { d } from './numbers';
-import { RESOURCES_ACCOUNT } from '../constants';
 import { is_sorted, composeType } from './contracts';
 
 /**
@@ -80,23 +79,6 @@ export function getOptimalLiquidityAmount(
   yReserve: Decimal,
 ): Decimal {
   return xDesired.mul(yReserve).div(xReserve);
-}
-
-export function getPoolLpStr(
-  coinX: string,
-  coinY: string,
-  curve: string,
-): string {
-  const [sortedX, sortedY] = is_sorted(coinX, coinY)
-    ? [coinX, coinY]
-    : [coinY, coinX];
-  return composeType(
-    //
-    RESOURCES_ACCOUNT,
-    'lp_coin',
-    'LP',
-    [sortedX, sortedY, curve],
-  );
 }
 
 export function getPoolStr(

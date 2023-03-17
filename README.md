@@ -57,6 +57,10 @@ For Yarn:
           CoinInfo: '0x1::coin::CoinInfo', - Type of base CoinInfo module
           CoinStore: '0x1::coin::CoinStore', - Type of base CoinStore module
         },
+        resourceAccount: '0x05a97986a9d031c4567e15b797be516910cfcb4156312482efc6a19c0a30c948',
+        moduleAccount: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12',
+        moduleAccountV05: '0x163df34fccbf003ce219d3f1d9e70d140b60622cb9dd47599c25fb2f797ba6e',
+        resourceAccountV05: '0x61d2c22a6cb7831bee0f48363b0eec92369357aece0d1142062f7d5d85c7bef8'
       }
     */
   })
@@ -288,6 +292,61 @@ For Yarn:
 
     console.log(output); // true
   })
+  ```
+</details>
+
+<details>
+  <summary>Pools v.0.5: Swap 0.8 LayerZero USDT to LayerZero USDC</summary>
+
+  ```typescript
+  (async () => {
+    // Get USDT amount
+    try {
+      const output = await sdk.Swap.calculateRates({
+        fromToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC', //layerzero USDC
+        toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // layerzero USDT
+        amount: 800000, // 0.8 USDC, or you can use convertValueToDecimal(0.8, 6)
+        curveType: 'stable', // can be 'uncorrelated' or 'stable'
+        interactiveToken: 'from', // which token is 'base' to calculate other token rate.
+        version: 0.5 // optional, version could be only 0 or 0.5. If not provided version is 0
+      })
+      console.log(output) // '601018' (0.601018 USDT)
+
+      // Generate TX payload for swap 0.8 USDC to maximum 0.601018 USDT
+      // and minimum 0.598013 USDT (with slippage -0.5%)
+      const txPayload = sdk.Swap.createSwapTransactionPayload({
+        fromToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC',
+        toToken: '0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT', // layerzero USDT
+        fromAmount: 800000, // 0.8 USDT, or you can use convertValueToDecimal(0.8, 6)
+        toAmount: 601018, // 0.601018 USDC, or you can use convertValueToDecimal(0.601018, 6)
+        interactiveToken: 'from',
+        slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
+        stableSwapType: 'high',
+        curveType: 'stable',
+        version: 0.5,
+      })
+      console.log(txPayload);
+    } catch(e) {
+      console.log(e)
+    }
+
+    /**
+     Output:
+     {
+        "arguments": [
+          "800000",
+          "598013"
+        ],
+        "function": "0x163df34fccbf003ce219d3f1d9e70d140b60622cb9dd47599c25fb2f797ba6e::scripts::swap",
+        "type": "entry_function_payload",
+        "type_arguments": [
+          "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC",
+          "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT",
+          "0x163df34fccbf003ce219d3f1d9e70d140b60622cb9dd47599c25fb2f797ba6e::curves::Stable"
+        ]
+      }
+    */
+  })()
   ```
 </details>
 
