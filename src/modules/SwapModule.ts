@@ -1,8 +1,8 @@
 import Decimal from 'decimal.js';
 
-import {SDK} from '../sdk';
-import {IModule} from '../interfaces/IModule';
-import {AptosCoinInfoResource, AptosPoolResource, AptosResourceType, CurveType, TAptosTxPayload,} from '../types/aptos';
+import { SDK } from '../sdk';
+import { IModule } from '../interfaces/IModule';
+import { AptosCoinInfoResource, AptosPoolResource, AptosResourceType, CurveType, TAptosTxPayload } from '../types/aptos';
 import {
   composeType,
   d,
@@ -15,7 +15,7 @@ import {
   withSlippage,
 } from '../utils';
 import { VERSION_0, VERSION_0_5 } from "../constants";
-import { getCurve } from "../utils/contracts";
+import { getCurve, getScriptsFor } from "../utils/contracts";
 
 export type CalculateRatesParams = {
   fromToken: AptosResourceType;
@@ -167,18 +167,20 @@ export class SwapModule implements IModule {
       );
     }
 
-    const { modules } = this.sdk.networkOptions;
-
-
-
+    const { moduleAccountV05, moduleAccount } = this.sdk.networkOptions;
+    const { version = VERSION_0 } = params;
 
     const isUnchecked =
-      params.version === VERSION_0 &&
+      version === VERSION_0 &&
       params.curveType === 'stable' &&
       params.stableSwapType === 'normal';
 
+    const scriptsVersion = getScriptsFor(version);
+    const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
+
     const functionName = composeType(
-      modules.Scripts,
+      moduleAcc,
+      scriptsVersion,
       isUnchecked
         ? 'swap_unchecked'
         : params.interactiveToken === 'from'
@@ -186,7 +188,7 @@ export class SwapModule implements IModule {
         : 'swap_into',
     );
 
-    const curve = getCurve(params.curveType, curves, params.version);
+    const curve = getCurve(params.curveType, curves, version);
 
     const typeArguments = [params.fromToken, params.toToken, curve];
 
