@@ -104,7 +104,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function:
-        '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
+        '0x163df34fccbf003ce219d3f1d9e70d140b60622cb9dd47599c25fb2f797ba6e::scripts::swap',
       type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stableV05],
       arguments: ['150000', '145'],
     });
@@ -126,7 +126,7 @@ describe('Swap Module', () => {
     expect(output).toStrictEqual({
       type: 'entry_function_payload',
       function:
-        '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap',
+        '0x163df34fccbf003ce219d3f1d9e70d140b60622cb9dd47599c25fb2f797ba6e::scripts::swap',
       type_arguments: [TOKENS_MAPPING.USDT, TOKENS_MAPPING.WETH, curves.stableV05],
       arguments: ['150000', '145'],
     });
