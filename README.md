@@ -91,6 +91,7 @@ For Yarn:
         amount: 100000000, // 1 APTOS, or you can use convertValueToDecimal(1, 8)
         curveType: 'uncorrelated', // can be 'uncorrelated' or 'stable'
         interactiveToken: 'from', // which token is 'base' to calculate other token rate.
+        version: 0
       })
       console.log(output) // '4304638' (4.304638 USDT)
 
@@ -105,6 +106,7 @@ For Yarn:
         slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
         stableSwapType: 'high',
         curveType: 'uncorrelated',
+        version: 0
       })
       console.log(txPayload);
     } catch(e) {
@@ -142,6 +144,7 @@ For Yarn:
         amount: 1000000, // 1 layerzero USDT
         interactiveToken: 'to',
         curveType: 'uncorrelated',
+        version: 0
       })
       console.log(amount) // '23211815' ('0.23211815' APTOS)
 
@@ -156,6 +159,7 @@ For Yarn:
         slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
         stableSwapType: 'hign',
         curveType: 'uncorrelated',
+        version: 0
       })
       console.log(txPayload);
     } catch (e) {
@@ -192,6 +196,7 @@ For Yarn:
         amount: 100000000, // 1 APTOS
         interactiveToken: 'from',
         curveType: 'stable',
+        version: 0
       })
       console.log(amount) // '175257' ('0.00175257' whWETH)
 
@@ -206,6 +211,7 @@ For Yarn:
         slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
         stableSwapType: 'normal',
         curveType: 'stable',
+        version: 0
       })
       console.log(txPayload);
     } catch (e) {
@@ -242,6 +248,7 @@ For Yarn:
         amount: 1000000, // 1 USDA
         interactiveToken: 'to',
         curveType: 'stable',
+        version: 0
       })
       console.log(amount) // '12356861' ('0.12356861' APTOS)
 
@@ -256,6 +263,7 @@ For Yarn:
         slippage: 0.005, // 0.5% (1 - 100%, 0 - 0%)
         stableSwapType: 'high',
         curveType: 'stable',
+        version: 0
       })
       console.log(txPayload);
     } catch (e) {
@@ -288,6 +296,7 @@ For Yarn:
       fromToken: "0x1::aptos_coin::AptosCoin",
       toToken: "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC",
       curveType: 'uncorrelated',
+      version: 0
     });
 
     console.log(output); // true
@@ -363,6 +372,7 @@ For Yarn:
       curveType: 'uncorrelated',
       interactiveToken: 'from',
       slippage: 0.005,
+      version: 0
     });
     console.log(rate) // '4472498' ('4.472498' USDC)
     console.log(receiveLp) // '19703137' ('19.703137' Minimum Received LP)
@@ -376,6 +386,7 @@ For Yarn:
       slippage: 0.005,
       stableSwapType: 'normal',
       curveType: 'uncorrelated',
+      version: 0
     })
 
     console.log(payload);
@@ -406,6 +417,7 @@ For Yarn:
       slippage: 0.005,
       curveType: 'uncorrelated',
       burnAmount: 100000,
+      version: 0
     });
 
     console.log(output);
@@ -434,6 +446,7 @@ For Yarn:
       slippage: 0.005,
       curveType: 'uncorrelated',
       burnAmount: 100000,
+      version: 0
     });
 
     console.log(output);
