@@ -486,6 +486,7 @@ Code examples to work with Aptos SDK can be found in the [examples](examples) di
 - [x] Pools: check pool / create pool
 - [x] Examples with Aptos SDK
 - [ ] Staking: stake / harvest / unstake
+- [ ] Concentrated Liquidity: swap, add, burn
 
 See the [open issues](https://github.com/pontem-network/liquidswap-sdk/issues) for a full list of proposed features (and known issues).
 
