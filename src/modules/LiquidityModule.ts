@@ -24,6 +24,8 @@ import {
 } from '../utils';
 
 import { CreateTXPayloadParams } from './SwapModule';
+import {VERSION_0, VERSION_0_5} from "../constants";
+import {getCurve, getScriptsFor} from "../utils/contracts";
 
 interface ICreateBurnLiquidityPayload {
   fromToken: AptosResourceType;
@@ -31,6 +33,7 @@ interface ICreateBurnLiquidityPayload {
   burnAmount: Decimal | number;
   slippage: number;
   curveType: CurveType;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 }
 
 interface ICalculateRatesParams {
@@ -40,10 +43,11 @@ interface ICalculateRatesParams {
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
   slippage: number;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 }
 
 interface ICalculateSupplyParams
-  extends Pick<ICalculateRatesParams, 'slippage'> {
+  extends Pick<ICalculateRatesParams, 'slippage' | 'version'> {
   toAmount: Decimal | number;
   fromAmount: Decimal | number;
   toReserve: Decimal | number;
@@ -58,6 +62,7 @@ interface ICalculateBurnLiquidityParams {
   slippage: number;
   burnAmount: Decimal | number;
   curveType: CurveType;
+  version?: typeof VERSION_0 | typeof VERSION_0_5;
 }
 
 type TGetResourcesPayload = Omit<
@@ -79,15 +84,21 @@ export class LiquidityModule implements IModule {
   }
 
   async checkPoolExistence(params: TGetResourcesPayload): Promise<boolean> {
-    const { moduleAccount, resourceAccount } = this.sdk.networkOptions;
+    const { moduleAccount, resourceAccount, moduleAccountV05, resourceAccountV05 } = this.sdk.networkOptions;
     const curves = this.sdk.curves;
+    const { version = VERSION_0 } = params;
+
+    const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
+    const resourceAcc = version === VERSION_0_5 ? resourceAccountV05 : resourceAccount;
+
     const modulesLiquidityPool = composeType(
-      moduleAccount,
+      moduleAcc,
       'liquidity_pool',
       'LiquidityPool',
     );
 
-    const curve = curves[params.curveType];
+    const curve = getCurve(params.curveType, curves, version);
+
     const liquidityPoolType = getPoolStr(
       params.fromToken,
       params.toToken,
@@ -98,7 +109,7 @@ export class LiquidityModule implements IModule {
     try {
       const liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosResource>(
-          resourceAccount,
+          resourceAcc,
           liquidityPoolType,
         );
       return Boolean(liquidityPoolResource?.type);
@@ -108,14 +119,19 @@ export class LiquidityModule implements IModule {
   }
 
   async getLiquidityPoolResource(params: TGetResourcesPayload) {
-    const { moduleAccount, resourceAccount } = this.sdk.networkOptions;
+    const { moduleAccount, resourceAccount, moduleAccountV05, resourceAccountV05 } = this.sdk.networkOptions;
     const curves = this.sdk.curves;
+    const { version = VERSION_0 } = params;
+
+    const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
+    const resourceAcc = version === VERSION_0_5 ? resourceAccountV05 : resourceAccount;
+    const curve = getCurve(params.curveType, curves, version);
+
     const modulesLiquidityPool = composeType(
-      moduleAccount,
+      moduleAcc,
       'liquidity_pool',
       'LiquidityPool',
     );
-    const curve = curves[params.curveType];
 
     const liquidityPoolType = getPoolStr(
       params.fromToken,
@@ -129,7 +145,7 @@ export class LiquidityModule implements IModule {
     try {
       liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosPoolResource>(
-          resourceAccount,
+          resourceAcc,
           liquidityPoolType,
         );
     } catch (e) {
@@ -140,9 +156,11 @@ export class LiquidityModule implements IModule {
 
   async getLiquiditySupplyResource(params: TGetResourcesPayload) {
     const curves = this.sdk.curves;
-    const { modules, resourceAccount } = this.sdk.networkOptions;
+    const { modules, resourceAccount, resourceAccountV05 } = this.sdk.networkOptions;
+    const { version = VERSION_0 } = params;
 
-    const curve = curves[params.curveType];
+    const curve = getCurve(params.curveType, curves, version);
+    const resourceAcc = version === VERSION_0_5 ? resourceAccountV05 : resourceAccount;
 
     function getPoolLpStr(
       coinX: string,
@@ -153,8 +171,7 @@ export class LiquidityModule implements IModule {
         ? [coinX, coinY]
         : [coinY, coinX];
       return composeType(
-        //
-        resourceAccount,
+        resourceAcc,
         'lp_coin',
         'LP',
         [sortedX, sortedY, curve],
@@ -168,7 +185,7 @@ export class LiquidityModule implements IModule {
     try {
       liquidityPoolResource =
         await this.sdk.Resources.fetchAccountResource<AptosCoinInfoResource>(
-          resourceAccount,
+          resourceAcc,
           composeType(modules.CoinInfo, [lpString]),
         );
     } catch (e) {
@@ -307,17 +324,21 @@ export class LiquidityModule implements IModule {
     }
 
     const isPoolExisted = await this.checkPoolExistence(params);
+    const { version = VERSION_0 } = params;
 
-    const { modules } = this.sdk.networkOptions;
+    const { moduleAccountV05, moduleAccount } = this.sdk.networkOptions;
+    const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
+
     const curves = this.sdk.curves;
+    const scriptsVersion = getScriptsFor(version);
 
     const functionName = composeType(
-      modules.Scripts,
+      moduleAcc,
+      scriptsVersion,
       isPoolExisted ? 'add_liquidity' : 'register_pool_and_add_liquidity',
     );
 
-
-    const curve = curves[params.curveType];
+    const curve = getCurve(params.curveType, curves, version);
     const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const typeArguments = isSorted
@@ -366,10 +387,13 @@ export class LiquidityModule implements IModule {
       );
     }
 
-    const curves = this.sdk.curves;
-    const curve = curves[params.curveType];
+    const { version = VERSION_0 } = params;
 
-    const { modules } = this.sdk.networkOptions;
+    const curves = this.sdk.curves;
+    const curve = getCurve(params.curveType, curves, version);
+
+    const { moduleAccountV05, moduleAccount  } = this.sdk.networkOptions;
+    const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
 
     const output = await this.calculateOutputBurn(params);
 
@@ -382,7 +406,9 @@ export class LiquidityModule implements IModule {
       ? [params.burnAmount.toString(), xOutput, yOutput]
       : [params.burnAmount.toString(), yOutput, xOutput];
 
-    const functionName = composeType(modules.Scripts, 'remove_liquidity');
+    const scriptsVersion = getScriptsFor(version);
+
+    const functionName = composeType(moduleAcc, scriptsVersion, 'remove_liquidity');
 
     const typeArguments = isSorted
       ? [params.fromToken, params.toToken, curve]
