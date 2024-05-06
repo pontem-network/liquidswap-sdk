@@ -24,7 +24,7 @@ export type CalculateRatesParams = {
   interactiveToken: 'from' | 'to';
   curveType: CurveType;
   version?: typeof VERSION_0 | typeof VERSION_0_5;
-  customFee?: number;
+  additionalFee?: number;
 };
 
 export type CreateTXPayloadParams = {
@@ -115,8 +115,8 @@ export class SwapModule implements IModule {
 
     let fee = d(liquidityPoolResource.data.fee);
 
-    if (params.customFee) {
-      fee = d(params.customFee);
+    if (params.additionalFee) {
+      fee = fee.plus(params.additionalFee);
     }
 
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
