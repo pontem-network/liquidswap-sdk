@@ -117,7 +117,6 @@ export class SwapModule implements IModule {
 
     if (params.customFee) {
       fee = d(params.customFee);
-      // params.customFee = 10
     }
 
     const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
