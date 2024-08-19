@@ -1,9 +1,15 @@
-import { AptosClient } from 'aptos';
+import { AptosClient, ClientConfig } from 'aptos';
 import { SwapModule } from './modules/SwapModule';
 import { ResourcesModule } from './modules/ResourcesModule';
 import { AptosResourceType } from './types/aptos';
 import { LiquidityModule } from './modules/LiquidityModule';
-import { NETWORKS_MODULES, MODULES_ACCOUNT, RESOURCES_ACCOUNT, MODULES_V05_ACCOUNT, RESOURCES_V05_ACCOUNT } from './constants';
+import {
+  NETWORKS_MODULES,
+  MODULES_ACCOUNT,
+  RESOURCES_ACCOUNT,
+  MODULES_V05_ACCOUNT,
+  RESOURCES_V05_ACCOUNT,
+} from './constants';
 
 const initialNetworkOptions = {
   nativeToken: '0x1::aptos_coin::AptosCoin',
@@ -15,7 +21,7 @@ const initialNetworkOptions = {
   resourceAccount: RESOURCES_ACCOUNT,
   moduleAccount: MODULES_ACCOUNT,
   moduleAccountV05: MODULES_V05_ACCOUNT,
-  resourceAccountV05: RESOURCES_V05_ACCOUNT
+  resourceAccountV05: RESOURCES_V05_ACCOUNT,
 };
 
 interface INetworkOptions {
@@ -33,6 +39,7 @@ interface INetworkOptions {
 
 export interface SdkOptions {
   nodeUrl: string;
+  nodeOptions?: Partial<ClientConfig>;
   networkOptions?: INetworkOptions;
 }
 
@@ -85,19 +92,23 @@ export class SDK {
         this._networkOptions.modules = options.networkOptions.modules;
       }
       if (options.networkOptions?.moduleAccount) {
-        this._networkOptions.moduleAccount = options.networkOptions.moduleAccount;
+        this._networkOptions.moduleAccount =
+          options.networkOptions.moduleAccount;
       }
       if (options.networkOptions?.resourceAccount) {
-        this._networkOptions.resourceAccount = options.networkOptions.resourceAccount;
+        this._networkOptions.resourceAccount =
+          options.networkOptions.resourceAccount;
       }
       if (options.networkOptions?.moduleAccountV05) {
-        this._networkOptions.moduleAccountV05 = options.networkOptions.moduleAccountV05;
+        this._networkOptions.moduleAccountV05 =
+          options.networkOptions.moduleAccountV05;
       }
       if (options.networkOptions?.resourceAccountV05) {
-        this._networkOptions.resourceAccountV05 = options.networkOptions.resourceAccountV05;
+        this._networkOptions.resourceAccountV05 =
+          options.networkOptions.resourceAccountV05;
       }
     }
-    this._client = new AptosClient(options.nodeUrl);
+    this._client = new AptosClient(options.nodeUrl, options.nodeOptions);
     this._swap = new SwapModule(this);
     this._resources = new ResourcesModule(this);
     this._liquidity = new LiquidityModule(this);
@@ -105,7 +116,7 @@ export class SDK {
       uncorrelated: `${this._networkOptions.moduleAccount}::curves::Uncorrelated`,
       stable: `${this._networkOptions.moduleAccount}::curves::Stable`,
       uncorrelatedV05: `${this._networkOptions.moduleAccountV05}::curves::Uncorrelated`,
-      stableV05: `${this._networkOptions.moduleAccountV05}::curves::Stable`
-    }
+      stableV05: `${this._networkOptions.moduleAccountV05}::curves::Stable`,
+    };
   }
 }
