@@ -2,6 +2,7 @@ import { Decimal } from 'decimal.js';
 
 import { d } from './numbers';
 import { is_sorted, composeType } from './contracts';
+import { AptosResourceType } from '../types/aptos';
 
 /**
  * Calculate return of Liquidity Coins
@@ -86,9 +87,9 @@ export function getPoolStr(
   coinY: string,
   curve: string,
   modulesLiquidityPool: string,
-): string {
+): AptosResourceType {
   const [sortedX, sortedY] = is_sorted(coinX, coinY)
     ? [coinX, coinY]
     : [coinY, coinX];
-  return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
+  return composeType<AptosResourceType>(modulesLiquidityPool, [sortedX, sortedY, curve]);
 }

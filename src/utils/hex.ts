@@ -16,7 +16,7 @@ export function shortAddress(address: string, start = 4, end = 4) {
 }
 
 export function checkAddress(
-  address: any,
+  address: unknown,
   options: { leadingZero: boolean } = { leadingZero: true },
 ): boolean {
   if (typeof address !== 'string') {
@@ -40,7 +40,7 @@ export function checkAddress(
  * As input it supports `Buffer`, `String`, `Number`, null/undefined, `BN` and other objects with a `toArray()` method.
  * @param v the value
  */
-export function toBuffer(v: any): Buffer {
+export function toBuffer(v: unknown): Buffer {
   if (!Buffer.isBuffer(v)) {
     if (Array.isArray(v)) {
       v = Buffer.from(v);
@@ -54,18 +54,18 @@ export function toBuffer(v: any): Buffer {
       v = exports.intToBuffer(v);
     } else if (v === null || v === undefined) {
       v = Buffer.allocUnsafe(0);
-    } else if (v.toArray) {
+    } else if ((v as { toArray: () => number[] }).toArray) {
       // converts a BN to a Buffer
-      v = Buffer.from(v.toArray());
+      v = Buffer.from((v as { toArray: () => number[] }).toArray());
     } else {
       throw new Error('invalid type');
     }
   }
-  return v;
+  return v as Buffer;
 }
 
 export function checkAptosType(
-  type: any,
+  type: unknown,
   options: { leadingZero: boolean } = { leadingZero: true },
 ): boolean {
   if (typeof type !== 'string') {

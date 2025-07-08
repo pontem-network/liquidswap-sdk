@@ -4,7 +4,6 @@ import { IModule } from '../interfaces/IModule';
 import { SDK } from '../sdk';
 import {
   AptosCoinInfoResource,
-  AptosResource,
   AptosResourceType,
   CurveType,
   AptosPoolResource,
@@ -57,8 +56,8 @@ interface ICalculateSupplyParams
 }
 
 interface ICalculateBurnLiquidityParams {
-  fromToken: string;
-  toToken: string;
+  fromToken: AptosResourceType;
+  toToken: AptosResourceType;
   slippage: number;
   burnAmount: Decimal | number;
   curveType: CurveType;
@@ -108,11 +107,11 @@ export class LiquidityModule implements IModule {
 
     try {
       const liquidityPoolResource =
-        await this.sdk.Resources.fetchAccountResource<AptosResource>(
+        await this.sdk.Resources.fetchAccountResource(
           resourceAcc,
           liquidityPoolType,
         );
-      return Boolean(liquidityPoolResource?.type);
+      return Boolean(liquidityPoolResource);
     } catch (_e) {
       return false;
     }
@@ -271,11 +270,11 @@ export class LiquidityModule implements IModule {
     }
 
     const fromReserve = isSorted
-      ? d(liquidityPoolResource.data.coin_x_reserve.value)
-      : d(liquidityPoolResource.data.coin_y_reserve.value);
+      ? d(liquidityPoolResource.coin_x_reserve.value)
+      : d(liquidityPoolResource.coin_y_reserve.value);
     const toReserve = isSorted
-      ? d(liquidityPoolResource.data.coin_y_reserve.value)
-      : d(liquidityPoolResource.data.coin_x_reserve.value);
+      ? d(liquidityPoolResource.coin_y_reserve.value)
+      : d(liquidityPoolResource.coin_x_reserve.value);
 
     const optimalAmount =
       params.interactiveToken === 'from'
@@ -293,7 +292,7 @@ export class LiquidityModule implements IModule {
       // TODO: fix typing
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      lpSupply = lpSupplyResponse.data.supply.vec[0].integer.vec[0].value;
+      lpSupply = lpSupplyResponse.supply.vec[0].integer.vec[0].value;
     } catch (e) {
       console.log(e);
     }
@@ -332,7 +331,7 @@ export class LiquidityModule implements IModule {
     const curves = this.sdk.curves;
     const scriptsVersion = getScriptsFor(version);
 
-    const functionName = composeType(
+    const functionName = composeType<AptosResourceType>(
       moduleAcc,
       scriptsVersion,
       isPoolExisted ? 'add_liquidity' : 'register_pool_and_add_liquidity',
@@ -374,8 +373,8 @@ export class LiquidityModule implements IModule {
     return {
       type: 'entry_function_payload',
       function: functionName,
-      type_arguments: typeArguments,
-      arguments: args,
+      typeArguments: typeArguments,
+      functionArguments: args,
     };
   }
 
@@ -416,8 +415,8 @@ export class LiquidityModule implements IModule {
     return {
       type: 'entry_function_payload',
       function: functionName,
-      type_arguments: typeArguments,
-      arguments: args,
+      typeArguments: typeArguments,
+      functionArguments: args,
     };
   }
 
@@ -437,7 +436,7 @@ export class LiquidityModule implements IModule {
       // TODO: fix typing
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      lpSupply = lpSupplyResponse.data.supply.vec[0].integer.vec[0].value;
+      lpSupply = lpSupplyResponse.supply.vec[0].integer.vec[0].value;
     } catch (e) {
       console.log(e);
     }
@@ -449,11 +448,11 @@ export class LiquidityModule implements IModule {
     const isSorted = is_sorted(params.fromToken, params.toToken);
 
     const fromReserve = isSorted
-      ? d(liquidityPoolResource.data.coin_x_reserve.value)
-      : d(liquidityPoolResource.data.coin_y_reserve.value);
+      ? d(liquidityPoolResource.coin_x_reserve.value)
+      : d(liquidityPoolResource.coin_y_reserve.value);
     const toReserve = isSorted
-      ? d(liquidityPoolResource.data.coin_y_reserve.value)
-      : d(liquidityPoolResource.data.coin_x_reserve.value);
+      ? d(liquidityPoolResource.coin_y_reserve.value)
+      : d(liquidityPoolResource.coin_x_reserve.value);
 
     const outputVal = calcOutputBurnLiquidity({
       xReserve: fromReserve,

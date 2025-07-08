@@ -9,6 +9,7 @@ import {
 } from '../constants';
 import SDK from '../main';
 import { convertValueToDecimal } from '../utils';
+import { AptosResourceType } from '../types/aptos';
 
 
 describe('Swap Module', () => {
@@ -200,7 +201,7 @@ describe('Swap Module', () => {
 
     try {
       await sdk.Swap.calculateRates({
-        fromToken: TOKENS_MAPPING.APTOS + '0',
+        fromToken: TOKENS_MAPPING.APTOS + '0' as AptosResourceType,
         toToken: TOKENS_MAPPING.WETH,
         amount: 100000000, // 1 WETH
         curveType: 'stable',
@@ -214,7 +215,7 @@ describe('Swap Module', () => {
     try {
       await sdk.Swap.calculateRates({
         fromToken: TOKENS_MAPPING.APTOS,
-        toToken: TOKENS_MAPPING.WETH + '0',
+        toToken: TOKENS_MAPPING.WETH + '0' as AptosResourceType,
         amount: 100000000, // 1 WETH
         curveType: 'stable',
         interactiveToken: 'to',

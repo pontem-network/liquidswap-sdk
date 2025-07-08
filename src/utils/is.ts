@@ -1,9 +1,5 @@
 import { AxiosError } from 'axios';
 
-export function isAxiosError(e: any): e is AxiosError {
-  if (e.isAxiosError) {
-    return e;
-  }
-
-  return e;
+export function isAxiosError(e: unknown): e is AxiosError {
+  return (e as AxiosError).isAxiosError === true;
 }

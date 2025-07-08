@@ -11,7 +11,7 @@ import {
 } from '../constants';
 
 import { checkAddress } from './hex';
-import {CurveType} from "../types/aptos";
+import { CurveType } from "../types/aptos";
 
 const EQUAL = 0;
 const LESS_THAN = 1;
@@ -104,22 +104,22 @@ export function is_sorted(coin_x: string, coin_y: string) {
   return compare_types(coin_x, coin_y) == LESS_THAN;
 }
 
-export function composeType(address: string, generics: string[]): string;
+export function composeType<TResourceType = string>(address: string, generics: string[]): TResourceType;
 
-export function composeType(
+export function composeType<TResourceType = string>(
   address: string,
   struct: string,
   generics?: string[],
-): string;
+): TResourceType;
 
-export function composeType(
+export function composeType<TResourceType = string>(
   address: string,
   module: string,
   struct: string,
   generics?: string[],
-): string;
+): TResourceType;
 
-export function composeType(address: string, ...args: unknown[]): string {
+export function composeType<TResourceType = string>(address: string, ...args: unknown[]): TResourceType {
   const generics: string[] = Array.isArray(args[args.length - 1])
     ? (args.pop() as string[])
     : [];
@@ -131,7 +131,7 @@ export function composeType(address: string, ...args: unknown[]): string {
     result += `<${generics.join(',')}>`;
   }
 
-  return result;
+  return result as unknown as TResourceType;
 }
 
 /**
@@ -157,7 +157,7 @@ export function extractAddressFromType(type: string) {
 }
 
 export function checkAptosType(
-  type: any,
+  type: unknown,
   options: { leadingZero: boolean } = { leadingZero: true },
 ): boolean {
   if (typeof type !== 'string') {

@@ -1,7 +1,7 @@
-import { AptosClient, ClientConfig } from 'aptos';
+import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 import { SwapModule } from './modules/SwapModule';
 import { ResourcesModule } from './modules/ResourcesModule';
-import { AptosResourceType } from './types/aptos';
+import { AptosResourceType, AptosScriptType } from './types/aptos';
 import { LiquidityModule } from './modules/LiquidityModule';
 import {
   NETWORKS_MODULES,
@@ -22,15 +22,15 @@ const initialNetworkOptions = {
   moduleAccount: MODULES_ACCOUNT,
   moduleAccountV05: MODULES_V05_ACCOUNT,
   resourceAccountV05: RESOURCES_V05_ACCOUNT,
-};
+} as const;
 
 interface INetworkOptions {
   nativeToken?: AptosResourceType;
   modules?: {
     CoinInfo: AptosResourceType;
     CoinStore: AptosResourceType;
-    Scripts: AptosResourceType;
-  } & Record<string, AptosResourceType>;
+    Scripts: AptosScriptType;
+  } & Record<string, AptosResourceType | AptosScriptType>;
   resourceAccount?: string;
   moduleAccount?: string;
   moduleAccountV05?: string;
@@ -39,7 +39,7 @@ interface INetworkOptions {
 
 export interface SdkOptions {
   nodeUrl: string;
-  nodeOptions?: Partial<ClientConfig>;
+  nodeOptions?: Partial<AptosConfig>;
   networkOptions?: INetworkOptions;
 }
 
@@ -51,7 +51,7 @@ export interface ICurves {
 }
 
 export class SDK {
-  protected _client: AptosClient;
+  protected _client: Aptos;
   protected _swap: SwapModule;
   protected _liquidity: LiquidityModule;
   protected _resources: ResourcesModule;
@@ -108,7 +108,11 @@ export class SDK {
           options.networkOptions.resourceAccountV05;
       }
     }
-    this._client = new AptosClient(options.nodeUrl, options.nodeOptions);
+    const config = new AptosConfig({
+      fullnode: options.nodeUrl,
+      ...options.nodeOptions,
+    });
+    this._client = new Aptos(config);
     this._swap = new SwapModule(this);
     this._resources = new ResourcesModule(this);
     this._liquidity = new LiquidityModule(this);
