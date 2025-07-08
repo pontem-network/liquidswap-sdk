@@ -106,21 +106,25 @@ export class SwapModule implements IModule {
       ? [fromCoinInfo, toCoinInfo]
       : [toCoinInfo, fromCoinInfo];
 
-    const fromReserve = isSorted
-      ? d(liquidityPoolResource.data.coin_x_reserve.value)
-      : d(liquidityPoolResource.data.coin_y_reserve.value);
-    const toReserve = isSorted
-      ? d(liquidityPoolResource.data.coin_y_reserve.value)
-      : d(liquidityPoolResource.data.coin_x_reserve.value);
+    console.log("sortedFromCoinInfo", sortedFromCoinInfo);
+    console.log("sortedToCoinInfo", sortedToCoinInfo);
+    console.log("liquidityPoolResource", liquidityPoolResource);
 
-    let fee = d(liquidityPoolResource.data.fee);
+    const fromReserve = isSorted
+      ? d(liquidityPoolResource.coin_x_reserve.value)
+      : d(liquidityPoolResource.coin_y_reserve.value);
+    const toReserve = isSorted
+      ? d(liquidityPoolResource.coin_y_reserve.value)
+      : d(liquidityPoolResource.coin_x_reserve.value);
+
+    let fee = d(liquidityPoolResource.fee);
 
     if (params.additionalFee) {
       fee = fee.plus(params.additionalFee);
     }
 
-    const coinFromDecimals = +sortedFromCoinInfo.data.decimals;
-    const coinToDecimals = +sortedToCoinInfo.data.decimals;
+    const coinFromDecimals = +sortedFromCoinInfo.decimals;
+    const coinToDecimals = +sortedToCoinInfo.decimals;
 
     const amount = d(params.amount);
 
@@ -183,7 +187,7 @@ export class SwapModule implements IModule {
     const scriptsVersion = getScriptsFor(version);
     const moduleAcc = version === VERSION_0_5 ? moduleAccountV05 : moduleAccount;
 
-    const functionName = composeType(
+    const functionName = composeType<AptosResourceType>(
       moduleAcc,
       scriptsVersion,
       isUnchecked
@@ -215,8 +219,8 @@ export class SwapModule implements IModule {
     return {
       type: 'entry_function_payload',
       function: functionName,
-      type_arguments: typeArguments,
-      arguments: args,
+      typeArguments: typeArguments,
+      functionArguments: args,
     };
   }
 
@@ -237,11 +241,11 @@ export class SwapModule implements IModule {
       'LiquidityPool',
     );
 
-    function getPoolStr(coinX: string, coinY: string, curve: string): string {
+    function getPoolStr(coinX: AptosResourceType, coinY: AptosResourceType, curve: string): AptosResourceType {
       const [sortedX, sortedY] = is_sorted(coinX, coinY)
         ? [coinX, coinY]
         : [coinY, coinX];
-      return composeType(modulesLiquidityPool, [sortedX, sortedY, curve]);
+      return composeType<AptosResourceType>(modulesLiquidityPool, [sortedX, sortedY, curve]);
     }
 
     const liquidityPoolType = getPoolStr(

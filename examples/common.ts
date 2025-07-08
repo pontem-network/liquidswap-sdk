@@ -1,24 +1,34 @@
+import { AccountAddress, Aptos } from "@aptos-labs/ts-sdk";
 
-export const NODE_URL = process.env.APTOS_NODE_URL || "https://aptos-devnet.pontem.network";
-export const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
-
-export const RESOURCE_ACCOUNT = "0xf5f11a0fa0ef6e2cd215d73cc3bd3c4cc2ad5b1c24625a690aadc9b13a57eaff";
-export const MODULES_ACCOUNT = "0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9";
+export const RESOURCE_ACCOUNT = "0x61d2c22a6cb7831bee0f48363b0eec92369357aece0d1142062f7d5d85c7bef8";
+export const MODULES_ACCOUNT = "0x163df34fccbf003ce219d3f1d9e70d140b60622cb9dd47599c25fb2f797ba6e";
 
 export const TokensMapping = {
   APTOS: '0x1::aptos_coin::AptosCoin', // APTOS
-  USDT: '0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::USDT', //devnet USDT
-};
+  LSD: '0x53a30a6e5936c0a4c5140daed34de39d17ca7fcae08f947c02e979cef98a3719::coin::LSD', //LSD
+} as const;
 
-export type TxPayloadCallFunction = {
-  type: 'entry_function_payload';
-  function: string;
-  type_arguments: string[];
-  arguments: string[];
-};
+/**
+ * Prints the balance of an account
+ * @param aptos
+ * @param name
+ * @param address
+ * @returns {Promise<*>}
+ *
+ */
+export const balance = async (aptos: Aptos, name: string, address: AccountAddress) => {
+  const balances = await aptos.fungibleAsset.getCurrentFungibleAssetBalances({
+    options: {
+      where: {
+        owner_address: {
+          _eq: address.toString(),
+        },
+      }
+    }
+  });
+  const aptBalance = balances.find(b => b.asset_type === TokensMapping.APTOS);
+  const amount = Number(aptBalance?.amount);
 
-export const NETWORKS_MAPPING = {
-  TESTNET: 'testnet',
-  DEVNET: 'devnet',
-  MAINNET: 'mainnet'
+  console.log(`${name}'s balance is: ${amount}`);
+  return amount;
 };

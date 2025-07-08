@@ -1,9 +1,5 @@
-export type AptosResourceType = string;
-
-export type AptosResource<T = unknown> = {
-  data: T;
-  type: string;
-};
+export type AptosResourceType = `${string}::${string}::${string}`;
+export type AptosScriptType = `${string}::${string}`;
 
 export type AptosCoinInfoResource = {
   decimals: string;
@@ -31,9 +27,9 @@ export type AptosPoolResource = {
 
 export type TxPayloadCallFunction = {
   type: 'entry_function_payload';
-  function: string;
-  type_arguments: string[];
-  arguments: string[];
+  function: AptosResourceType;
+  typeArguments: string[];
+  functionArguments: string[];
 };
 
 export type TAptosTxPayload = TxPayloadCallFunction;

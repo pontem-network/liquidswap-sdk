@@ -1,6 +1,6 @@
 import { SDK } from '../sdk';
 import { IModule } from '../interfaces/IModule';
-import { AptosResource, AptosResourceType } from '../types/aptos';
+import { AptosResourceType } from '../types/aptos';
 import { isAxiosError } from '../utils/is';
 
 export class ResourcesModule implements IModule {
@@ -17,13 +17,13 @@ export class ResourcesModule implements IModule {
   async fetchAccountResource<T = unknown>(
     accountAddress: string,
     resourceType: AptosResourceType,
-  ): Promise<AptosResource<T> | undefined> {
+  ): Promise<T | undefined> {
     try {
-      const response = await this._sdk.client.getAccountResource(
+      const response = await this._sdk.client.getAccountResource({
         accountAddress,
         resourceType,
-      );
-      return response as unknown as AptosResource<T>;
+      });
+      return response as unknown as T;
     } catch (e: unknown) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
